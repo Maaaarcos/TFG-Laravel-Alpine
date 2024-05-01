@@ -1,3 +1,11 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  @vite('resources/css/app.css')
+</head>
+<body>
 <div id="tpv" class=" h-screen flex" 
 x-data="{
     showModal: false,
@@ -97,7 +105,7 @@ calcularBase()">
         <div class="my-2">
             <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Nombre 1</p>
-        </div>
+    </div>
         <div class="my-2">
             <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Nombre 2</p>
@@ -198,3 +206,5 @@ calcularBase()">
         </div>
     </div>
 </div>
+</body>
+</html>
