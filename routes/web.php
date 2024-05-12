@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Tpv;
-
+use App\Livewire\Crear;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +20,4 @@ Route::get('/', function () {
 });
 
 Route::get('/tpv', Tpv::class);
+Route::get('/crear', Crear::class);
