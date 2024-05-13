@@ -14,15 +14,14 @@ class Tpv extends Component
     public $iva =[];
 
     public function mount()
-    {
-        $this->productos= Producto::select('id','nombre', 'precio', 'imagen_url', 'iva_id')->with('categoria')->get()->keyBy('id')->toArray();
-        $this->categorias= Categoria::select('id','nombre')->get()->keyBy('id')->toArray();
-        $this->iva= Iva::select('id','qty')->get()->keyBy('id')->toArray();
+{
+    $this->productos = Producto::select('id','nombre', 'precio', 'imagen_url', 'iva_id')->with('categoria')->get()->keyBy('id')->toArray();
+    $this->categorias = Categoria::select('id','nombre')->get()->keyBy('id')->toArray();
+    $this->iva = Iva::select('id','qty')->get()->keyBy('id')->toArray();
 
-        
-    }
-
-
+    // dd($this->productos, $this->categorias, $this->iva);
+}
+    
     public function render()
     {
 
