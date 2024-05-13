@@ -10,8 +10,8 @@
 x-data="{
     showModal: false,
     barcode: '',
-    productos: @entangle('productos'),
     productosShow: null,
+    productos: @entangle('productos'),
     categorias: @entangle('categorias'),
     iva: @entangle('iva'),
     carrito: JSON.parse(localStorage.getItem('carrito')) || {},
@@ -99,7 +99,9 @@ x-data="{
         return IVA;
     },
 }" x-init="productosShow = productos;
-calcularBase()">
+calcularBase();
+console.log(this.productos);
+">
     {{-- columna izquierda --}}
     <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center">
         <div class="my-2">
@@ -142,17 +144,15 @@ calcularBase()">
         </div>
         {{-- productos --}}
         <div class="flex-1 bg-gray-200 overflow-y-auto h-screen flex flex-wrap justify-start">
-
-            <template x-for="producto in productosShow">
+            <template x-for="producto in productos">
                 <div class="my-3 bg-white w-36 h-36 p-4 mx-4 flex flex-col justify-center items-center cursor-pointer"
                     @click="carritoAdd(producto.id)">
-                    <img src="" alt="Foto" class="w-16 h-16 object-cover rounded-full">
-                    <p class="text-center mt-2" x-text='producto.name'></p>
-                    <p class="text-center mt-2" x-text="(producto.precio) + '€'"></p>
+                    <img src="producto.imagen_url" alt="Foto" class="w-16 h-16 object-cover rounded-full">
+                    <p class="text-center mt-2" x-text='producto.nombre'></p>
+                    <p class="text-center mt-2" x-text="(producto.precio).toFixed(2) + '€'"></p>
                 </div>
             </template>
         </div>
-
     </div>
     {{-- columna derecha --}}
     <div class="bg-gray-600 text-white w-3/12 flex flex-col h-screen">
@@ -161,8 +161,8 @@ calcularBase()">
         </div>
         <div class="flex-1 bg-white border-l-4 border-gray-500 overflow-y-auto ">
             <table class="table-auto table-list">
-                <thead>
-                    <tr>
+                <thead class="text-black">
+                    <tr class="">
                         <th class="border-r border-black">CANT</th>
                         <th class="col-span-2">NOMBRE</th>
                         <th>SUB.TOTAL</th>
@@ -190,7 +190,7 @@ calcularBase()">
             {{-- Columna de datos --}}
             <div>
                 <ul>
-                    <li class="  pb-2">BASE IMPONIBLE:</li>
+                    <li class=" pb-2">BASE IMPONIBLE:</li>
                     <li class=" pb-2">IVA:</li>
                     <li class=" pb-2">TOTAL:</li>
                 </ul>

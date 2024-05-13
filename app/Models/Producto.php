@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Categoria;
-use App\Models\Ivas;
+use App\Models\Iva;
 
 
 class Producto extends Model
@@ -22,7 +22,7 @@ class Producto extends Model
 
     public function iva()
     {
-        return $this->belongsTo(Ivas::class);
+        return $this->belongsTo(Iva::class);
     }
 
     public function getNombreCategoriaAtributo()

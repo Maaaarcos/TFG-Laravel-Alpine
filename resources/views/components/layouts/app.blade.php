@@ -14,5 +14,6 @@
 
     <!-- Aquí puedes incluir tus scripts JavaScript, etc. -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ mix('js/alpine.js') }}"></script>
 </body>
 </html>
