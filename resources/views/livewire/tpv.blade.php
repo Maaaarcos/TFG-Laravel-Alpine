@@ -1,16 +1,7 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
-  @vite('resources/css/app.css')
-</head>
-<body>
     <div id="tpv" class="h-screen flex" x-data="{
-        productos: {!! json_encode($productos) !!},
-        categorias: {!! json_encode($categorias) !!},
-        iva: {!! json_encode($iva) !!},
+        productos: @entangle('productos'),
+        categorias: @entangle('categorias'),
+        iva: @entangle('iva'),
         
         carrito: JSON.parse(localStorage.getItem('carrito')) || {},
         carritoEspera: JSON.parse(localStorage.getItem('carrito')) || {},
@@ -103,6 +94,7 @@
             }
             {{-- console.log(IVA); --}}
             return IVA;
+        }
         
     }">
         {{-- columna izquierda --}}
@@ -211,5 +203,3 @@
             </div>
         </div>
     </div>
-</body>
-</html>
