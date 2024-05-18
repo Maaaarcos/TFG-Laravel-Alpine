@@ -94,7 +94,8 @@
             }
             {{-- console.log(IVA); --}}
             return IVA;
-        }
+        },
+        
         
     }">
         {{-- columna izquierda --}}
@@ -155,6 +156,11 @@
         <div class="bg-gray-600 text-white w-3/12 flex flex-col h-screen">
             <div class=" text-white p-4 h-20 ml-auto flex items-center">
                 <i class="fa-regular fa-user fa-3x px-4 py-2 cursor-pointer "></i>
+                <i class="fa-solid fa-cog fa-3x px-4 py-2 cursor-pointer"></i>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+                </form>
+                <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer" onclick="document.getElementById('logout-form').submit();"></i>
             </div>
             <div class="flex-1 bg-white border-l-4 border-gray-500 overflow-y-auto ">
                 <table class="table-auto table-list">
