@@ -2,12 +2,13 @@
         productos: @entangle('productos'),
         categorias: @entangle('categorias'),
         iva: @entangle('iva'),
-        
+        showModal: false,  
         carrito: JSON.parse(localStorage.getItem('carrito')) || {},
         carritoEspera: JSON.parse(localStorage.getItem('carrito')) || {},
         totalCarrito: 0,
+        totalSinDesglosar: 0,
         productosShow: [],
-        carritoAdd: function(id) {
+        carritoAdd(id) {
             // Verificar si el producto ya está en el carrito
             if (localStorage.getItem('carrito')) {
                 let carrito = JSON.parse(localStorage.getItem('carrito'));
@@ -34,19 +35,19 @@
                 localStorage.setItem('carrito', JSON.stringify(carrito));
             }
         },
-        dropCarrito: function(id) {
+        dropCarrito(id) {
             if (this.carrito[id] !== undefined) {
                 delete this.carrito[id];
             }
             this.calcularBase();
             localStorage.setItem('carrito', JSON.stringify(this.carrito));
         },
-        deleteCarrito: function() {
+        deleteCarrito() {
             this.carrito = {};
             this.calcularBase();
             localStorage.setItem('carrito', JSON.stringify(this.carrito));
         },
-        selectProd: function(id) {
+        selectProd(id) {
             let arr = [];
             this.productos.forEach(function(prod) {
                 prod.categorias.forEach(function(cat) {
@@ -57,7 +58,7 @@
             });
             this.productosShow = arr;
         },
-        saveCarrito: function() {
+        saveCarrito() {
             console.log(this.carritoEspera);
             this.carritoEspera.push(this.carrito);
             this.carrito = {};
@@ -65,7 +66,7 @@
             localStorage.setItem('carrito', JSON.stringify(this.carrito));
             {{-- localStorage.setItem('carritoEspera', JSON.stringify(this.carritoEspera)); --}}
         },
-        calcularBase: function() {
+        calcularBase() {
             let total = 0;
             for (let art in this.carrito) {
                 if (this.carrito.hasOwnProperty(art)) {
@@ -95,30 +96,40 @@
             {{-- console.log(IVA); --}}
             return IVA;
         },
-        
-        
-    }">
+    },
+        updateTotalSinDesglosar() {
+            this.totalSinDesglosar = this.calcularIVA() + this.totalCarrito;
+        },
+
+    }" x-init="productosShow = productos;
+    calcularBase();
+    totalSinDesglosar = calcularIVA() + totalCarrito;
+    setInterval(() => updateTotalSinDesglosar());
+    $watch('carrito', () => updateTotalSinDesglosar());
+    $watch('totalCarrito', () => updateTotalSinDesglosar());
+    console.log(this.calcularIVA);">
+
         {{-- columna izquierda --}}
-        <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center">
+        <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center uppercase">
             <div class="my-2">
                 <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">Nombre 1</p>
+                <p class="mx-2">tpv</p>
             </div>
             <div class="my-2">
                 <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">Nombre 2</p>
+                <p class="mx-2">sala</p>
             </div>
             <div class="my-2">
                 <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">Nombre 3</p>
+                <p class="mx-2">ventas</p>
             </div>
             <div class="my-2">
                 <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">Nombre 4</p>
+                <p class="mx-2">arqueo</p>
             </div>
             <div class="my-2">
                 <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">Nombre 5</p>
+                <p class="mx-2">salir</p>
             </div>
         </div>
         {{-- columna central --}}
@@ -205,7 +216,262 @@
                         <li class=" pb-2" x-text="calcularIVA().toFixed(2) + '€'"></li>
                         <li class=" pb-2" x-text="(totalCarrito + calcularIVA()).toFixed(2) + '€'"></li>
                     </ul>
+                    </div>
+            </div>
+            <div class="bg-gray-600 text-white p-1 ">
+                <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-0">
+                    <button @click="deleteCarrito" class="m-1 flex-grow items-center boton boton-danger !p-4 bg-red-800 rounded-lg">
+                        <i class="fa-solid fa-trash  cursor-pointer"></i>
+                    </button>
+                    <button @click="saveCarrito" class="m-1 flex-grow items-center boton bg-gray-800 rounded-lg">
+                        <i class="fa-solid fa-floppy-disk  py-2 cursor-pointer"></i>
+                    </button>
+                    <button @click="showModal = true; calcularBase();"
+                        class="md:col-span-2 m-1 flex-grow items-center boton boton-success bg-blue-600 rounded-lg">
+                        <span class="hidden md:inline">VENDER</span>
+                        <i class="fa-solid fa-cart-shopping inline md:hidden" @click="showModal = true"></i>
+                    </button>
                 </div>
             </div>
+        </div>
+        {{-- Ventana emergente --}}
+    <div class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center"
+        x-show="showModal" x-data="{
+            showNumericKeyboard: true,
+            showCardOptions: false,
+            showMixedOptions: false,
+            dineroEntregado: '',
+            cambio: '',
+            calcularCambio() {
+                const total = totalCarrito + calcularIVA();
+                const entregado = parseFloat(this.dineroEntregado);
+                if (!isNaN(entregado)) {
+                    this.cambio = (entregado - total).toFixed(2);
+                } else {
+                    this.cambio = '';
+                }
+            },
+            deleteLastCharacter() {
+                if (this.dineroEntregado.length > 0) {
+                    this.dineroEntregado = this.dineroEntregado.slice(0, -1);
+                    this.calcularCambio();
+                }
+            },
+            clearInput() {
+                this.dineroEntregado = '';
+                this.calcularCambio();
+            },
+            pulsarTecla(tecla) {
+
+                if (tecla === 'delete') {
+                    this.deleteLastCharacter();
+                } else if (tecla === 'cancel') {
+                    this.clearInput();
+                } else
+                    if (tecla === 'b5')
+                        {
+                            this.dineroEntregado = (parseFloat(this.dineroEntregado) + 5).toString();
+                        }
+                        else if (tecla === 'b10')
+                        {
+                            this.dineroEntregado = (parseFloat(this.dineroEntregado) + 10).toString();
+                        }
+                        else if (tecla === 'b20')
+                        {
+                            this.dineroEntregado = (parseFloat(this.dineroEntregado) + 20).toString();
+                        }
+                        else if (tecla === 'b50')
+                        {
+                            this.dineroEntregado = (parseFloat(this.dineroEntregado) + 50).toString();
+                        }
+                else if (tecla === '.' && this.dineroEntregado.includes('.') === false)
+                {
+                    this.dineroEntregado += tecla;
+                    this.calcularCambio();
+                }
+                else {
+                    this.dineroEntregado += tecla;
+                    this.calcularCambio();
+                }
+            }
+        }" x-init="calcularCambio()">
+        <div class="relative bg-white p-8 rounded-lg flex" style="width: 800px; height: 600px;">
+            {{-- boton cerrar ventana --}}
+            <button class="absolute top-0 right-0 p-2 rounded-tr-lg text-gray-600 hover:bg-red-600  "
+                @click="showModal = false">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <!-- Sección metodos de pago -->
+            <div class="w-2/5">
+                <div>
+                    <div class="mb-6 space-y-2">
+                        <!-- Botones para seleccionar método de pago -->
+                        <div>
+                            <button
+                                @click=" showNumericKeyboard = true; showCardOptions = false; showMixedOptions = false;"
+                                class="relative border-b-2 border-black">
+
+                                Efectivo
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                @click=" showNumericKeyboard = false; showCardOptions = true; showMixedOptions = false;"
+                                class="relative border-b-2 border-black">
+
+                                Tarjeta
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                @click=" showNumericKeyboard = false; showCardOptions = false; showMixedOptions = true;"
+                                class="relative border-b-2 border-black">
+                                Pago dividida
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-4 gap-4">
+                    <div>
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2">Imp:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2">Base:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2">Cuota:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2">Total:</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="tipoIVA()"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="totalCarrito.toFixed(2) + '€'">
+                            </li>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="calcularIVA().toFixed(2) + '€'">
+                            </li>
+                            <li class="border-b-2 border-l-skin-primary pb-2"
+                                x-text="(totalCarrito + calcularIVA()).toFixed(2) + '€'"></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Pago en Efectivo -->
+            <div class=" w-3/5 m-0" x-show="showNumericKeyboard">
+
+                <div class="grid grid-cols-2 gap-4">
+                    {{-- Columna de datos --}}
+                    <div>
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2">TOTAL:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2">ENTREGADO:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2">CAMBIO:</li>
+                        </ul>
+                    </div>
+                    {{-- Columna de precios --}}
+                    <div class="mb-6">
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2"
+                                x-text="(totalCarrito + calcularIVA()).toFixed(2) + '€'">
+                            </li>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="dineroEntregado + '€'"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="cambio + '€'"></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Teclado numerico -->
+                <div class="grid grid-cols-6 gap-1 mb-6">
+                    <button @click="pulsarTecla('7')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">7</button>
+                    <button @click="pulsarTecla('8')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">8</button>
+                    <button @click="pulsarTecla('9')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">9</button>
+                    <button @click="pulsarTecla('cancel')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg"><i
+                            class="fa-solid fa-trash cursor-pointer"></i></button>
+                    <button @click="pulsarTecla('b5')" class="py-2  boton  col-span-2 bg-blue-400 rounded-lg">5.00€</button>
+                    <button @click="pulsarTecla('4')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">4</button>
+                    <button @click="pulsarTecla('5')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">5</button>
+                    <button @click="pulsarTecla('6')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">6</button>
+                    <button @click="pulsarTecla('delete')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg"><i
+                            class="fa-solid fa-delete-left cursor-pointer"></i></button>
+                    <button @click="pulsarTecla('b10')" class="py-2  boton   col-span-2 bg-blue-400 rounded-lg">10.00€</button>
+                    <button @click="pulsarTecla('1')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">1</button>
+                    <button @click="pulsarTecla('2')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">2</button>
+                    <button @click="pulsarTecla('3')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">3</button>
+                    <button @click="calcularCambio" class="py-2  boton  row-span-2"><i
+                            class="fa-solid fa-arrow-turn-down transform rotate-90 bg-blue-400 rounded-lg"></i></button>
+                    <button @click="pulsarTecla('b20')" class="py-2  boton  col-span-2 bg-blue-400 rounded-lg">20.00€</button>
+                    <button class="py-2 boton"></button>
+                    <button @click="pulsarTecla('.')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">.</button>
+                    <button @click="pulsarTecla('0')" class="py-2  boton w-20 h-20 bg-blue-400 rounded-lg">0</button>
+                    <button @click="pulsarTecla('b50')" class="py-2  boton col-span-2 bg-blue-400 rounded-lg">50.00€</button>
+                </div>
+                <div class="flex justify-between  mt-16">
+                    <button class="boton boton-danger bg-red-600" @click="showModal = false">CANCELAR</button>
+                    <button class="boton boton-success bg-green-200">PAGAR</button>
+                </div>
+            </div>
+            {{-- Pago con Tarjeta --}}
+            <div class="w-1/2 " x-show="showCardOptions">
+                <div class="grid grid-cols-2 gap-4">
+                    {{-- Columna de datos --}}
+                    <div>
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2">TOTAL:</li>
+                        </ul>
+                    </div>
+                    {{-- Columna de precios --}}
+                    <div class="mb-6">
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2"
+                                x-text="(totalCarrito + calcularIVA()).toFixed(2) + '€'"></li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <select class="form-select mt-1 block w-full">
+                        <option selected disabled>Selecciona un banco</option>
+                        <option value="banco1">Banco 1</option>
+                        <option value="banco2">Banco 2</option>
+                        <option value="banco3">Banco 3</option>
+                    </select>
+                </div>
+
+
+                <div class="flex justify-between mt-16">
+                    <button class="boton boton-danger" @click="showModal = false">CANCELAR</button>
+                    <button class="boton boton-success">PAGAR</button>
+                </div>
+            </div>
+            {{-- Pago Dividido --}}
+            <div class="w-1/2 " x-show="showMixedOptions">
+                <div class="grid grid-cols-2 gap-4">
+                    {{-- Columna de datos --}}
+                    <div>
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2">TOTAL:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2">ENTREGADO:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2">CAMBIO:</li>
+                        </ul>
+                    </div>
+                    {{-- Columna de precios --}}
+                    <div class="mb-6">
+                        <ul>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="totalCarrito + '€'"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="dineroEntregado + '€'"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="cambio + '€'"></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-16">
+                    <button class="boton boton-danger" @click="showModal = false">CANCELAR</button>
+                    <button class="boton boton-success">PAGAR</button>
+                </div>
+                </div>
+            </div>
+                
         </div>
     </div>
