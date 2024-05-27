@@ -1,8 +1,21 @@
-    <div id="tpv" class="h-screen flex" x-data="{
+<div id="tpv" class="h-screen flex" x-data="{
+        showModal: false,
+        showCrearTarjeta: false,
+        showComprobanteArqueo: false,
+        showCrearArqueo: false,
+        showInicioCaja: false,
+        showSeleccionCaja: true,
+        showTpv: true,
+        showTR: false,
+        showArqueo: false,
+        showVentas: false,
+        showOperacionVenta: false,
+        showVales: false,
+        showCambio: false,
         productos: @entangle('productos'),
         categorias: @entangle('categorias'),
         iva: @entangle('iva'),
-        showModal: false,  
+        showModal: false,
         carrito: JSON.parse(localStorage.getItem('carrito')) || {},
         carritoEspera: JSON.parse(localStorage.getItem('carrito')) || {},
         totalCarrito: 0,
@@ -96,11 +109,10 @@
             {{-- console.log(IVA); --}}
             return IVA;
         },
-    },
         updateTotalSinDesglosar() {
             this.totalSinDesglosar = this.calcularIVA() + this.totalCarrito;
         },
-
+        
     }" x-init="productosShow = productos;
     calcularBase();
     totalSinDesglosar = calcularIVA() + totalCarrito;
@@ -108,28 +120,34 @@
     $watch('carrito', () => updateTotalSinDesglosar());
     $watch('totalCarrito', () => updateTotalSinDesglosar());
     console.log(this.calcularIVA);">
-
         {{-- columna izquierda --}}
-        <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center uppercase">
-            <div class="my-2">
-                <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">tpv</p>
+        <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center">
+            <div class="my-2 text-center cursor-pointer"
+                @click=" showTpv = true; showTR = false; showArqueo = false; showVentas = false;">
+                <i class="fa-solid fa-cash-register fa-3x px-4 pb-2 pt-4"></i>
+                <p class="mx-2">TPV</p>
             </div>
-            <div class="my-2">
-                <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">sala</p>
+            <div class="my-2 text-center cursor-pointer"
+                @click=" showTpv = false; showTR = false; showArqueo = false; showVentas = true;">
+                <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></i>
+                <p class="mx-2">Ventas</p>
             </div>
-            <div class="my-2">
-                <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">ventas</p>
+            <div class="my-2 text-center cursor-pointer"
+                @click=" showTpv = false; showTR = true; showArqueo = false; showVentas = false;">
+                <i class="fa-solid fa-hand-holding-heart fa-3x px-4 pb-2 pt-4"></i>
+                <p class="mx-2">Tarjetas Regalo</p>
             </div>
-            <div class="my-2">
-                <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">arqueo</p>
+            <div class="my-2 text-center cursor-pointer"
+                @click=" showTpv = false; showTR = false; showArqueo = true; showVentas = false;">
+                <i class="fa-solid fa-folder-open fa-3x px-4 pb-2 pt-4"></i>
+                <p class="mx-2">Arqueo</p>
             </div>
-            <div class="my-2">
-                <i class="fa-solid fa-barcode fa-3x px-4 pb-2 pt-4"></i>
-                <p class="mx-2">salir</p>
+            <div class="my-2 text-center cursor-pointer">
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+                </form>
+                <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer" onclick="document.getElementById('logout-form').submit();"></i>
+                <p class="mx-2">Salir</p>
             </div>
         </div>
         {{-- columna central --}}
@@ -137,7 +155,6 @@
             {{-- navegador --}}
             <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
                 <i class="fa-solid fa-magnifying-glass fa-3x px-4 py-2 cursor-pointer"></i>
-                <i class="fa-solid fa-barcode fa-3x px-4 py-2 cursor-pointer"></i>
                 <input type="text"
                     class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
             </div>
@@ -167,11 +184,6 @@
         <div class="bg-gray-600 text-white w-3/12 flex flex-col h-screen">
             <div class=" text-white p-4 h-20 ml-auto flex items-center">
                 <i class="fa-regular fa-user fa-3x px-4 py-2 cursor-pointer "></i>
-                <i class="fa-solid fa-cog fa-3x px-4 py-2 cursor-pointer"></i>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-                </form>
-                <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer" onclick="document.getElementById('logout-form').submit();"></i>
             </div>
             <div class="flex-1 bg-white border-l-4 border-gray-500 overflow-y-auto ">
                 <table class="table-auto table-list">
@@ -189,7 +201,7 @@
                             <tr class="bg-slate-200 text-black text-sm">
                                 <td class="border-r border-black" x-text="articulo.cantidad"></td>
                                 <td class="col-span-2" x-text="articulo.name"></td>
-                                <td class="ml-4" x-text="(articulo.precio).toFixed(2) + '€'"></td>
+                                <td class="ml-4" x-text="articulo.precio + '€'"></td>
                                 <td x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
                                 <td class="border-l border-black" @click="dropCarrito(articulo.id)">
                                     <i class="fa-solid fa-trash cursor-pointer text-red-600"></i>
@@ -216,7 +228,7 @@
                         <li class=" pb-2" x-text="calcularIVA().toFixed(2) + '€'"></li>
                         <li class=" pb-2" x-text="(totalCarrito + calcularIVA()).toFixed(2) + '€'"></li>
                     </ul>
-                    </div>
+                </div>
             </div>
             <div class="bg-gray-600 text-white p-1 ">
                 <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-0">
@@ -470,8 +482,7 @@
                     <button class="boton boton-danger" @click="showModal = false">CANCELAR</button>
                     <button class="boton boton-success">PAGAR</button>
                 </div>
-                </div>
             </div>
-                
         </div>
     </div>
+</div>
