@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Tpv;
 use App\Livewire\Crear;
 use App\Livewire\Test;
+use App\Livewire\Fichar;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,8 +21,11 @@ Route::get('/', function () {
 });
 
 Route::get('/tpv', Tpv::class)->name('tpv');
+Route::get('/fichar', Fichar::class)->name('fichar');
 Route::get('/crear', Crear::class);
 Route::get('/test', Test::class);
+
+
 Auth::routes();
 Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
