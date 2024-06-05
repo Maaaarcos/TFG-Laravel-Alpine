@@ -24,7 +24,7 @@ class Fichar extends Component
         $user->hora_inicio = now();
         $user->save();
 
-        $this->hora_inicio = $user->hora_inicio; 
+        $this->hora_inicio = $user->hora_inicios;
     }
 
     public function desfichar()
