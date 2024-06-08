@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Tpv;
+use App\Livewire\GestionInvetario;
 use App\Livewire\Crear;
 use App\Livewire\Test;
 use App\Livewire\Fichar;
@@ -21,6 +22,7 @@ Route::get('/', function () {
 });
 
 Route::get('/tpv', Tpv::class)->name('tpv');
+Route::get('/gestion-invetario', GestionInvetario::class)->name('gestion-invetario');
 Route::get('/fichar', Fichar::class)->name('fichar');
 Route::get('/crear', Crear::class);
 Route::get('/test', Test::class);
