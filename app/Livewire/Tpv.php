@@ -77,9 +77,9 @@
             $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock')->where('se_vende', '=', 1)->with('categoria')->get()->keyBy('id')->toArray();
             $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
             $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
-            $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
+            // $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
 
-            //$this->terceros = Tercero::select('id', 'name')->get()->keyBy('id')->toArray();
+            //$this->terceros = Tercero::select('id', 'nombre)->get()->keyBy('id')->toArray();
             //$this->pagos = FormasPago::select('id', 'name', 'tipo_id', 'banco_id')->get()->keyBy('id')->toArray();
             //$this->datosEmpresa = Conf::select('key', 'value')->get()->keyBy('key')->toArray();
             //$this->provincia = Provincia::select('id', 'name')->get()->keyBy('id')->toArray();

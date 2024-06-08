@@ -21,7 +21,7 @@ Route::get('/', function () {
 });
 
 Route::get('/tpv', Tpv::class)->name('tpv');
-Route::get('/fichar', Fichar::class)->name('fichar');
+// Route::get('/fichar', Fichar::class)->name('fichar');
 Route::get('/crear', Crear::class);
 Route::get('/test', Test::class);
 

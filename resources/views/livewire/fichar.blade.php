@@ -1,20 +1,9 @@
-<div x-data="{ 
-        horaInicio: @entangle('hora_inicio'), 
-        horaFin: @entangle('hora_fin'), 
-        tiempo_total_jornada: @entangle('tiempo_total_jornada'),
-        horasTotales: @entangle('horas_totales')
-        
-    }">
-    <div>
-        <h1>Fichar</h1>
-        <p>Hora de inicio: <span x-text="horaInicio"></span></p>
-        <p>Hora de fin: <span x-text="horaFin"></span></p>
-        <p>Tiempo total de jornada: <span x-text="tiempo_total_jornada"></span></p>
-        <p>Horas totales mes: <span x-text="horasTotales"></span></p>
-    </div>
-    <div>
-        <button @click="$wire.fichar()">Fichar</button>
-        <button @click="$wire.desfichar()">Desfichar</button>
-    </div>
+<div>
+    <p>Hora de inicio: {{ $hora_inicio }}</p>
+    <p>Hora de fin: {{ $hora_fin }}</p>
+    <p>Tiempo total de jornada: {{ $tiempo_total_jornada }}</p>
+    <p>Horas totales: {{ $horas_totales }}</p>
+    <button wire:click="fichar" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Fichar</button>
+    <button wire:click="desfichar" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Desfichar</button>
 </div>
 
