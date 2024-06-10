@@ -362,9 +362,12 @@
             <p class="mx-2">Arqueo</p>
         </div>
         <div class="my-2 text-center cursor-pointer">
-            <i class="fa-solid fa-arrow-right-from-bracket fa-3x px-4 pb-2 pt-4 transform rotate-180 "></i>
-            <p class="mx-2">Salir</p>
-        </div>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+                </form>
+                <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer" onclick="document.getElementById('logout-form').submit();"></i>
+                <p class="mx-2">Salir</p>
+            </div>
     </div>
 
     {{-- columna central --}}
@@ -1036,13 +1039,22 @@
     </div>
     {{-- columna derecha --}}
     <div class="bg-gray-600 text-white w-3/12 flex flex-col h-screen">
-        <div class="text-white p-4 h-20 ml-auto flex items-center relative rounded-sm" x-data="{ open: false, cambioUsuario: false, carritosEsperaOpen: false, productosCarritoEspera: false, configuracion: false }"
+
+            <div class="text-white p-4 h-20 ml-auto flex items-center relative rounded-sm" x-data="{ open: false, cambioUsuario: false, fichaje:false, carritosEsperaOpen: false, productosCarritoEspera: false, configuracion: false, 
+            usuario: ''}"
             @click.away="open = false; cambioUsuario = false; carritosEsperaOpen= false;">
             <i class="fa-regular fa-user fa-3x px-4 py-2 cursor-pointer" @click="open = !open"></i>
             <div x-show="open" class="absolute bg-white text-black p-4 rounded shadow-lg w-48 text-lg"
                 style="top: calc(100% + 10px); right: 0;">
                 <!-- Contenido del menú desplegable -->
+                 @if(Auth::user()->isAdmin())
                 <p class="cursor-pointer mb-2" @click="cambioUsuario = !cambioUsuario">Añadir usuario</p>
+                @endif
+                <p class="cursor-pointer mb-2" @click="fichaje = !fichaje">Fichar</p>
+                <div x-show="fichaje" class="absolute bg-white text-black p-4 rounded shadow-lg w-48"
+                    style="top: 0; right: calc(100% + 10px);">
+                    @livewire('Fichar')
+                </div>     
                 <p class="cursor-pointer mt-3 mb-2 text-red-500"
                     @click=" open = false; cambioUsuario = false; carritosEsperaOpen= false; ">Cerrar</p>
                 <div x-show="cambioUsuario" class="absolute bg-white text-black p-4 rounded shadow-lg w-48"
@@ -1052,6 +1064,8 @@
                     <button type="button" class="boton mt-4"
                         @click="open = false; cambioUsuario = false;">Aceptar</button>
                 </div>
+
+
                 <div x-show="carritosEsperaOpen" class="absolute bg-white text-black p-4 rounded shadow-lg"
                     style="top: 0; right: calc(100% + 10px);">
                     {{-- <template x-for="carrito in carritoEspera">

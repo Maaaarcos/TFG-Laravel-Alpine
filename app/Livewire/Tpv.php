@@ -77,13 +77,12 @@
             $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock')->where('se_vende', '=', 1)->with('categoria')->get()->keyBy('id')->toArray();
             $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
             $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
-            $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
+            // $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
 
-            //$this->terceros = Tercero::select('id', 'name')->get()->keyBy('id')->toArray();
-            //$this->pagos = FormasPago::select('id', 'name', 'tipo_id', 'banco_id')->get()->keyBy('id')->toArray();
-            //$this->datosEmpresa = Conf::select('key', 'value')->get()->keyBy('key')->toArray();
-            //$this->provincia = Provincia::select('id', 'name')->get()->keyBy('id')->toArray();
-            //$this->factura = FacVenta::orderBy('id', 'desc')->first();
+            //hecho$this->terceros = Tercero::select('id', 'nombre)->get()->keyBy('id')->toArray();
+            //tipo_id?$this->pagos = FormasPago::select('id', 'name')->get()->keyBy('id')->toArray();
+            //Enlace a terceros(id) + provincias$this->datosEmpresa = Conf::select('key', 'value')->get()->keyBy('key')->toArray();
+            //Olvidarse de esto$this->factura = FacVenta::orderBy('id', 'desc')->first();
             //$this->facturas = FacVenta::select('id', 'name', 'tercero_id', 'fecha', 'forma_pago_id', 'base_imp', 'total_iva', 'total')->get()->keyBy('id')->toArray();
             //$this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();
             //$this->movimientos_arqueo = ArqueoMove::select('id', 'arqueo_id', 'caja_id', 'user_id', 'billetes', 'moves')->get()->keyBy('id')->toArray();
@@ -324,62 +323,62 @@
             $this->factura = FacVenta::orderBy('id', 'desc')->first();
             $this->facturas = FacVenta::select('id', 'name', 'tercero_id', 'fecha', 'forma_pago_id', 'base_imp', 'total_iva', 'total')->get()->keyBy('id')->toArray();
         }
-        public function crearDevolucion($valores, $iva, $valorIVA, $totalSinDesglosar, $totalCarrito, $usuarioName, $facturaId, $stock)
-        {
+        // public function crearDevolucion($valores, $iva, $valorIVA, $totalSinDesglosar, $totalCarrito, $usuarioName, $facturaId, $stock)
+        // {
     
-            $usuario = User::where('name', $usuarioName)->first();
-            $usuarioId = $usuario->id;
+        //     $usuario = User::where('name', $usuarioName)->first();
+        //     $usuarioId = $usuario->id;
     
-            $lineas = [];
-            foreach ($valores as $value) {
-                $ls =
-                    [
-                        'producto_id' => $value['id'],
-                        'tipo' => '0',
-                        'precio' => $value['precio'] * -1,
-                        'qty' => $value['cantidad'],
-                        'base_imp' => $totalCarrito * -1,
-                        'total_iva' => $valorIVA * -1,
-                        'total' => $totalSinDesglosar * -1,
+        //     $lineas = [];
+        //     foreach ($valores as $value) {
+        //         $ls =
+        //             [
+        //                 'producto_id' => $value['id'],
+        //                 'tipo' => '0',
+        //                 'precio' => $value['precio'] * -1,
+        //                 'qty' => $value['cantidad'],
+        //                 'base_imp' => $totalCarrito * -1,
+        //                 'total_iva' => $valorIVA * -1,
+        //                 'total' => $totalSinDesglosar * -1,
     
-                    ];
-                array_push($lineas, $ls);
-                if ($stock) {
-                    $producto = Producto::find($value['id']);
-                    $producto->stock += $value['cantidad'];
-                    $producto->save();
-                }
-            }
+        //             ];
+        //         array_push($lineas, $ls);
+        //         if ($stock) {
+        //             $producto = Producto::find($value['id']);
+        //             $producto->stock += $value['cantidad'];
+        //             $producto->save();
+        //         }
+        //     }
     
-            $abono = FacVenta::createRapida(
-                [
-                    'tercero_id' => $this->terceroSeleccionado,
-                    'forma_pago_id' => $this->formaPagoSeleccionada,
-                    'estado' => '8',
-                    'user_id' => $usuarioId,
-                    'tipo' => 1,
-                ],
-                $lineas
-            );
+        //     $abono = FacVenta::createRapida(
+        //         [
+        //             'tercero_id' => $this->terceroSeleccionado,
+        //             'forma_pago_id' => $this->formaPagoSeleccionada,
+        //             'estado' => '8',
+        //             'user_id' => $usuarioId,
+        //             'tipo' => 1,
+        //         ],
+        //         $lineas
+        //     );
     
-            $this->getNextRef = $this->factura->getNextRef();
-            FacturacionRel::create([
-                "origen_id" => $facturaId, //id de la factura del array
-                "tipo_origen" => 'FacVenta',
-                "destino_id" => $abono->id, //id de la nueva linea que sera el abono
-                "tipo_destino" => 'FacVenta',
-            ]);
+        //     $this->getNextRef = $this->factura->getNextRef();
+        //     FacturacionRel::create([
+        //         "origen_id" => $facturaId, //id de la factura del array
+        //         "tipo_origen" => 'FacVenta',
+        //         "destino_id" => $abono->id, //id de la nueva linea que sera el abono
+        //         "tipo_destino" => 'FacVenta',
+        //     ]);
     
-            foreach ($abono->lineas as $l) {
-                $lineaOriginal = array_search($l->producto_id, array_column($this->lineas_factura, 'producto_id'));
-                FacturacionLineasRel::create([
-                    "origen_id" => $this->lineas_factura[$lineaOriginal]["id"], // id de la linea original del producto en la tabla FacVentaLinea lineas_factura
-                    "tipo_origen" => 'FacVentaLinea',
-                    "destino_id" => $l->id, // id que genero en FacVentaLinea al crear una nueva linea con el array arrayDevoluciones
-                    "tipo_destino" => 'FacVentaLinea',
-                ]);
-            }
-        }
+        //     foreach ($abono->lineas as $l) {
+        //         $lineaOriginal = array_search($l->producto_id, array_column($this->lineas_factura, 'producto_id'));
+        //         FacturacionLineasRel::create([
+        //             "origen_id" => $this->lineas_factura[$lineaOriginal]["id"], // id de la linea original del producto en la tabla FacVentaLinea lineas_factura
+        //             "tipo_origen" => 'FacVentaLinea',
+        //             "destino_id" => $l->id, // id que genero en FacVentaLinea al crear una nueva linea con el array arrayDevoluciones
+        //             "tipo_destino" => 'FacVentaLinea',
+        //         ]);
+        //     }
+        // }
         public function sumarValoresTablaFacVenta()
         {
             $fechaActual = date('Y-m-d');

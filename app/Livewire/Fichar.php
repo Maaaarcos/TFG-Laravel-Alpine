@@ -24,7 +24,7 @@ class Fichar extends Component
         $user->hora_inicio = now();
         $user->save();
 
-        $this->hora_inicio = $user->hora_inicios;
+        $this->hora_inicio = $user->hora_inicio;
     }
 
     public function desfichar()
@@ -49,17 +49,20 @@ class Fichar extends Component
     {
         $user = auth()->user();
         $horaInicio = Carbon::parse($user->hora_inicio);
-        $horaFin = Carbon::parse($user->hora_fin);
-
+        
+        if ($user->hora_fin) {
+            $horaFin = Carbon::parse($user->hora_fin);
+        } else {
+            $horaFin = now();
+        }
+    
         $diff = $horaInicio->diff($horaFin);
         $horasNuevas = sprintf('%02d:%02d:%02d', $diff->h, $diff->i, $diff->s);
-
-        
+    
         $horasTotalesAnteriores = Carbon::parse($user->horas_totales);
         $horasTotalesNuevas = $horasTotalesAnteriores->addHours($diff->h)->addMinutes($diff->i)->addSeconds($diff->s);
         $this->horas_totales = $horasTotalesNuevas->format('H:i:s');
-
-        
+    
         $user->horas_totales = $this->horas_totales;
         $user->save();
     }
