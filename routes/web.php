@@ -16,16 +16,24 @@ use App\Livewire\Fichar;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+    Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
 });
 
-Route::get('/tpv', Tpv::class)->name('tpv');
-// Route::get('/fichar', Fichar::class)->name('fichar');
-Route::get('/crear', Crear::class);
-Route::get('/test', Test::class);
+// Rutas que requieren autenticación
+Route::middleware('auth')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('tpv');
+    });
 
+    Route::get('/tpv', Tpv::class)->name('tpv');
+    Route::middleware('checkPrivileges:1')->get('/crear', Crear::class);
+    Route::get('/test', Test::class);
+    Route::get('/crear', Crear::class);
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+});
 
-Auth::routes();
-Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
