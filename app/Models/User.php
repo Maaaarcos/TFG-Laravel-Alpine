@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'privilegios',
     ];
 
     /**
@@ -42,4 +43,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function fichajes()
+    {
+        return $this->hasMany(Fichaje::class);
+    }
+
+    public function isAdmin()
+    {
+        return $this->privilegios === 1;
+    }
+
+    public function isUser()
+    {
+        return $this->privilegios === 0;
+    }
+
+    // public function isSuperAdmin()
+    // {
+    //     return $this->role === 'superadmin';
+    // }
+
 }

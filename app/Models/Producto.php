@@ -15,6 +15,10 @@ class Producto extends Model
     protected $table = 'productos';
     protected $fillable = ['nombre', 'precio', 'descripcion'];
 
+    protected $casts = [
+        'precio' => 'float',
+    ];
+
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
@@ -42,7 +46,6 @@ class Producto extends Model
 
     public function setPrecioAttribute($value)
     {
-        $this->attributes['precio'] = str_replace(',', '.', $value);
+        $this->attributes['precio'] = is_numeric($value) ? floatval(str_replace(',', '.', $value)) : 0;
     }
-
 }
