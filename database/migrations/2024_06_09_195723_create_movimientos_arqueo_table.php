@@ -19,7 +19,6 @@ class CreateMovimientosArqueoTable extends Migration
             $table->unsignedBigInteger('caja_id');
             $table->unsignedBigInteger('user_id');
             $table->integer('billetes');
-            $table->decimal('moneda', 15, 2);
             $table->decimal('moves', 15, 2);
             $table->timestamps();
 
