@@ -74,7 +74,7 @@
         }
         return precioIVA;
     },
-    carritoAdd: function(id) {
+    carritoAdd(id) {
         if (this.carrito[id] !== undefined) {
             this.carrito[id].cantidad++;
         } else {
@@ -1444,12 +1444,7 @@
                     </div>
                 </div>
                 <div>
-                    <select id="bancos" name="bancos" class="form-select mt-1 block w-full">
-                        <option selected disabled>Selecciona un banco</option>
-                        <option value="banco1">Banco 1</option>
-                        <option value="banco2">Banco 2</option>
-                        <option value="banco3">Banco 3</option>
-                    </select>
+                    
                 </div>
 
 
