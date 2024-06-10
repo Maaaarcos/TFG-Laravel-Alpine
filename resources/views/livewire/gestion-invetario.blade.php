@@ -24,6 +24,27 @@
         categoria_idProd: '',
         stockProd: '',
         estadoProd: '',
+        search: '',
+        searchCategory: '',
+        buscarPorNombre(){
+            console.log('this.search:', this.search, 'Tipo:', typeof this.search);
+            let clientsWithOrders = Object.values(this.productos);
+
+            const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            if(this.search) {
+                let search = normalize(this.search)
+
+                clientsWithOrders = clientsWithOrders.filter((producto) => normalize(producto.nombre).includes(search) || normalizeNumber(producto.categoria_id).includes(search))
+            }
+            if(this.searchCategory){
+                let searchCategory = this.searchCategory
+
+                clientsWithOrders = clientsWithOrders.filter((producto) => normalizeNumber(producto.categoria_id).includes(searchCategory))
+            }
+            
+            return clientsWithOrders;
+        },
         getIvaProd(ivaId) {
             let ivaProd = 0;
 
@@ -70,6 +91,10 @@
     <div class="flex-1 pt-16 w-full overflow-y-auto px-4 md:px-8">
         <div x-show="showInventario">
         <div class="container mx-auto py-4"> 
+        <div class="text-white p-4 h-20 flex items-center" x-data="{ init() { this.$nextTick(() => this.$refs.input) } }" x-init="init">
+            <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
+                class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
+        </div>
             <div>
                 <button @click="ventanaNuevoProducto = true">
                     <i class="fa-solid fa-pen-to-square fa-3x px-4 pb-2 pt-4 mb-3 bg-blue-400"></i>
