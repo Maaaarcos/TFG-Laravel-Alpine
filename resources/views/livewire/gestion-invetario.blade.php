@@ -26,21 +26,56 @@
         estadoProd: '',
         search: '',
         searchCategory: '',
+        searchIva: '',
         buscarPorNombre(){
-            console.log('this.search:', this.search, 'Tipo:', typeof this.search);
             let clientsWithOrders = Object.values(this.productos);
 
             const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
             const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            const categoria_name = Object.values(this.categorias);
             if(this.search) {
                 let search = normalize(this.search)
 
                 clientsWithOrders = clientsWithOrders.filter((producto) => normalize(producto.nombre).includes(search) || normalizeNumber(producto.categoria_id).includes(search))
             }
-            if(this.searchCategory){
-                let searchCategory = this.searchCategory
+            
+            return clientsWithOrders;
+        },
+        buscarPorNombreCategoria(){
+            let clientsWithOrders = Object.values(this.categorias);
 
-                clientsWithOrders = clientsWithOrders.filter((producto) => normalizeNumber(producto.categoria_id).includes(searchCategory))
+            const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            if(this.searchCategory) {
+                let searchCategory = normalize(this.searchCategory)
+
+                clientsWithOrders = clientsWithOrders.filter((categoria) => normalize(categoria.nombre).includes(searchCategory))
+            }
+            
+            return clientsWithOrders;
+        },
+        buscarPorNombreIva(){
+            let clientsWithOrders = Object.values(this.ivas);
+
+            const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            if(this.searchIva) {
+                let searchIva = normalizeNumber(this.searchIva)
+
+                clientsWithOrders = clientsWithOrders.filter((iva) => normalizeNumber(iva.qty).includes(searchIva))
+            }
+            
+            return clientsWithOrders;
+        },
+        buscarPorNombreCaja(){
+            let clientsWithOrders = Object.values(this.categorias);
+
+            const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            if(this.searchCategory) {
+                let searchCategory = normalize(this.searchCategory)
+
+                clientsWithOrders = clientsWithOrders.filter((categoria) => normalize(categoria.nombre).includes(searchCategory))
             }
             
             return clientsWithOrders;
@@ -52,16 +87,7 @@
 
             return ivaProd;
         },
-    }" x-init="
-            $watch('productoFiltrado', value => {
-                    nombreProd = value.nombre;
-                    precioProd = value.precio;
-                    iva_idProd = value.iva_id;
-                    categoria_idProd = value.categoria_id;
-                    stockProd = value.stock;
-                    estadoProd = value.se_vende;
-                    imagenProd = value.imagen_url;
-            })">
+    }" x-init="">
 
     <!-- Navegador -->
     <div class="w-full bg-gray-100 flex justify-around fixed top-0 left-0 z-10">
@@ -91,7 +117,7 @@
     <div class="flex-1 pt-16 w-full overflow-y-auto px-4 md:px-8">
         <div x-show="showInventario">
         <div class="container mx-auto py-4"> 
-        <div class="text-white p-4 h-20 flex items-center" x-data="{ init() { this.$nextTick(() => this.$refs.input) } }" x-init="init">
+        <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
         </div>
@@ -116,7 +142,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <template x-for="producto in productos" :key="producto.id">
+                    <template x-for="producto in buscarPorNombre()" :key="producto.id">
                         <tr>
                             <td class="py-2 px-4 border-b">
                                 <img :src="producto.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
@@ -147,7 +173,7 @@
     }" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
         <div class="bg-white p-8 rounded-lg flex flex-col">
             <div class="uppercase text-xl font-bold mb-4">
-                Editcion Producto
+                Edición Producto
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
@@ -201,7 +227,7 @@
             </div>
             <div class="flex justify-end">
                 <button class="boton" @click="
-                    $wire.actualizarProducto(nombreProd, precioProd, iva_idProd, categoria_idProd, stockProd, estadoProd, imagenProd);
+                    $wire.actualizarProducto(productoFiltrado.id, nombreProd, precioProd, iva_idProd, categoria_idProd, stockProd, estadoProd, imagenProd);
                     ventanaEditarProducto = false;
                 ">Guardar</button>
             </div>
@@ -402,6 +428,10 @@
     </div>
 
     <div x-show="showCategorias">
+        <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
+            <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchCategory"
+                class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
+        </div>
         <div>
             <button @click="ventanaNuevaCategoria = true">
                 <i class="fa-solid fa-pen-to-square fa-3x px-4 pb-2 pt-4 mb-3 bg-blue-400"></i>
@@ -417,7 +447,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <template x-for="categoria in categorias" :key="categoria.id">
+                    <template x-for="categoria in buscarPorNombreCategoria" :key="categoria.id">
                         <tr>
                             <td class="py-2 px-4 border-b">
                                 <img :src="categoria.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
@@ -440,7 +470,7 @@
     }" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
         <div class="bg-white p-8 rounded-lg flex flex-col">
             <div class="uppercase text-xl font-bold mb-4">
-                Nuevo Categoria
+                Nueva Categoria
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
@@ -463,7 +493,11 @@
     </div>
     
     <div x-show="showIvas">
-        <div>
+        <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
+            <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchIva"
+                class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
+        </div>
+        <div> 
             <button @click="ventanaNuevoIva = true">
                 <i class="fa-solid fa-pen-to-square fa-3x px-4 pb-2 pt-4 mb-3 bg-blue-400"></i>
             </button>
@@ -477,7 +511,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <template x-for="iva in ivas" :key="iva.id">
+                    <template x-for="iva in buscarPorNombreIva()" :key="iva.id">
                         <tr>
                             <td class="py-2 px-4 border-b" x-text="iva.qty + '%'"></td>
                             <td class="py-2 px-4 border-b">

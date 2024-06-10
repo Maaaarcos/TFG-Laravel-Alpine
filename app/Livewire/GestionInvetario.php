@@ -5,6 +5,7 @@ namespace App\Livewire;
     use App\Models\Producto;
     use App\Models\Categoria;
     use App\Models\Iva;
+    
 
 use Livewire\Component;
 
@@ -13,6 +14,7 @@ class GestionInvetario extends Component
     public $productos = [];
     public $categorias = [];
     public $iva = [];
+    public $caja = [];
     public $productoFiltrado = [];
     public $categoriaFiltrada = [];
     public $ivaFiltrado = [];
@@ -22,6 +24,7 @@ class GestionInvetario extends Component
         $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
+        
 
 
     }
@@ -75,19 +78,22 @@ class GestionInvetario extends Component
     }
     public function actualizarProducto($id, $nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url = null)
     {
-            $producto = Producto::findOrFail($id);
-            $producto->update([
-                'nombre' => $nombre,
-                'precio' => $precio,
-                'iva_id' => $iva_id,
-                'categoria_id' => $categoria_id,
-                'stock' => $stock,
-                'se_vende' => $se_vende,
-                'imagen_url' => $imagen_url
-            ]);
+            $producto = Producto::find($id);
+            if ($producto) {
+    
+                $producto->nombre = $nombre;
+                $producto->precio = $precio;
+                $producto->iva_id = $iva_id;
+                $producto->categoria_id = $categoria_id;
+                $producto->stock = $stock;
+                $producto->se_vende = $se_vende;
+                $producto->imagen_url = $imagen_url;
+                $producto->save();
+            }
 
             $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
     }
+    
     public function dropProducto($id)
     {
             $producto = Producto::findOrFail($id);

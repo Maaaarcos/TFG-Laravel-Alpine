@@ -7,19 +7,15 @@
     use App\Models\Producto;
     use Livewire\Component;
     use App\Models\FacVenta;
+    use App\Models\Tercero;
     use App\Models\FormasPago;
-    use App\Models\Conf;
-    use App\Models\Provincia;
     use App\Models\Arqueo;
     use App\Models\Caja;
     use App\Models\User;
-    use App\Models\TarjetasRegalo;
     use App\Models\ArqueoMove;
-    use App\Models\SaldoInicialTarjetaRegalo;
-    use App\Models\FacturacionRel;
-    use App\Models\FacturacionLineasRel;
+    //use App\Models\FacturacionRel;
+    //use App\Models\FacturacionLineasRel;
     use App\Models\FacVentaLinea;
-    use App\Models\Pais;
     use App\Models\View;
     use Illuminate\Support\Facades\Session;
     use FontLib\Table\Type\name;
@@ -79,19 +75,15 @@
             $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
             // $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
 
-            //hecho$this->terceros = Tercero::select('id', 'nombre)->get()->keyBy('id')->toArray();
-            //tipo_id?$this->pagos = FormasPago::select('id', 'name')->get()->keyBy('id')->toArray();
-            //Enlace a terceros(id) + provincias$this->datosEmpresa = Conf::select('key', 'value')->get()->keyBy('key')->toArray();
-            //Olvidarse de esto$this->factura = FacVenta::orderBy('id', 'desc')->first();
-            //$this->facturas = FacVenta::select('id', 'name', 'tercero_id', 'fecha', 'forma_pago_id', 'base_imp', 'total_iva', 'total')->get()->keyBy('id')->toArray();
-            //$this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();
-            //$this->movimientos_arqueo = ArqueoMove::select('id', 'arqueo_id', 'caja_id', 'user_id', 'billetes', 'moves')->get()->keyBy('id')->toArray();
-            //$this->cajas = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
+            //$this->terceros = Tercero::select('id', 'nombre)->get()->keyBy('id')->toArray();
+            $this->pagos = FormasPago::select('id', 'name')->get()->keyBy('id')->toArray();
+            $this->datosEmpresa = Conf::select('key', 'value')->get()->keyBy('key')->toArray();
+            $this->factura = FacVenta::orderBy('id', 'desc')->first();
+            $this->facturas = FacVenta::select('id', 'name', 'tercero_id', 'fecha', 'forma_pago_id', 'base_imp', 'total_iva', 'total')->get()->keyBy('id')->toArray();
+            $this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();
+            $this->movimientos_arqueo = ArqueoMove::select('id', 'arqueo_id', 'caja_id', 'user_id', 'billetes', 'moves')->get()->keyBy('id')->toArray();
+            $this->cajas = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
 
-            
-            //$this->paises = Pais::select('id', 'code', 'name', 'name_en', 'prefijo')->get()->keyBy('id')->toArray();
-            //$this->provincias = Provincia::select('id', 'name')->get()->keyBy('id')->toArray();
-    
             //dd($this->productos);
             //dd($this->categorias);
             //dd($this->iva);
@@ -234,18 +226,6 @@
                 'user_id' => $user->id,
                 'billetes' => json_encode($billetes),
                 'moves' => 'cierre',
-            ]);
-        }
-    
-        public function crearTarjetaRegalo($codigo, $cantidad_inicial, $fechaCaducidad, $tipo)
-        {
-            TarjetasRegalo::create([
-                'codigo' => (int)$codigo,
-                'saldo_inicial' => $cantidad_inicial,
-                'saldo' => $cantidad_inicial,
-                'fecha_caducidad' => $fechaCaducidad,
-                'estado' => 1,
-                'tipo' => $tipo,
             ]);
         }
         public function editarTarjetaRegalo($id, $estado)
