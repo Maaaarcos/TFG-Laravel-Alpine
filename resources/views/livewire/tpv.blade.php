@@ -313,7 +313,7 @@
     FiltrarFactura(objectId) {
         let facturaFiltrada = {};
         for (let key in this.lineas_factura) {
-            if (this.lineas_factura.hasOwnProperty(key)) {
+            if (this.lineas_factura.hasOwnProperty(key)) {ñññññ
                 let lineaFactura = this.lineas_factura[key];
                 if (lineaFactura.object_id === objectId) {
                     facturaFiltrada[key] = lineaFactura;
@@ -340,40 +340,41 @@
     console.log('categorias:', categorias);
     console.log('carrito:', carrito);">
     {{-- columna izquierda --}}
-    <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center h-full justify-between">
-        <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = true; showTR = false; showArqueo = false; showVentas = false;">
+    <div class="bg-borgoña-predeterminado text-white w-1/12 flex flex-col items-center h-full justify-between">
+        <button class="my-2 text-center cursor-pointer"
+            @click=" showTpv = true; showTR = false; showArqueo = false; showVentas = false;" aria-expanded="false" aria-controls="tpvSection">
+            
             <i class="fa-solid fa-cash-register fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">TPV</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = false; showTR = false; showArqueo = false; showVentas = true;">
+        </button>
+        <button class="my-2 text-center cursor-pointer"
+            @click=" showTpv = false; showTR = false; showArqueo = false; showVentas = true;" aria-expanded="false" aria-controls="tpvSection">
             <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Ventas</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer"
+        </button>
+        <button class="my-2 text-center cursor-pointer"
             @click=" showTpv = false; showTR = true; showArqueo = false; showVentas = false;">
             <i class="fa-solid fa-hand-holding-heart fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Sala</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer"
+        </button>
+        <button class="my-2 text-center cursor-pointer"
             @click=" showTpv = false; showTR = false; showArqueo = true; showVentas = false;">
             <i class="fa-solid fa-folder-open fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Arqueo</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer">
+        </button>
+        <button class="my-2 text-center cursor-pointer">
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
                 </form>
                 <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer" onclick="document.getElementById('logout-form').submit();"></i>
                 <p class="mx-2">Salir</p>
-            </div>
+        </button>
     </div>
 
     {{-- columna central --}}
     <div class="flex-1 flex flex-col w-8/12">
         {{-- navegador --}}
-        <div class="bg-gray-600 text-white p-4 h-20 flex items-center" x-data="{ init() { this.$nextTick(() => this.$refs.input.focus()) } }" x-init="init">
+        <div class="bg-borgoña-claro text-white p-4 h-20 flex items-center" x-data="{ init() { this.$nextTick(() => this.$refs.input.focus()) } }" x-init="init">
             <i class="fa-solid fa-magnifying-glass fa-3x px-4 py-2 cursor-pointer"></i>
            {{-- <i class="fa-solid fa-barcode fa-3x px-4 py-2 cursor-pointer"></i> --}}
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
@@ -394,7 +395,7 @@
                     </template>
                 </div>
                 <!-- Productos -->
-                <div class="flex-1 bg-gray-200 overflow-y-auto h-screen flex flex-wrap justify-start">
+                <div class="flex-1 bg-borgoña-predeterminado overflow-y-auto h-screen flex flex-wrap justify-start">
                     <template x-for="producto in buscarPorNombre()" :key="producto.id">
                         <div class="my-3 bg-white w-36 h-36 p-2 mx-4 flex flex-col justify-center items-center cursor-pointer" @click="carritoAdd(producto.id)">
                             <img :src="producto.imagen_url" alt="Foto" class="flex-grow flex-shrink object-cover rounded-md">
@@ -1038,7 +1039,7 @@
         </div>
     </div>
     {{-- columna derecha --}}
-    <div class="bg-gray-600 text-white w-3/12 flex flex-col h-screen">
+    <div class="bg-borgoña-predeterminado  text-white w-3/12 flex flex-col h-screen">
 
             <div class="text-white p-4 h-20 ml-auto flex items-center relative rounded-sm" x-data="{ open: false, cambioUsuario: false, fichaje:false, carritosEsperaOpen: false, productosCarritoEspera: false, configuracion: false, 
             usuario: ''}"
@@ -1098,9 +1099,9 @@
                 </div>
             </div>
         </div>
-        <div class="flex-1 bg-white border-l-4 border-gray-500 overflow-y-auto ">
+        <div class="flex-1 bg-white border-l-4 border-borgoña-predeterminado overflow-y-auto ">
             <table class="table-auto table-list">
-                <thead>
+                <thead class="bg-borgoña-predeterminado ">
                     <tr>
                         <th class="border-r border-black">CANT</th>
                         <th class="col-span-2 border-black">NOMBRE</th>
@@ -1125,7 +1126,7 @@
             </table>
 
         </div>
-        <div class="grid grid-cols-2 gap-4 pl-3 bg-gray-500 rounded-tl-xl rounded-tr-xl">
+        <div class="grid grid-cols-2 gap-4 pl-3 bg-borgoña-claro  rounded-tl-xl rounded-tr-xl">
             {{-- Columna de datos --}}
             <div>
                 <ul>
@@ -1145,7 +1146,7 @@
         </div>
 
         {{-- botones venta --}}
-        <div class="bg-gray-600 text-white p-1 ">
+        <div class="bg-borgoña-predeterminado  text-white p-1 ">
             <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-0">
                 <button @click="deleteCarrito" class="m-1 flex-grow items-center boton boton-danger !p-4">
                     <i class="fa-solid fa-trash  cursor-pointer"></i>
