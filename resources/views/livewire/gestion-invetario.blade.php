@@ -17,7 +17,6 @@
         categorias: @entangle('categorias'),
         ivas: @entangle('iva'),
         cajas: @entangle('caja'),
-        productoFiltrado: @entangle('productoFiltrado'),
         idProd: '',
         nombreProd: '',
         precioProd: '',
@@ -388,9 +387,6 @@
                 <tbody>
                     <template x-for="caja in buscarPorNombreCaja()" :key="caja.id">
                         <tr>
-                            <td class="py-2 px-4 border-b">
-                                <img :src="categoria.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
-                            </td>
                             <td class="py-2 px-4 border-b" x-text="caja.name"></td>
                             <td class="py-2 px-4 border-b">
                                 <button @click="updateCajaFiltrada(caja.id, caja.name); ventanaEditarCaja= true" class="text-blue-500">Editar</button>
