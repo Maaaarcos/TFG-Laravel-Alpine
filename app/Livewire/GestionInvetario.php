@@ -6,16 +6,20 @@ namespace App\Livewire;
     use App\Models\Categoria;
     use App\Models\Iva;
     use App\Models\Caja;
+    use Livewire\WithFileUploads;
     
 
 use Livewire\Component;
 
 class GestionInvetario extends Component
 {
+    use WithFileUploads;
+    
     public $productos = [];
     public $categorias = [];
     public $iva = [];
     public $caja = [];
+    public $imagen; 
 
     public function mount()
     {
@@ -27,8 +31,10 @@ class GestionInvetario extends Component
 
 
     }
-    public function crearProducto($nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url= null)
+    public function crearProducto($nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url)
     {
+        $imagenUrl = $this->imagen->store('imagenes_productos', 'public');
+
         Producto::create([
             'nombre' => $nombre,
             'precio' => $precio,
@@ -36,7 +42,7 @@ class GestionInvetario extends Component
             'categoria_id' => $categoria_id,
             'stock' => $stock,
             'se_vende' => $se_vende,
-            'imagen_url' => $imagen_url
+            'imagen_url' => $imagenUrl
         ]);
         $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
     }
