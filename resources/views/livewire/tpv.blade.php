@@ -313,7 +313,7 @@
     FiltrarFactura(objectId) {
         let facturaFiltrada = {};
         for (let key in this.lineas_factura) {
-            if (this.lineas_factura.hasOwnProperty(key)) {ñññññ
+            if (this.lineas_factura.hasOwnProperty(key)) {
                 let lineaFactura = this.lineas_factura[key];
                 if (lineaFactura.object_id === objectId) {
                     facturaFiltrada[key] = lineaFactura;
@@ -1048,7 +1048,7 @@
             <div x-show="open" class="absolute bg-white text-black p-4 rounded shadow-lg w-48 text-lg"
                 style="top: calc(100% + 10px); right: 0;">
                 <!-- Contenido del menú desplegable -->
-                 @if(Auth::user()->isAdmin())
+                 @if(Auth::user()->isUser())
                 <p class="cursor-pointer mb-2" @click="cambioUsuario = !cambioUsuario">Añadir usuario</p>
                 @endif
                 <p class="cursor-pointer mb-2" @click="fichaje = !fichaje">Fichar</p>
@@ -1359,121 +1359,110 @@
                 };
             },
         }" x-init="calcularCambio();">
-        <div class=" bg-white p-8 rounded-lg flex" style="height: 500px; width: 700px">
-            <!-- Sección metodos de pago -->
-            <div class="w-1/5 ">
+        <div class="bg-white p-8 rounded-lg shadow-lg flex" style="height: 540px; width: 700px">
+            <!-- Sección métodos de pago -->
+            <div class="w-1/5 border-r pr-4">
                 <div>
                     <div class="mb-6 space-y-2">
                         <!-- Botones para seleccionar método de pago -->
                         <div>
                             <button
-                                @click=" showNumericKeyboard = true;"
-                                class="relative border-b-2 border-black">
+                                @click="showNumericKeyboard = true; showCardOptions = false;"
+                                class="relative border-b-2 border-black pb-1 text-lg hover:bg-gray-100 transition duration-300">
                                 Efectivo
                             </button>
                         </div>
                         <div>
                             <button
-                                @click=" showNumericKeyboard = false;
-                                showSala = false;"
-                                class="relative border-b-2 border-black">
+                                @click="showNumericKeyboard = false; showCardOptions = true;"
+                                class="relative border-b-2 border-black pb-1 text-lg hover:bg-gray-100 transition duration-300">
                                 Tarjeta
                             </button>
                         </div>
-                
                     </div>
                 </div>
             </div>
-
+        
             <!-- Pago en Efectivo -->
-            <div class=" w-4/5 m-0" x-show="showNumericKeyboard">
-
+            <div class="w-4/5 pl-4" x-show="showNumericKeyboard">
                 <div class="grid grid-cols-2 gap-4">
-                    {{-- Columna de datos --}}
+                    <!-- Columna de datos -->
                     <div>
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2">TOTAL:</li>
-                            <li class="border-b-2 border-l-skin-primary pb-2">ENTREGADO:</li>
-                            <li class="border-b-2 border-l-skin-primary pb-2">CAMBIO:</li>
+                            <li class="border-b-2 border-gray-300 pb-2">TOTAL:</li>
+                            <li class="border-b-2 border-gray-300 pb-2">ENTREGADO:</li>
+                            <li class="border-b-2 border-gray-300 pb-2">CAMBIO:</li>
                         </ul>
                     </div>
-                    {{-- Columna de precios --}}
+                    <!-- Columna de precios -->
                     <div class="mb-6">
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2"
-                                x-text="(totalSinDesglosar).toFixed(2) + '€'">
-                            </li>
-                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="dineroEntregado + '€'"></li>
-                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="cambio + '€'"></li>
+                            <li class="border-b-2 border-gray-300 pb-2" x-text="(totalSinDesglosar).toFixed(2) + '€'"></li>
+                            <li class="border-b-2 border-gray-300 pb-2" x-text="dineroEntregado + '€'"></li>
+                            <li class="border-b-2 border-gray-300 pb-2" x-text="cambio + '€'"></li>
                         </ul>
                     </div>
                 </div>
-
-                <!-- Teclado numerico -->
-                <div class="grid grid-cols-6 gap-1 mb-6" style="height:280px;">
-                    <button @click="pulsarTecla('7')" class="py-2  boton w-full h-full">7</button>
-                    <button @click="pulsarTecla('8')" class="py-2  boton w-full h-full">8</button>
-                    <button @click="pulsarTecla('9')" class="py-2  boton w-full h-full">9</button>
-                    <button @click="pulsarTecla('cancel')" class="py-2  boton w-full h-full"><i
-                            class="fa-solid fa-trash cursor-pointer"></i></button>
-                    <button @click="pulsarTecla('b5')" class="py-2  boton  col-span-2">5.00€</button>
-                    <button @click="pulsarTecla('4')" class="py-2  boton w-full h-full">4</button>
-                    <button @click="pulsarTecla('5')" class="py-2  boton w-full h-full">5</button>
-                    <button @click="pulsarTecla('6')" class="py-2  boton w-full h-full">6</button>
-                    <button @click="pulsarTecla('delete')" class="py-2  boton w-full h-full"><i
-                            class="fa-solid fa-delete-left cursor-pointer"></i></button>
-                    <button @click="pulsarTecla('b10')" class="py-2  boton   col-span-2">10.00€</button>
-                    <button @click="pulsarTecla('1')" class="py-2  boton w-full h-full">1</button>
-                    <button @click="pulsarTecla('2')" class="py-2  boton w-full h-full">2</button>
-                    <button @click="pulsarTecla('3')" class="py-2  boton w-full h-full">3</button>
-                    <button @click="calcularCambio" class="py-2  boton  row-span-2  w-full h-full"><i
-                            class="fa-solid fa-arrow-turn-down transform rotate-90"></i></button>
-                    <button @click="pulsarTecla('b20')" class="py-2  boton  col-span-2  w-full h-full">20.00€</button>
-                    <button class="py-2 boton  w-full h-full"></button>
-                    <button @click="pulsarTecla('.')" class="py-2  boton  w-full h-full">.</button>
-                    <button @click="pulsarTecla('0')" class="py-2  boton  w-full h-full">0</button>
-                    <button @click="pulsarTecla('b50')" class="py-2  boton col-span-2  w-full h-full">50.00€</button>
+        
+                <!-- Teclado numérico -->
+                <div class="grid grid-cols-6 gap-2 mb-6" style="height:280px;">
+                    <button @click="pulsarTecla('7')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">7</button>
+                    <button @click="pulsarTecla('8')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">8</button>
+                    <button @click="pulsarTecla('9')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">9</button>
+                    <button @click="pulsarTecla('cancel')" class="py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 w-full h-full"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="pulsarTecla('b5')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 col-span-2">5.00€</button>
+                    <button @click="pulsarTecla('4')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">4</button>
+                    <button @click="pulsarTecla('5')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">5</button>
+                    <button @click="pulsarTecla('6')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">6</button>
+                    <button @click="pulsarTecla('delete')" class="py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-300 w-full h-full"><i class="fa-solid fa-delete-left"></i></button>
+                    <button @click="pulsarTecla('b10')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 col-span-2">10.00€</button>
+                    <button @click="pulsarTecla('1')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">1</button>
+                    <button @click="pulsarTecla('2')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">2</button>
+                    <button @click="pulsarTecla('3')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">3</button>
+                    <button @click="calcularCambio" class="py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 row-span-2 w-full h-full"><i class="fa-solid fa-arrow-turn-down transform rotate-90"></i></button>
+                    <button @click="pulsarTecla('b20')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 col-span-2 w-full h-full">20.00€</button>
+                    <button class="py-2 bg-gray-200 rounded-lg w-full h-full"></button>
+                    <button @click="pulsarTecla('.')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">.</button>
+                    <button @click="pulsarTecla('0')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">0</button>
+                    <button @click="pulsarTecla('b50')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 col-span-2 w-full h-full">50.00€</button>
                 </div>
-                <div class="flex justify-between " style="height: 55px">
-                    <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
-                    <button class="boton boton-success text-2xl"
-                        @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, usuario); deleteCarrito(); showModal = false;"
-                        :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0" >PAGAR</button> 
+                <div class="flex justify-between mt-4" style="height: 55px">
+                    <button class="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 text-2xl" @click="showModal = false">CANCELAR</button>
+                    <button class="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 text-2xl" @click="$wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, usuario); deleteCarrito(); showModal = false;" :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0">PAGAR</button> 
                 </div>
             </div>
-            {{-- Pago con Tarjeta --}}
-            <div class="w-1/2 " x-show="showCardOptions">
+        
+            <!-- Pago con Tarjeta -->
+            <div class="w-4/5 pl-4" x-show="showCardOptions">
                 <div class="grid grid-cols-2 gap-4">
-                    {{-- Columna de datos --}}
+                    <!-- Columna de datos -->
                     <div>
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2">TOTAL:</li>
+                            <li class="border-b-2 border-gray-300 pb-2">TOTAL:</li>
                         </ul>
                     </div>
-                    {{-- Columna de precios --}}
+                    <!-- Columna de precios -->
                     <div class="mb-6">
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2"
-                                x-text="(totalSinDesglosar ).toFixed(2) + '€'"></li>
+                            <li class="border-b-2 border-gray-300 pb-2" x-text="(totalSinDesglosar).toFixed(2) + '€'"></li>
                         </ul>
                     </div>
                 </div>
                 <div>
-                    <select id="bancos" name="bancos" class="form-select mt-1 block w-full">
+                    <select id="bancos" name="bancos" class="form-select mt-1 block w-full rounded-lg border-gray-300">
                         <option selected disabled>Selecciona un banco</option>
                         <option value="banco1">Banco 1</option>
                         <option value="banco2">Banco 2</option>
                         <option value="banco3">Banco 3</option>
                     </select>
                 </div>
-
-
                 <div class="flex justify-between mt-16">
-                    <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
-                    <button class="boton boton-success text-2xl">PAGAR</button>
+                    <button class="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 text-2xl" @click="showModal = false">CANCELAR</button>
+                    <button class="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 text-2xl">PAGAR</button>
                 </div>
             </div>
         </div>
+        
         {{-- Ventana Ticket --}}
         <div class="">
             <div class="bg-slate-100 p-8 rounded-lg flex ml-4 flex-col uppercase overflow-y-auto overflow-x-hidden"
