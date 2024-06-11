@@ -74,7 +74,7 @@
         }
         return precioIVA;
     },
-    carritoAdd: function(id) {
+    carritoAdd(id) {
         if (this.carrito[id] !== undefined) {
             this.carrito[id].cantidad++;
         } else {
@@ -906,7 +906,6 @@
                             <th class="px-2 py-2 text-base" colspan="1">referencia</th>
                             <th class="px-2 py-2 text-base" colspan="1">tercero</th>
                             <th class="px-2 py-2 text-base" colspan="1">forma de pago</th>
-                            <th class="px-2 py-2 text-base" colspan="1">fecha emisión</th>
                             <th class="px-2 py-2 text-base" colspan="1">base imponible</th>
                             <th class="px-2 py-2 text-base" colspan="1">total iva</th>
                             <th class="px-2 py-2 text-base" colspan="1">total</th>
@@ -1165,7 +1164,7 @@
 
     {{-- ventana inicio caja y arqueo --}}
 
-    <div id="{{ uniqid() }}" x-show="esVisible && !showInicioCaja && conf.tpv_habilitar_arqueos == 1"
+    <div id="{{ uniqid() }}" x-show="esVisible && !showInicioCaja"
         x-data="{
             sumaBilletes: 0,
             calcularSumaBilletes() {
@@ -1458,12 +1457,7 @@
                     </div>
                 </div>
                 <div>
-                    <select id="bancos" name="bancos" class="form-select mt-1 block w-full">
-                        <option selected disabled>Selecciona un banco</option>
-                        <option value="banco1">Banco 1</option>
-                        <option value="banco2">Banco 2</option>
-                        <option value="banco3">Banco 3</option>
-                    </select>
+                    
                 </div>
 
 

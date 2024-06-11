@@ -5,6 +5,7 @@ use App\Livewire\Tpv;
 use App\Livewire\Crear;
 use App\Livewire\Test;
 use App\Livewire\Fichar;
+use App\Livewire\GestionInvetario;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,9 +32,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/tpv', Tpv::class)->name('tpv');
     Route::middleware('checkPrivileges:1')->get('/crear', Crear::class);
+    Route::get('/gestion-invetario', GestionInvetario::class)->name('gestion-invetario');
     Route::get('/test', Test::class);
     Route::get('/crear', Crear::class);
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 });
-
