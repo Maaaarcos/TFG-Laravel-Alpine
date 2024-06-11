@@ -1048,7 +1048,7 @@
             <div x-show="open" class="absolute bg-white text-black p-4 rounded shadow-lg w-48 text-lg"
                 style="top: calc(100% + 10px); right: 0;">
                 <!-- Contenido del menú desplegable -->
-                 @if(Auth::user()->isUser())
+                 @if(Auth::user()->isAdmin())
                 <p class="cursor-pointer mb-2" @click="cambioUsuario = !cambioUsuario">Añadir usuario</p>
                 @endif
                 <p class="cursor-pointer mb-2" @click="fichaje = !fichaje">Fichar</p>
