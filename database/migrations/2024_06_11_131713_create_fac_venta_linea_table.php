@@ -16,7 +16,7 @@ class CreateFacVentaLineaTable extends Migration
 
         Schema::create('FacVentaLinea', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('factura_id')->constrained('facventa')->onDelete('cascade');
+            $table->foreignId('factura_id')->constrained('fac_ventas')->onDelete('cascade');
             $table->foreignId('producto_id')->constrained('productos')->onDelete('cascade');
             $table->decimal('precio', 8, 2);
             $table->decimal('cantidad', 8, 2);

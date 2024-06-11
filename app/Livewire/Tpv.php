@@ -77,7 +77,7 @@
 
             //$this->terceros = Tercero::select('id', 'nombre)->get()->keyBy('id')->toArray();
             $this->pagos = FormasPago::select('id', 'name')->get()->keyBy('id')->toArray();
-            $this->datosEmpresa = Conf::select('key', 'value')->get()->keyBy('key')->toArray();
+            // $this->datosEmpresa = Conf::select('key', 'value')->get()->keyBy('key')->toArray();
             $this->factura = FacVenta::orderBy('id', 'desc')->first();
             $this->facturas = FacVenta::select('id', 'name', 'tercero_id', 'fecha', 'forma_pago_id', 'base_imp', 'total_iva', 'total')->get()->keyBy('id')->toArray();
             $this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();
