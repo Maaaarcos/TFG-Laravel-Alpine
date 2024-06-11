@@ -5,6 +5,7 @@ namespace App\Livewire;
     use App\Models\Producto;
     use App\Models\Categoria;
     use App\Models\Iva;
+    use App\Models\Caja;
     
 
 use Livewire\Component;
@@ -15,15 +16,13 @@ class GestionInvetario extends Component
     public $categorias = [];
     public $iva = [];
     public $caja = [];
-    public $productoFiltrado = [];
-    public $categoriaFiltrada = [];
-    public $ivaFiltrado = [];
 
     public function mount()
     {
         $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
+        $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
         
 
 
@@ -56,25 +55,12 @@ class GestionInvetario extends Component
         ]);
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
     }
-    public function getProducto($id)
+    public function crearCaja($name)
     {
-        $this->productoFiltrado = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->where('id', $id)->with('categoria')->get()->keyBy('id')->toArray();
-        //dd($this->productoFiltrado);
-    }
-    public function getCategoria($id)
-    {
-        $this->categoriaFiltrada = Categoria::select('id', 'nombre', 'imagen_url')->where('id', $id)->get()->keyBy('id')->toArray();
-        //dd($this->productoFiltrado);
-    }
-    public function getCaja($id)
-    {
-        $this->productoFiltrado = Caja::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->where('id', $id)->get()->keyBy('id')->toArray();
-        //dd($this->productoFiltrado);
-    }
-    public function getIvas($id)
-    {
-        $this->ivaFiltrado = Iva::select('id', 'qty')->where('id', $id)->get()->keyBy('id')->toArray();
-        //dd($this->productoFiltrado);
+        Caja::create([
+            'name' => $name
+        ]);
+        $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
     }
     public function actualizarProducto($id, $nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url = null)
     {
@@ -93,27 +79,68 @@ class GestionInvetario extends Component
 
             $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
     }
+    public function actualizarCategoria($id, $nombre, $imagen_url = null)
+    {
+            $categoria = Categoria::find($id);
+            if ($categoria) {
+    
+                $categoria->nombre = $nombre;
+                $categoria->imagen_url = $imagen_url;
+                $categoria->save();
+            }
+
+            $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
+    }
+    public function actualizarIva($id, $qty)
+    {
+            $iva = Iva::find($id);
+            if ($iva) {
+    
+                $iva->qty = $qty;
+                $iva->save();
+            }
+
+            $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
+    }
+    public function actualizarCaja($id, $name)
+    {
+            $caja = Caja::find($id);
+            if ($caja) {
+    
+                $caja->name = $name;
+                $caja->save();
+            }
+
+            $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
+    }
     
     public function dropProducto($id)
     {
-            $producto = Producto::findOrFail($id);
+            $producto = Producto::find($id);
             $producto->delete();
 
             $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
     }
     public function dropCategoria($id)
     {
-            $categoria = Categoria::findOrFail($id);
+            $categoria = Categoria::find($id);
             $categoria->delete();
 
             $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
     }
     public function dropIva($id)
     {
-            $iva = Iva::findOrFail($id);
+            $iva = Iva::find($id);
             $iva->delete();
 
             $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
+    }
+    public function dropCaja($id)
+    {
+            $caja = Caja::find($id);
+            $caja->delete();
+
+            $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
     }
     public function render()
     {
