@@ -13,7 +13,7 @@ class CreateFacturaTable extends Migration
      */
     public function up()
     {
-        Schema::create('FacVenta', function (Blueprint $table) {
+        Schema::create('fac_ventas', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('tercero_id');
@@ -37,6 +37,6 @@ class CreateFacturaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('FacVenta');
+        Schema::dropIfExists('fac_ventas');
     }
 }

@@ -13,7 +13,7 @@ class CreateMovimientosArqueoTable extends Migration
      */
     public function up()
     {
-        Schema::create('movimientos_arqueo', function (Blueprint $table) {
+        Schema::create('arqueo_moves', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('arqueo_id');
             $table->unsignedBigInteger('caja_id');
@@ -36,6 +36,6 @@ class CreateMovimientosArqueoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('movimientos_arqueo');
+        Schema::dropIfExists('arqueo_moves');
     }
 }

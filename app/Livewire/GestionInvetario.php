@@ -6,6 +6,7 @@ namespace App\Livewire;
     use App\Models\Categoria;
     use App\Models\Iva;
     use App\Models\Caja;
+    use App\Models\User;
     
     use Livewire\WithFileUploads;
     
@@ -38,6 +39,7 @@ class GestionInvetario extends Component
     public $categorias = [];
     public $iva = [];
     public $caja = [];
+    public $user = [];
 
     public function mount()
     {
@@ -45,6 +47,7 @@ class GestionInvetario extends Component
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
         $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
+        $this->user = User::select('id', 'name', 'email', 'puesto_empresa','privilegios','password','imagen_url')->get()->keyBy('id')->toArray();
         
 
 
@@ -92,6 +95,36 @@ class GestionInvetario extends Component
         ]);
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
     }
+
+    public function crearEmpleado($name,$email,$password,$privilegios,$imagen_url,$puesto_empresa){
+
+        User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => bcrypt($password),
+            'privilegios' => $privilegios,
+            'imagen_url' => $imagen_url,
+            'puesto_empresa' => $puesto_empresa
+        ]);
+        $this->user = User::select('id', 'name', 'email','privilegios','puesto_empresa','imagen_url')->get()->keyBy('id')->toArray();
+    }
+
+    public function actualizarEmpleado($id,$name,$email,$password,$privilegios,$imagen_url,$puesto_empresa){
+        $user = User::find($id);
+        if ($user) {
+
+            $user->name = $name;
+            $user->email = $email;
+            $user->password = bcrypt($password);
+            $user->privilegios = intval($privilegios);
+            $user->imagen_url = $imagen_url;
+            $user->puesto_empresa = $puesto_empresa;
+            $user->save();
+        }
+
+        $this->user = User::select('id', 'name', 'email','password','privilegios','imagen_url','puesto_empresa')->get()->keyBy('id')->toArray();
+    }
+
     public function crearIva($qty)
     {
         Iva::create([

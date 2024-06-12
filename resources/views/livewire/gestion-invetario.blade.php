@@ -13,10 +13,13 @@
         ventanaEditarIva: false,
         ventanaNuevaCaja: false,
         ventanaEditarCaja: false,
+        ventanaNuevoEmpleado: false,
+        ventanaEditarEmpleado: false,
         productos: @entangle('productos'),
         categorias: @entangle('categorias'),
         ivas: @entangle('iva'),
         cajas: @entangle('caja'),
+        users: @entangle('user'),
         idProd: '',
         nombreProd: '',
         precioProd: '',
@@ -89,6 +92,23 @@
             
             return clientsWithOrders;
         },
+        
+        buscarPorNombreEmpleado(){
+        
+            let clientsWithOrders = Object.values(this.users);
+
+            const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+            if(this.searchBox) {
+                let searchBox = normalize(this.searchBox)
+
+                clientsWithOrders = clientsWithOrders.filter((users) => normalize(users.name).includes(searchBox))
+            }
+
+            return clientsWithOrders;
+        },
+
+
         getIvaProd(ivaId) {
             let ivaProd = 0;
 
@@ -119,6 +139,15 @@
             this.idCaja = id;
             this.nameCaja = name;
         },
+        updateEmpleadoFiltrado(id, name, email, privilegios,puesto_empresa, imagen_url, password){
+            this.idEmpleado = id;
+            this.nameEmpleado = name;
+            this.emailEmpleado = email;
+            this.privilegiosEmpleado = privilegios;
+            this.puestoEmpleado = puesto_empresa;
+            this.imagenEmpleado = imagen_url;
+            this.passwordEmpleado = password;
+        }
     }">
 
     {{-- NAVEGADOR --}}
@@ -333,8 +362,98 @@
     
     {{-- SECCION EMPLEADOS --}}
     <div x-show="showEmpleados">
-            
-    </div>
+        <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
+            <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchBox"
+                class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500"
+                @input="buscarPorNombreEmpleado()">
+        </div>        
+
+        <div>
+            <button @click="ventanaNuevaCaja = true">
+                <i class="fa-solid fa-pen-to-square fa-3x px-4 pb-2 pt-4 mb-3 bg-blue-400"></i>
+            </button>
+        </div>
+
+        <table class="min-w-full bg-white border">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Imagen</th>
+                        <th class="py-2 px-4 border-b">Nombre</th>
+                        <th class="py-2 px-4 border-b">Correo</th>
+                        <th class="py-2 px-4 border-b">Privilegios</th>
+                        <th class="py-2 px-4 border-b">Puesto</th>
+                        <th class="py-2 px-4 border-b">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="users in buscarPorNombreEmpleado()" :key="users.id">
+                        <tr>
+                            <td class="py-2 px-4 border-b">
+                                    <img :src="users.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
+                            </td>
+                            <td class="py-2 px-4 border-b" x-text="users.name"></td>
+                            <td class="py-2 px-4 border-b" x-text="users.email"></td>
+                            <td class="py-2 px-4 border-b" x-text="users.privilegios"></td>
+                            <td class="py-2 px-4 border-b" x-text="users.puesto_empresa"></td>
+                            <td class="py-2 px-4 border-b">
+                                <button @click="updateEmpleadoFiltrado(users.id, users.name, users.email, users.privilegios, users.puesto_empresa, users.imagen_url, users.password); ventanaEditarEmpleado= true" class="text-blue-500">Editar</button>
+                            <td class="py-2 px-4 border-b">
+                                <!-- <button @click="$wire.dropCaja(caja.id);" class="text-blue-500">Borrar</button> -->
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+        </table>
+
+        {{-- VENTANA EDITAR EMPLEADO --}}
+        <div x-show="ventanaEditarEmpleado" x-data="{}" 
+        class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+            <div class="bg-white p-8 rounded-lg flex flex-col">
+                <div class="uppercase text-xl font-bold mb-4">
+                    Edición Empleado
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                        <input type="text" id="nameEmpleado" name="nameEmpleado" x-model="nameEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Correo</label>
+                        <input type="text" id="emailEmpleado" name="emailEmpleado" x-model="emailEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Privilegios</label>
+                        <input type="number" id="privilegiosEmpleado" name="privilegiosEmpleado" x-model="privilegiosEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Puesto</label>
+                        <input type="text" id="puestoEmpleado" name="puestoEmpleado" x-model="puestoEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Imagen</label>
+                        <input type="text" id="imagenEmpleado" name="imagenEmpleado" x-model="imagenEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                        <input type="text" id="passwordEmpleado" name="passwordEmpleado" x-model="passwordEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button class="boton" @click="
+                        $wire.actualizarEmpleado(idEmpleado, nameEmpleado, emailEmpleado,privilegiosEmpleado, puestoEmpleado, imagenEmpleado, passwordEmpleado);
+                        ventanaEditarEmpleado = false;">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>    
     {{-- SECCION CAJAS --}}
     <div x-show="showCajas">
     <div class="bg-gray-600 text-white p-4 h-20 flex items-center">

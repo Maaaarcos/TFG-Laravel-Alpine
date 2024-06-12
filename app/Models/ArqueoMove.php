@@ -8,7 +8,7 @@ use App\Models\Caja;
 use App\Models\User;
 use App\Models\Arqueo;
 
-class MovimientosArqueo extends Model
+class ArqueoMove extends Model
 {
     use HasFactory;
 
