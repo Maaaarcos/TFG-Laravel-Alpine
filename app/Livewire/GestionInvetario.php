@@ -8,11 +8,33 @@ namespace App\Livewire;
     use App\Models\Caja;
     use App\Models\User;
     
+    use Livewire\WithFileUploads;
+    
 
 use Livewire\Component;
 
 class GestionInvetario extends Component
 {
+    use WithFileUploads;
+
+    public $nombre;
+    public $precio;
+    public $imagen;
+    public $iva_id;
+    public $categoria_id;
+    public $stock;
+    public $estado;
+
+    protected $rules = [
+        'nombre' => 'required|string',
+        'precio' => 'required|numeric',
+        'imagen' => 'required|image|max:2048', // 1MB Max
+        'iva_id' => 'required|integer',
+        'categoria_id' => 'required|integer',
+        'stock' => 'required|integer',
+        'estado' => 'required|boolean',
+    ];
+    
     public $productos = [];
     public $categorias = [];
     public $iva = [];
@@ -30,19 +52,41 @@ class GestionInvetario extends Component
 
 
     }
-    public function crearProducto($nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url= null)
+    public function crearProducto()
     {
+        $this->validate();
+
+        // Guardar la imagen
+        $imagenPath = $this->imagen->store('productos', 'public');
+
+        // Crear el producto (ejemplo)
         Producto::create([
-            'nombre' => $nombre,
-            'precio' => $precio,
-            'iva_id' => $iva_id,
-            'categoria_id' => $categoria_id,
-            'stock' => $stock,
-            'se_vende' => $se_vende,
-            'imagen_url' => $imagen_url
+            'nombre' => $this->nombre,
+            'precio' => $this->precio,
+            'imagen_url' => $imagenPath,
+            'iva_id' => $this->iva_id,
+            'categoria_id' => $this->categoria_id,
+            'stock' => $this->stock,
+            'estado' => $this->estado,
         ]);
-        $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
+        
+        session()->flash('message', 'Producto creado exitosamente.');
     }
+    // public function crearProducto($nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url)
+    // {
+    //     $imagenUrl = $this->imagen->store('imagenes_productos', 'public');
+
+    //     Producto::create([
+    //         'nombre' => $nombre,
+    //         'precio' => $precio,
+    //         'iva_id' => $iva_id,
+    //         'categoria_id' => $categoria_id,
+    //         'stock' => $stock,
+    //         'se_vende' => $se_vende,
+    //         'imagen_url' => $imagenUrl
+    //     ]);
+    //     $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
+    // }
     public function crearCategoria($nombre, $imagen_url= null)
     {
         Categoria::create([
