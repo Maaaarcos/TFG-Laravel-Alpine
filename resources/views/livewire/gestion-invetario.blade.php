@@ -178,7 +178,7 @@
                         <template x-for="producto in buscarPorNombre()" :key="producto.id">
                             <tr>
                                 <td class="py-2 px-4 border-b">
-                                    <img :src="producto.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
+                                    <img :src="'{{ asset('storage/') }}' + '/' + producto.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
                                 </td>
                                 <td class="py-2 px-4 border-b" x-text="producto.nombre"></td>
                                 <td class="py-2 px-4 border-b" x-text="producto.precio.toFixed(2) + '€'"></td>
@@ -266,33 +266,9 @@
             </div>
         </div>
         {{-- VENTANA NUEVO PRODUCTO --}}
-        <div x-show="ventanaNuevoProducto" x-data="{
-                nombre: '',
-                precio: '',
-                imagen: '',
-                iva_id: '',
-                categoria_id: '',
-                stock: '',
-                estado: '',
-                getProductoData() {
-                    return {
-                        nombre: this.nombre,
-                        precio: parseFloat(this.precio),
-                        iva_id: parseInt(this.iva_id),
-                        categoria_id: parseInt(this.categoria_id),
-                        stock: parseInt(this.stock),
-                        estado: parseInt(this.estado),
-                        imagen: this.imagen,
-                        tipoNombre: typeof this.nombre,
-                        tipoPrecio: typeof parseFloat(this.precio),
-                        tipoIvaId: typeof parseInt(this.iva_id),
-                        tipoCategoriaId: typeof parseInt(this.categoria_id),
-                        tipoStock: typeof parseInt(this.stock),
-                        tipoEstado: typeof parseInt(this.estado),
-                        tipoImagen: typeof this.imagen
-                    };
-                }
-                }" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div x-show="ventanaNuevoProducto">
+
+            <div x-show="ventanaNuevoProducto" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
                 <div class="bg-white p-8 rounded-lg flex flex-col">
                     <div class="uppercase text-xl font-bold mb-4">
                         Nuevo Producto
@@ -300,17 +276,17 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Nombre*</label>
-                            <input type="text" id="nombre" name="nombre" x-model="nombre" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <input type="text" x-model="$wire.nombre" class="mt-1 block w-full">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Precio*</label>
-                            <input type="text" id="precio" name="precio" x-model="precio" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <input type="text" x-model="$wire.precio" class="mt-1 block w-full">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">IVA</label>
-                            <select x-model="iva_id" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <select x-model="$wire.iva_id" class="mt-1 block w-full">
                                 <option value="" disabled selected>Seleccione IVA</option>
                                 <template x-for="iva in ivas" :key="iva.id">
                                     <option :value="iva.id" x-text="iva.qty + '%'"></option>
@@ -319,7 +295,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Categoría</label>
-                            <select x-model="categoria_id" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <select x-model="$wire.categoria_id" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                 <option value="" disabled selected>Seleccione Categoría</option>
                                 <template x-for="categoria in categorias" :key="categoria.id">
                                     <option :value="categoria.id" x-text="categoria.nombre"></option>
@@ -327,38 +303,32 @@
                             </select>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Stock</label>
-                            <input type="text" id="stock" name="stock" x-model="stock" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            <input type="text" x-model="$wire.stock" class="mt-1 block w-full">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Estado</label>
-                            <select x-model="estado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                <option value="">Seleccione Estado</option>    
+                            <select x-model="$wire.estado" class="mt-1 block w-full">
+                                <option value="">Seleccione Estado</option>
                                 <option value="1">Habilitado</option>
                                 <option value="0">Deshabilitado</option>
                             </select>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Imagen</label>
-                            <form action="" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <input type="file" id="imagen" name="imagen" x-model="imagen" accept="image/*" 
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                                <button type="submit">Subir Imagen</button>
-                            </form>
+                            <input type="file" wire:model="imagen" accept="image/*" class="mt-1 block w-full">
                         </div>
                     </div>
                     <div class="flex justify-end">
-                        <button class="boton" @click="
-                            $wire.crearProducto(nombre, precio, iva_id, categoria_id, stock, estado, imagen);
-                            ventanaNuevoProducto = false;">Guardar</button>
+                        <button class="btn" @click="$wire.crearProducto()">Guardar</button>
                     </div>
                 </div>
-            </div>   
+            </div>
+        </div>
     </div>
     
     {{-- SECCION EMPLEADOS --}}
