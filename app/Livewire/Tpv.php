@@ -21,8 +21,12 @@ use Illuminate\Support\Facades\Session;
 use FontLib\Table\Type\name;
 use Carbon\Carbon;
 
+
+use Livewire\WithFileUploads;
 class Tpv extends Component
 {
+    use WithFileUploads; 
+    
     public $productos = [];
     public $categorias = [];
     public $iva = [];

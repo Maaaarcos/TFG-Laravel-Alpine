@@ -25,14 +25,21 @@ class GestionInvetario extends Component
     public $stock;
     public $estado;
 
+    public $nombreCategoria;
+    public $imagenCategoria;
+
     protected $rules = [
         'nombre' => 'required|string',
         'precio' => 'required|numeric',
-        'imagen' => 'required|image|max:2048', // 1MB Max
+        'imagen' => 'required|image|max:2048', // 2MB Max
         'iva_id' => 'required|integer',
         'categoria_id' => 'required|integer',
         'stock' => 'required|integer',
         'estado' => 'required|boolean',
+    ];
+    protected $rulesCategoria = [
+        'nombreCategoria' => 'required|string',
+        'imagenCategoria' => 'required|image|max:2048', // 2MB Max
     ];
     
     public $productos = [];
@@ -69,31 +76,22 @@ class GestionInvetario extends Component
             'stock' => $this->stock,
             'estado' => $this->estado,
         ]);
-        
-        session()->flash('message', 'Producto creado exitosamente.');
+        $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
+        $this->nombre = ''; $this->precio = ''; $this->iva_id = ''; $this->categoria_id = ''; $this->stock = ''; $this->estado  = ''; $this->imagen = null;
     }
-    // public function crearProducto($nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url)
-    // {
-    //     $imagenUrl = $this->imagen->store('imagenes_productos', 'public');
-
-    //     Producto::create([
-    //         'nombre' => $nombre,
-    //         'precio' => $precio,
-    //         'iva_id' => $iva_id,
-    //         'categoria_id' => $categoria_id,
-    //         'stock' => $stock,
-    //         'se_vende' => $se_vende,
-    //         'imagen_url' => $imagenUrl
-    //     ]);
-    //     $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
-    // }
-    public function crearCategoria($nombre, $imagen_url= null)
+    public function crearCategoria()
     {
+        $this->validate($this->rulesCategoria);
+        
+        $imagenPath = $this->imagenCategoria->store('productos', 'public');
+        dd($this->nombreCategoria, $imagenPath);
         Categoria::create([
-            'nombre' => $nombre,
-            'imagen_url' => $imagen_url
+            'nombre' => $this->nombreCategoria,
+            'imagen_url' => $imagenPath,
         ]);
+
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
+        $this->nombreCategoria = ''; $this->imagenCategoria = null;
     }
 
     public function crearEmpleado($name,$email,$password,$privilegios,$imagen_url,$puesto_empresa){
@@ -139,22 +137,30 @@ class GestionInvetario extends Component
         ]);
         $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
     }
-    public function actualizarProducto($id, $nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url = null)
+    public function actualizarProducto($id, $nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url = null, $nueva_imagen = null)
     {
-            $producto = Producto::find($id);
-            if ($producto) {
-    
-                $producto->nombre = $nombre;
-                $producto->precio = $precio;
-                $producto->iva_id = $iva_id;
-                $producto->categoria_id = $categoria_id;
-                $producto->stock = $stock;
-                $producto->se_vende = $se_vende;
-                $producto->imagen_url = $imagen_url;
-                $producto->save();
+        $producto = Producto::find($id);
+        if ($producto) {
+            $producto->nombre = $nombre;
+            $producto->precio = $precio;
+            $producto->iva_id = $iva_id;
+            $producto->categoria_id = $categoria_id;
+            $producto->stock = $stock;
+            $producto->se_vende = $se_vende;
+
+            // Si se proporciona una nueva imagen, validar y guardar
+            if ($this->imagen) {
+                $this->validate([
+                    'imagen' => 'image|max:2048', // Validar el archivo de imagen
+                ]);
+                $imagenPath = $this->imagen->store('productos', 'public');
+                $producto->imagen_url = $imagenPath;
             }
 
-            $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
+            $producto->save();
+        }
+
+        $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
     }
     public function actualizarCategoria($id, $nombre, $imagen_url = null)
     {
