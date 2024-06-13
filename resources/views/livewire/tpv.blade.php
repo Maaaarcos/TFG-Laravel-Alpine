@@ -397,7 +397,8 @@
                 <div class="flex-1 bg-gray-200 overflow-y-auto h-screen flex flex-wrap justify-start">
                     <template x-for="producto in buscarPorNombre()" :key="producto.id">
                         <div class="my-3 bg-white w-36 h-36 p-2 mx-4 flex flex-col justify-center items-center cursor-pointer" @click="carritoAdd(producto.id)">
-                            <img :src="producto.imagen_url" alt="Foto" class="flex-grow flex-shrink object-cover rounded-md">
+                        <img :src="'{{ asset('storage/') }}/' +  producto.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
+
                             <div class="flex justify-center items-center mt-2">
                                 <p class="h-8 overflow-hidden" x-text="producto.nombre" title="producto.nombre"></p>
                                 <p class="text-xs ml-2 mb-1" x-text="(parseFloat(producto.precio) || 0).toFixed(2) + '€'"></p>

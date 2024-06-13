@@ -282,10 +282,10 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Imagen</label>
-                        <input type="file" id="imagenProd" name="imagenProd" x-model="imagenProd" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Imagen</label>
+                    <input type="file" wire:model="imagen" accept="image/*" class="mt-1 block w-full">
+                </div>
                 </div>
                 <div class="flex justify-end">
                     <button class="boton" @click=" console.log('Datos enviados:', idProd, nombreProd, precioProd, iva_idProd, categoria_idProd, stockProd, estadoProd, imagenProd);
@@ -602,7 +602,7 @@
                     <template x-for="categoria in buscarPorNombreCategoria" :key="categoria.id">
                         <tr>
                             <td class="py-2 px-4 border-b">
-                                <img :src="categoria.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
+                                <img :src="'{{ asset('storage/') }}' + '/' + categoria.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
                             </td>
                             <td class="py-2 px-4 border-b" x-text="categoria.nombre"></td>
                             <td class="py-2 px-4 border-b">
@@ -640,29 +640,24 @@
             </div>
         </div>
         {{-- VENTANA NUEVA CATEGORIA --}}
-        <div x-show="ventanaNuevaCategoria" x-data="{
-            nombre: '',
-            imagen: ''}" 
-            class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div x-show="ventanaNuevaCategoria" x-data="{ nombre: '', imagen: '' }" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
                 <div class="uppercase text-xl font-bold mb-4">
-                    Nueva Categoria
+                Nueva Categoría
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nombre*</label>
+                    <input type="text" wire:model="nombreCategoria" class="mt-1 block w-full">
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Nombre*</label>
-                        <input type="text" id="nombre" name="nombre" x-model="nombre" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Imagen</label>
-                        <input type="text" id="imagen" name="imagen" x-model="imagen" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Imagen</label>
+                    <input type="file" wire:model="imagenCategoria" accept="image/*" class="mt-1 block w-full">
                 </div>
-                <div class="flex justify-end">
-                    <button class="boton" @click="
-                        $wire.crearCategoria(nombre, imagen);
-                        ventanaNuevaCategoria = false;">Guardar</button>
-                </div>
+            </div>
+            <div class="flex justify-end">
+                <button class="boton" @click="$wire.crearCategoria(); ventanaNuevaCategoria = false;">Guardar</button>
+            </div>
             </div>
         </div>
     </div>
