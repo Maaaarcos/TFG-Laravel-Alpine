@@ -25,6 +25,13 @@ class GestionInvetario extends Component
     public $stock;
     public $estado;
 
+    public $name;
+    public $email;
+    public $password;
+    public $privilegios;
+    public $puesto_empresa;
+    public $imagen_empleado;
+
     protected $rules = [
         'nombre' => 'required|string',
         'precio' => 'required|numeric',
@@ -34,6 +41,8 @@ class GestionInvetario extends Component
         'stock' => 'required|integer',
         'estado' => 'required|boolean',
     ];
+
+
     
     public $productos = [];
     public $categorias = [];
@@ -54,6 +63,7 @@ class GestionInvetario extends Component
     }
     public function crearProducto()
     {
+        // dd($this->nombre, $this->precio, $this->imagen, $this->iva_id, $this->categoria_id, $this->stock, $this->estado);
         $this->validate();
 
         // Guardar la imagen
@@ -69,8 +79,7 @@ class GestionInvetario extends Component
             'stock' => $this->stock,
             'estado' => $this->estado,
         ]);
-        
-        session()->flash('message', 'Producto creado exitosamente.');
+        $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')->with('categoria')->get()->keyBy('id')->toArray();
     }
     // public function crearProducto($nombre, $precio, $iva_id, $categoria_id, $stock, $se_vende, $imagen_url)
     // {
@@ -96,18 +105,38 @@ class GestionInvetario extends Component
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
     }
 
-    public function crearEmpleado($name,$email,$password,$privilegios,$imagen_url,$puesto_empresa){
-
-        User::create([
-            'name' => $name,
-            'email' => $email,
-            'password' => bcrypt($password),
-            'privilegios' => $privilegios,
-            'imagen_url' => $imagen_url,
-            'puesto_empresa' => $puesto_empresa
+    public function crearEmpleado() {
+        // dd($this->name, $this->email, $this->password, $this->privilegios, $this->imagen_empleado, $this->puesto_empresa);
+    
+        $this->validate([
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string',
+            'privilegios' => 'required|integer',
+            'imagen_empleado' => 'required|image|max:2048',
+            'puesto_empresa' => 'required|string'
         ]);
-        $this->user = User::select('id', 'name', 'email','privilegios','puesto_empresa','imagen_url')->get()->keyBy('id')->toArray();
+    
+        // Verificar que la imagen está siendo recibida
+        
+    
+        $imagenPath = $this->imagen_empleado->store('empleados', 'public');
+    
+        // Verificar la ruta de la imagen
+        
+    
+        User::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'password' => bcrypt($this->password),
+            'privilegios' => $this->privilegios,
+            'imagen_url' => $imagenPath,
+            'puesto_empresa' => $this->puesto_empresa,
+        ]);
+    
+        $this->user = User::select('id', 'name', 'email', 'password', 'privilegios', 'imagen_url', 'puesto_empresa')->get()->keyBy('id')->toArray();
     }
+    
 
     public function actualizarEmpleado($id,$name,$email,$password,$privilegios,$imagen_url,$puesto_empresa){
         $user = User::find($id);
@@ -189,6 +218,14 @@ class GestionInvetario extends Component
             }
 
             $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
+    }
+
+    public function dropEmpleado($id)
+    {
+            $user = User::find($id);
+            $user->delete();
+
+            $this->user = User::select('id', 'name', 'email','password','privilegios','imagen_url','puesto_empresa')->get()->keyBy('id')->toArray();
     }
     
     public function dropProducto($id)
