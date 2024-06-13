@@ -353,7 +353,8 @@
                         </div>
                     </div>
                     <div class="flex justify-end">
-                        <button class="btn" @click="$wire.crearProducto()">Guardar</button>
+                        <button class="btn" @click="$wire.crearProducto(); ventanaNuevoProducto=false;">Guardar</button>
+
                     </div>
                 </div>
             </div>
@@ -369,7 +370,7 @@
         </div>        
 
         <div>
-            <button @click="ventanaNuevaCaja = true">
+            <button @click="ventanaNuevoEmpleado = true">
                 <i class="fa-solid fa-pen-to-square fa-3x px-4 pb-2 pt-4 mb-3 bg-blue-400"></i>
             </button>
         </div>
@@ -389,7 +390,7 @@
                     <template x-for="users in buscarPorNombreEmpleado()" :key="users.id">
                         <tr>
                             <td class="py-2 px-4 border-b">
-                                    <img :src="users.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
+                                <img :src="'{{ asset('storage/') }}' + '/' + users.imagen_url" alt="Foto del empleado" class="h-12 w-12 object-cover">
                             </td>
                             <td class="py-2 px-4 border-b" x-text="users.name"></td>
                             <td class="py-2 px-4 border-b" x-text="users.email"></td>
@@ -398,7 +399,7 @@
                             <td class="py-2 px-4 border-b">
                                 <button @click="updateEmpleadoFiltrado(users.id, users.name, users.email, users.privilegios, users.puesto_empresa, users.imagen_url, users.password); ventanaEditarEmpleado= true" class="text-blue-500">Editar</button>
                             <td class="py-2 px-4 border-b">
-                                <!-- <button @click="$wire.dropCaja(caja.id);" class="text-blue-500">Borrar</button> -->
+                                <button @click="$wire.dropEmpleado(users.id);" class="text-blue-500">Borrar</button>
                             </td>
                         </tr>
                     </template>
@@ -450,7 +451,54 @@
                 </div>
             </div>
         </div>
+        
+        <div x-show="ventanaNuevoEmpleado">
+            <div x-show="ventanaNuevoEmpleado" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                    <div class="bg-white p-8 rounded-lg flex flex-col">
+                        <div class="uppercase text-xl font-bold mb-4">
+                            Nuevo empleado
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nombre*</label>
+                                <input type="text" x-model="$wire.name" class="mt-1 block w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email*</label>
+                                <input type="text" x-model="$wire.email" class="mt-1 block w-full">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        
 
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Privilegios*</label>
+                                <input type="number" x-model="$wire.privilegios" class="mt-1 block w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Puesto*</label>
+                                <input type="text" x-model="$wire.puesto_empresa" class="mt-1 block w-full">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Imagen</label>
+                                <input type="file" wire:model="imagen_empleado" accept="image/*" class="mt-1 block w-full">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Contraseña*</label>
+                                <input type="text" x-model="$wire.password" class="mt-1 block w-full">
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button class="btn" @click="$wire.crearEmpleado(); ventanaNuevoEmpleado=false;">Guardar</button>
+
+                        </div>
+                    </div>
+                </div>
+
+        </div>
 
 
     </div>    
