@@ -28,6 +28,7 @@
         categoria_idProd: '',
         stockProd: '',
         estadoProd: '',
+        privilegiosEmpleado: '',
         idCategoria: '',
         nombreCategoria: '',
         imagenCategoria: '',
@@ -425,8 +426,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Privilegios</label>
-                        <input type="number" id="privilegiosEmpleado" name="privilegiosEmpleado" x-model="privilegiosEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        <label class="block text-sm font-medium text-gray-700">Permisos</label>
+                            <select x-model="privilegiosEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <option value="" disabled selected></option>
+                                <option value="1">Admin</option>
+                                <option value="0">Usuario</option>
+                            </select>
                     </div>
 
                     <div>
@@ -436,7 +441,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Imagen</label>
-                        <input type="text" id="imagenEmpleado" name="imagenEmpleado" x-model="imagenEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        <input type="file" wire:model="imagen_empleado" accept="image/*" class="mt-1 block w-full">
                     </div>
 
                     <div>
@@ -446,11 +451,13 @@
                 </div>
                 <div class="flex justify-end">
                     <button class="boton" @click="
-                        $wire.actualizarEmpleado(idEmpleado, nameEmpleado, emailEmpleado,privilegiosEmpleado, puestoEmpleado, imagenEmpleado, passwordEmpleado);
+                        $wire.actualizarEmpleado(idEmpleado, nameEmpleado, emailEmpleado, passwordEmpleado,privilegiosEmpleado,imagenEmpleado,puestoEmpleado);
                         ventanaEditarEmpleado = false;">Guardar</button>
                 </div>
             </div>
         </div>
+
+        {{-- VENTANA NUEVO EMPLEADO --}}
         
         <div x-show="ventanaNuevoEmpleado">
             <div x-show="ventanaNuevoEmpleado" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">

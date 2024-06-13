@@ -130,20 +130,28 @@ class GestionInvetario extends Component
         $this->user = User::select('id', 'name', 'email', 'password', 'privilegios', 'imagen_url', 'puesto_empresa')->get()->keyBy('id')->toArray();
     }
 
-    public function actualizarEmpleado($id, $name, $email, $password, $privilegios, $imagen_url, $puesto_empresa)
+    public function actualizarEmpleado($id, $name, $email, $password, $privilegios, $imagen_empleado, $puesto_empresa)
     {
+        
         $user = User::find($id);
         if ($user) {
             $user->name = $name;
             $user->email = $email;
             $user->password = bcrypt($password);
-            $user->privilegios = intval($privilegios);
-            $user->imagen_url = $imagen_url;
+            $user->privilegios = $privilegios;
             $user->puesto_empresa = $puesto_empresa;
+
+            if ($this->imagen_empleado) {
+                $this->validate(['imagen_empleado' => 'image|max:2048']);
+                $imagenPath = $this->imagen_empleado->store('empleados', 'public');
+                $user->imagen_url = $imagenPath;
+            }
+
             $user->save();
         }
 
         $this->user = User::select('id', 'name', 'email', 'password', 'privilegios', 'imagen_url', 'puesto_empresa')->get()->keyBy('id')->toArray();
+
     }
 
     public function crearIva($qty)
