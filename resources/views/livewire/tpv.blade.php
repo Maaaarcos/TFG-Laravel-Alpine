@@ -340,7 +340,7 @@
     console.log('categorias:', categorias);
     console.log('carrito:', carrito);">
     {{-- columna izquierda --}}
-    <div class="bg-borgoña-predeterminado text-white w-1/12 flex flex-col items-center h-full justify-between">
+    <div class="bg-gris-insaturado text-white w-1/12 flex flex-col items-center h-full justify-between">
         <button class="my-2 text-center cursor-pointer"
             @click=" showTpv = true; showTR = false; showArqueo = false; showVentas = false;" aria-expanded="false" aria-controls="tpvSection">
             
@@ -349,7 +349,8 @@
         </button>
         <button class="my-2 text-center cursor-pointer"
             @click=" showTpv = false; showTR = false; showArqueo = false; showVentas = true;" aria-expanded="false" aria-controls="tpvSection">
-            <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></i>
+            <span class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></span>
+            
             <p class="mx-2">Ventas</p>
         </button>
         <button class="my-2 text-center cursor-pointer"
@@ -374,7 +375,7 @@
     {{-- columna central --}}
     <div class="flex-1 flex flex-col w-8/12">
         {{-- navegador --}}
-        <div class="bg-borgoña-claro text-white p-4 h-20 flex items-center" x-data="{ init() { this.$nextTick(() => this.$refs.input.focus()) } }" x-init="init">
+        <div class="bg-gris-predeterminado text-white p-4 h-20 flex items-center" x-data="{ init() { this.$nextTick(() => this.$refs.input.focus()) } }" x-init="init">
             <i class="fa-solid fa-magnifying-glass fa-3x px-4 py-2 cursor-pointer"></i>
            {{-- <i class="fa-solid fa-barcode fa-3x px-4 py-2 cursor-pointer"></i> --}}
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
@@ -384,18 +385,21 @@
         <div x-show="showTpv" class="flex overflow-x-auto bg-skin-primary">
             <div class="flex flex-col w-full overflow-x-auto bg-skin-primary">
                 <!-- Categorías -->
-                <div class="flex overflow-x-auto bg-skin-primary">
-                    <div class="flex-none w-24 h-24 bg-gray-300 p-4 m-3 cursor-pointer" @click="resetProductos()">
-                        <p class="text-center mt-2">Borrar Filtros</p>
+                <div class="flex overflow-x-auto bg-blanco-predeterminado">
+                    <div class="flex-none w-24 h-24 bg-blanco-floral p-4 m-3 cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 flex justify-center items-center" @click="resetProductos()" style="border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                        <p class="text-color-category text-center mt-2">Borrar Filtros</p>
                     </div>
                     <template x-for="categoria in Object.values(categorias)">
-                        <div class="flex-none w-24 h-24 bg-gray-300 p-4 m-3 cursor-pointer" @click="selectProd(categoria.id)">
-                            <p class="text-center mt-2" x-text="categoria.nombre"></p>
+                        <div class="flex-none w-24 h-24 bg-blanco-floral p-4 m-3 cursor-pointer transition duration-300 ease-in-out transform hover:scale-105 flex justify-center items-center" @click="selectProd(categoria.id)" style="border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <p class="text-custom-text-color text-center mt-2" x-text="categoria.nombre"></p>
                         </div>
                     </template>
                 </div>
+                
+                
+                
                 <!-- Productos -->
-                <div class="flex-1 bg-borgoña-predeterminado overflow-y-auto h-screen flex flex-wrap justify-start">
+                <div class="flex-1 overflow-y-auto h-screen flex flex-wrap justify-start">
                     <template x-for="producto in buscarPorNombre()" :key="producto.id">
                         <div class="my-3 bg-white w-36 h-36 p-2 mx-4 flex flex-col justify-center items-center cursor-pointer" @click="carritoAdd(producto.id)">
                             <img :src="producto.imagen_url" alt="Foto" class="flex-grow flex-shrink object-cover rounded-md">
@@ -444,7 +448,7 @@
                                         <td class="px-4 py-2 text-center"
                                             @click=" idElemento = tarjeta.id; estado = Number(!tarjeta.estado); $wire.editarTarjetaRegalo(idElemento, estado).then(() => { tarjeta.estado = estado; });">
                                             <span class="inline-block h-4 w-4 rounded-full"
-                                                :class="tarjeta.estado == 1 ? 'bg-green-500' : 'bg-red-500'"></span>
+                                                :class="tarjeta.estado == 1 ? 'bg-verde-saturado' : 'bg-rojo-claro'"></span>
                                         </td>
                                         <td class="px-4 py-2 text-center"
                                             x-text="new Date(tarjeta.fecha_caducidad).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
@@ -469,7 +473,7 @@
                                         <td class="px-4 py-2 text-center"
                                             @click=" idElemento = tarjeta.id; estado = Number(!tarjeta.estado); $wire.editarTarjetaRegalo(idElemento, estado).then(() => { tarjeta.estado = estado; });">
                                             <span class="inline-block h-4 w-4 rounded-full"
-                                                :class="tarjeta.estado == 1 ? 'bg-green-500' : 'bg-red-500'"></span>
+                                                :class="tarjeta.estado == 1 ? 'bg-verde-saturado' : 'bg-rojo-claro'"></span>
                                         </td>
                                         <td class="px-4 py-2 text-center"
                                             x-text="new Date(tarjeta.fecha_caducidad).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
@@ -1039,7 +1043,7 @@
         </div>
     </div>
     {{-- columna derecha --}}
-    <div class="bg-borgoña-predeterminado  text-white w-3/12 flex flex-col h-screen">
+    <div class="bg-gris-insaturado  text-white w-3/12 flex flex-col h-screen">
 
             <div class="text-white p-4 h-20 ml-auto flex items-center relative rounded-sm" x-data="{ open: false, cambioUsuario: false, fichaje:false, carritosEsperaOpen: false, productosCarritoEspera: false, configuracion: false, 
             usuario: ''}"
@@ -1099,34 +1103,34 @@
                 </div>
             </div>
         </div>
-        <div class="flex-1 bg-white border-l-4 border-borgoña-predeterminado overflow-y-auto ">
-            <table class="table-auto table-list">
-                <thead class="bg-borgoña-predeterminado ">
+        <div class="flex-1 bg-white border-l-4 border-gris-insaturado overflow-y-auto p-2">
+            <table class="w-full table-auto table-list">
+                <thead class="bg-gris-predeterminado">
                     <tr>
-                        <th class="border-r border-black">CANT</th>
-                        <th class="col-span-2 border-black">NOMBRE</th>
-                        <th>SUB.TOTAL</th>
-                        <th class="ml-4 border-black">TOTAL</th>
-                        <th class="border-l border-black"></th>
+                        <th class="px-1 py-1 border-r border-black w-1/12 text-center">CANT.</th>
+                        <th class="px-1 py-1 col-span-2 border-black text-center">NOMBRE</th>
+                        <th class="px-1 py-1 w-1/12 text-center">SUB.TOTAL</th>
+                        <th class="px-1 py-1 ml-1 border-black w-1/12 text-center">TOTAL</th>
+                        <th class="px-1 py-1 border-l border-black w-1/12"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="articulo in carrito">
                         <tr class="bg-slate-200 text-black text-sm">
-                            <td class="border-r border-black" x-text="articulo.cantidad"></td>
-                            <td class="col-span-2 overflow-hidden" x-text="articulo.name"></td>
-                            <td class="ml-4" x-text="(articulo.precio).toFixed(2) + '€'"></td>
-                            <td x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
-                            <td class="border-l border-black" @click="dropCarrito(articulo.id)">
+                            <td class="px-1 py-1 border-r border-black w-1/12 text-center" x-text="articulo.cantidad"></td>
+                            <td class="px-1 py-1 col-span-2 text-center" x-text="articulo.name"></td>
+                            <td class="px-1 py-1 w-1/12 text-center" x-text="(articulo.precio).toFixed(2) + '€'"></td>
+                            <td class="px-1 py-1 w-1/12 text-center" x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
+                            <td class="px-1 py-1 border-l border-black w-1/12" @click="dropCarrito(articulo.id)">
                                 <i class="fa-solid fa-trash cursor-pointer text-red-600"></i>
                             </td>
                         </tr>
                     </template>
                 </tbody>
             </table>
-
         </div>
-        <div class="grid grid-cols-2 gap-4 pl-3 bg-borgoña-claro  rounded-tl-xl rounded-tr-xl">
+        
+        <div class="grid grid-cols-2 gap-4 pl-3 bg-gris-claro  rounded-tl-xl rounded-tr-xl">
             {{-- Columna de datos --}}
             <div>
                 <ul>
@@ -1146,7 +1150,7 @@
         </div>
 
         {{-- botones venta --}}
-        <div class="bg-borgoña-predeterminado  text-white p-1 ">
+        <div class="bg-gris-insaturado  text-white p-1 ">
             <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-0">
                 <button @click="deleteCarrito" class="m-1 flex-grow items-center boton boton-danger !p-4">
                     <i class="fa-solid fa-trash  cursor-pointer"></i>
@@ -1409,7 +1413,7 @@
                     <button @click="pulsarTecla('7')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">7</button>
                     <button @click="pulsarTecla('8')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">8</button>
                     <button @click="pulsarTecla('9')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">9</button>
-                    <button @click="pulsarTecla('cancel')" class="py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 w-full h-full"><i class="fa-solid fa-trash"></i></button>
+                    <button @click="pulsarTecla('cancel')" class="py-2 bg-rojo-claro text-white rounded-lg hover:bg-rojo-predeterminado transition duration-300 w-full h-full"><i class="fa-solid fa-trash"></i></button>
                     <button @click="pulsarTecla('b5')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 col-span-2">5.00€</button>
                     <button @click="pulsarTecla('4')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">4</button>
                     <button @click="pulsarTecla('5')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">5</button>
@@ -1419,7 +1423,7 @@
                     <button @click="pulsarTecla('1')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">1</button>
                     <button @click="pulsarTecla('2')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">2</button>
                     <button @click="pulsarTecla('3')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">3</button>
-                    <button @click="calcularCambio" class="py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 row-span-2 w-full h-full"><i class="fa-solid fa-arrow-turn-down transform rotate-90"></i></button>
+                    <button @click="calcularCambio" class="py-2 bg-verde-saturado text-white rounded-lg hover:bg-verde-oscuro transition duration-300 row-span-2 w-full h-full"><i class="fa-solid fa-arrow-turn-down transform rotate-90"></i></button>
                     <button @click="pulsarTecla('b20')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 col-span-2 w-full h-full">20.00€</button>
                     <button class="py-2 bg-gray-200 rounded-lg w-full h-full"></button>
                     <button @click="pulsarTecla('.')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 w-full h-full">.</button>
@@ -1427,8 +1431,9 @@
                     <button @click="pulsarTecla('b50')" class="py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-300 col-span-2 w-full h-full">50.00€</button>
                 </div>
                 <div class="flex justify-between mt-4" style="height: 55px">
-                    <button class="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 text-2xl" @click="showModal = false">CANCELAR</button>
-                    <button class="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 text-2xl" @click="$wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, usuario); deleteCarrito(); showModal = false;" :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0">PAGAR</button> 
+                    <button class="py-2 px-4 bg-rojo-claro text-white rounded-lg hover:bg-rojo-predeterminado transition duration-300 text-2xl" @click="showModal = false">CANCELAR</button>
+                    
+                    <button class="py-2 px-4 bg-verde-saturado text-white rounded-lg hover:bg-verde-oscuro transition duration-300 text-2xl" @click="$wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, usuario); deleteCarrito(); showModal = false;" :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0">PAGAR</button> 
                 </div>
             </div>
         
@@ -1457,149 +1462,98 @@
                     </select>
                 </div>
                 <div class="flex justify-between mt-16">
-                    <button class="py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300 text-2xl" @click="showModal = false">CANCELAR</button>
-                    <button class="py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-300 text-2xl">PAGAR</button>
+                    <button class="py-2 px-4 bg-rojo-claro text-white rounded-lg hover:bg-rojo-predeterminado transition duration-300 text-2xl" @click="showModal = false">CANCELAR</button>
+                    <button class="py-2 px-4 bg-verde-personalizado text-white rounded-lg hover:bg-verde-predeterminado transition duration-300 text-2xl">PAGAR</button>
                 </div>
             </div>
         </div>
         
-        {{-- Ventana Ticket --}}
-        <div class="">
-            <div class="bg-slate-100 p-8 rounded-lg flex ml-4 flex-col uppercase overflow-y-auto overflow-x-hidden"
-                style="width: 314px; height: 100vh;">
-                {{-- Cabecera --}}
-                {{-- Datos empresa --}}
-                <div class="flex flex-col items-center mb-3 text-sm">
-                    <img class="" src=""
-                        alt="Descripción de la imagen">
-                    <span ></span>
-                    <span ></span>
-                    <div>
-                        <span ></span>
-                        <span ></span>
-                        (<span ></span>)
+        <div class="bg-slate-100 p-8 rounded-lg flex ml-4 flex-col uppercase overflow-y-auto overflow-x-hidden" style="width: 345px; height: 100vh;">
+            <!-- Cabecera -->
+            <div class="mb-8 text-sm">
+                <div class="flex flex-col items-center mb-3">
+                    <img class="mb-2" src="url_de_la_imagen" alt="Descripción de la imagen">
+                    <div class="text-center">
+                        <span>Nombre de la empresa</span><br>
+                        <span>Dirección de la empresa</span><br>
+                        <span>Localidad, Código Postal, Provincia</span>
                     </div>
-                    <div>
-                        <span>Tlf . </span>
-                        <span ></span>
-                        <span>CIF/NIF: </span>
-                        <span ></span>
+                    <div class="mt-2">
+                        <span>Tlf . Teléfono de la empresa</span><br>
+                        <span>CIF/NIF: Número de identificación fiscal</span>
                     </div>
                 </div>
-                {{-- Fecha --}}
-                <div class="text-sm">
-                    <span class="font-bold">FACTURA SIMPLIFICADA</span>
+        
+                <!-- Fecha y tipo de factura -->
+                <div class="text-center">
+                    <span class="font-bold">FACTURA SIMPLIFICADA</span><br>
+                    <span>NF: Número de factura</span><br>
+                    <span>Fecha y hora de emisión de la factura</span>
+                </div>
+            </div>
+        
+            <!-- Detalles de la compra -->
+            <div class="flex-1 bg-whit mb-8">
+                <table class="w-full">
+                    <thead class="border-b border-black">
+                        <tr>
+                            <th class="text-left px-2 h-8">und</th>
+                            <th class="text-left px-2 h-8">NOMBRE</th>
+                            <th class="px-2 h-8">PRECIO</th>
+                            <th class="px-2 h-8">IMPORTE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí irían los datos de los artículos del carrito -->
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- Resumen de la compra -->
+            <div class="mb-8">
+                <table class="w-full border-b-4 text-sm">
+                    <thead>
+                        <tr>
+                            <th class="text-right">Imp</th>
+                            <th class="text-right">Base</th>
+                            <th class="text-right">Cuota</th>
+                            <th class="text-right">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí iría el resumen de impuestos y total -->
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- Información de pago y vendedor -->
+            <div class="border-t border-black text-sm">
+                <div class="w-full mb-4">
                     <div class="flex justify-between">
                         <div>
-                            <span>NF: </span>
-                            <span x-text="getNextRef"></span>
+                            <span>ENTREGADO Monto entregado</span><br>
+                            <span class="border-b-2 border-l-skin-primary">Cantidad entregada</span>
                         </div>
                         <div>
-                            <span
-                                x-text="fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})"></span>
-                            <span
-                                x-text="fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})"></span>
+                            <span>CAMBIO Cambio</span><br>
+                            <span class="border-b-2 border-l-skin-primary">Cantidad de cambio</span>
                         </div>
                     </div>
                 </div>
-                {{-- Datos compra --}}
-                <div class="">
-                    <div class="flex-1 bg-whit">
-                        <table class="w-full">
-                            <thead class="border-b border-black">
-                                <tr>
-                                    <th class="text-left px-2 h-5">und</th>
-                                    <th class="col-span-2 text-left px-2 h-5">NOMBRE</th>
-                                    <th class="px-2 h-5">PRECIO</th>
-                                    <th class="ml-4 px-2 h-5">IMPORTE</th>
-                                    <th class="px-2 h-5"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="articulo in carrito">
-                                
-                                    <tr class="text-black text-sm h-5">
-                                        <td class="text-right mr-2 px-2 h-5" x-text="articulo.cantidad"></td>
-                                        <td class="col-span-2 text-left flex overflow-hidden  h-5"
-                                            x-text="articulo.name">
-                                        </td>
-                                        <td class="ml-4 text-right px-2 h-5"
-                                            x-text="(articulo.precio).toFixed(2) + '€'">
-                                        </td>
-                                        <td class="text-right px-2 h-5"
-                                            x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-
+                <div>
+                    <div class="flex mb-2">
+                        <span>Num. Lin. Factura Número de líneas de factura</span>
                     </div>
-                </div>
-                <div class=" mt-3">
-                    <table class="w-full border-b-4 text-sm">
-                        <thead>
-                            <tr>
-                                <th class=" text-right">Imp</th>
-                                <th class=" text-right">Base</th>
-                                <th class=" text-right">Cuota</th>
-                                <th class=" text-right">TOTAL</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="(value, index) in tipoIVA()">
-                                <tr>
-
-                                    <td class=" text-right" x-text="index + '%'"></td>
-                                    <td class=" text-right" x-text="value.base.toFixed(2) + '€'"></td>
-                                    <td class=" text-right" x-text="value.cuota.toFixed(2) + '€'"></td>
-                                    <td class=" text-right" x-text="value.total.toFixed(2) + '€'"></td>
-                                </tr>
-                            </template>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td class="font-bold text-right border-t border-black text-base">TOTAL</td>
-                                <td class="font-bold text-right border-t border-black text-base"
-                                    x-text="(totalSinDesglosar).toFixed(2) + '€'"></td>
-                            </tr>
-                        </tbody>
-
-                    </table>
-
-
-                </div>
-                {{-- footer --}}
-                <div class="border-t border-black text-sm">
-                    <div class="w-full text-sm">
-                        <div class="flex flex-wrap justify-between items-start">
-                            <div>
-                                <span class="">ENTREGADO</span>
-                                <span class="border-b-2 border-l-skin-primary pb-2 ml-1"
-                                    x-text="'dineroEntregado' + '€'"></span>
-                            </div>
-                            <div>
-                                <span>CAMBIO</span>
-                                <span class="border-b-2 border-l-skin-primary pb-2 ml-1"
-                                    x-text="'cambio' + '€'"></span>
-                            </div>
-                        </div>
+                    <div class="flex">
+                        <span>Vendedor Nombre del vendedor</span>
                     </div>
-                    <div>
-                        <div class="flex mb-2">
-                            <span class="mr-2">Num. Lin. Factura</span>
-                            <span x-text="elementosCarrito()"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="mr-2">Vendedor</span>
-                            <span x-text="usuario"></span>
-                        </div>
-                        <div class="w-full mx-auto flex flex-col items-center justify-center">
-                            <span class="my-2">**** IMPUESTOS INCLUIDOS ****</span>
-                            <span class="my-2">GRACIAS POR SU COMPRA</span>
-                        </div>
+                    <div class="w-full mx-auto mt-4 text-center">
+                        <span class="block">**** IMPUESTOS INCLUIDOS ****</span>
+                        <span class="block">GRACIAS POR SU COMPRA</span>
                     </div>
                 </div>
             </div>
         </div>
+        
     </div>
 </div>

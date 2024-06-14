@@ -25,6 +25,31 @@ export default {
           insaturado: '#006609', // Tono menos saturado
           personalizado: '#00a326', // Tono personalizado
       },
+
+      rojo: {
+        claro: '#cc3333', // Tono más claro
+        predeterminado: '#800000', // Tono base
+        oscuro: '#660000', // Tono más oscuro
+        saturado: '#cc0000', // Tono más saturado
+        insaturado: '#990000', // Tono menos saturado
+        personalizado: '#b30000', // Tono personalizado
+      },
+      
+      blanco: {
+          predeterminado: '#ffffff', // Tono base
+          floral: '#F5F5DC', // Tono más suavizado
+      },
+
+      gris: {
+        claro: '#757575', // Tono más claro
+        predeterminado: '#4F4F4F', // Tono base
+        oscuro: '#333333', // Tono más oscuro
+        saturado: '#5F5F5F', // Tono más saturado
+        insaturado: '#404040', // Tono menos saturado
+        personalizado: '#444444', // Tono personalizado
+      },
+
+
     },
   },
   plugins: [],
