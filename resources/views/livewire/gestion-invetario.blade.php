@@ -453,6 +453,7 @@
                     <button class="boton" @click="
                         $wire.actualizarEmpleado(idEmpleado, nameEmpleado, emailEmpleado, passwordEmpleado,privilegiosEmpleado,imagenEmpleado,puestoEmpleado);
                         ventanaEditarEmpleado = false;">Guardar</button>
+                        <button @click="ventanaEditarEmpleado = false" class="boton">Cancelar</button>
                 </div>
             </div>
         </div>
