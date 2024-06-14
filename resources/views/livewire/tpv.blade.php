@@ -6,7 +6,7 @@
     showInicioCaja: false,
     showSeleccionCaja: true,
     showTpv: true,
-    showTR: false,
+    showCS: false,
     showArqueo: false,
     showVentas: false,
     showOperacionVenta: false,
@@ -17,10 +17,13 @@
     showNumericKeyboard : false,
     showSala : false,
     showCardOptions : false,
+    showUsuarioCarritoEspera: false,
     fecha: new Date(),
     barcode: '',
     search: '',
     searchCategory: '',
+    searchVenta: '',
+    searchArqueo: '',
     productos: @entangle('productos'),
     productosShow: null,
     categorias: @entangle('categorias'),
@@ -29,7 +32,8 @@
     factura: @entangle('factura'),
     getNextRef: @entangle('getNextRef'),
     arqueos: @entangle('arqueos'),
-    usuarios: @entangle('usuarios').defer,
+    usuarios: @entangle('usuarios'),
+    user: @entangle('user'),
     usuario: '',
     cajas: @entangle('cajas'),
     tarjeta_regalo: @entangle('tarjeta_regalo'),
@@ -40,12 +44,13 @@
     clonFacturas: @entangle('facturas'),
     pagos: @entangle('pagos'),
     terceros: @entangle('terceros'),
-    conf: @entangle('conf').defer,
     valores_fijos_TR: @entangle('valores_fijos_TR'),
     movimientos_arqueo: @entangle('movimientos_arqueo'),
     lineas_factura: @entangle('lineas_factura'),
     prodFiltrados: @entangle('prodFiltrados'),
     historialDev: @entangle('historialDev'),
+    user: @entangle('user'),
+    datosEmpresa: @entangle('datosEmpresa'),
     cajaSeleccionada: '',
     carrito: JSON.parse(localStorage.getItem('carrito')) || {},
     carritoEspera: JSON.parse(localStorage.getItem('carritoEspera')) || {},
@@ -63,6 +68,11 @@
     referenciaVenta: '',
     operacionVenta: '',
     mensaje: '',
+    metodoDePago: '',
+    contenidoDev: '', 
+    nombreVendedor: '',
+    mesa: '',
+    valorIVA: 0,
     stock: true,
     billetes: { '500': 0, '200': 0, '100': 0, '50': 0, '20': 0, '10': 0, '5': 0, '2': 0, '1': 0, '05': 0, '02': 0, '01': 0, '005': 0, '002': 0, '001': 0 },
     infoEmpresa() {
@@ -85,14 +95,11 @@
                 precio: this.productos[id].precio,
             }
         }
-        console.log(this.productos[id].categoria_id);
         this.calcularBase();
         localStorage.setItem('carrito', JSON.stringify(this.carrito));
     },
     productoExiste(codigo) {
         let producto_id = this.buscarPorCB(codigo);
-        console.log(this.lineas_factura);
-        console.log(producto_id);
         for (let linea of this.lineas_factura) {
             if (linea.producto_id === producto_id) {
                 return true;
@@ -126,14 +133,25 @@
         }
         this.calcularBase();
     },
-    guardarCarritoEnEspera() {
-        let id = `${this.fecha.getHours().toString().padStart(2, '0')}:
-                                ${this.fecha.getMinutes().toString().padStart(2, '0')}:
-                                ${this.fecha.getSeconds().toString().padStart(2, '0')}`;
+    guardarCarritoEnEspera(nombreVendedor, mesa) {
+        if (this.carritoEspera.length !== 12) {
+            this.carritoEspera = Array(12).fill({
+                productos: {},
+                vendedor: ''
+            });
+        }
 
-        // Guardar el carrito actual en carritoEspera con clave única
-        this.carritoEspera[id] = this.carrito;
+        // Encontrar el primer índice vacío para guardar el carrito
+        let index = this.carritoEspera.findIndex(item => !item.productos || Object.keys(item.productos).length === 0);
 
+        // Guardar el carrito actual en el primer índice vacío
+        if (index !== -1) {
+            this.carritoEspera[index] = {
+                productos: { ...this.carrito },
+                vendedor: nombreVendedor  // Sustituye por el nombre real del vendedor
+            };
+        }
+        
         // Guardar en localStorage
         localStorage.setItem('carritoEspera', JSON.stringify(this.carritoEspera));
 
@@ -141,8 +159,23 @@
         this.carrito = {};
         localStorage.setItem('carrito', JSON.stringify(this.carrito));
     },
+    cargarCarrito(){
+    
+        for (let id in this.carritoEspera[index].productos) {
+        let producto = this.carritoEspera[index].productos[id];
+        this.carrito[id] = {
+            id: producto.id,
+            name: producto.name,
+            precio: producto.precio,
+            cantidad: producto.cantidad
+        };
+    }
+
+    // Guardar en localStorage
+    localStorage.setItem('carritoEspera', JSON.stringify(this.carritoEspera));
+    localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Guardar también el carrito actual
+    },
     buscarPorNombre(){
-        console.log('this.search:', this.search, 'Tipo:', typeof this.search);
         let clientsWithOrders = Object.values(this.productos);
 
         const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -158,6 +191,32 @@
             clientsWithOrders = clientsWithOrders.filter((producto) => normalizeNumber(producto.categoria_id).includes(searchCategory))
         }
         
+        return clientsWithOrders;
+    },
+    buscarVenta(){
+        let clientsWithOrders = Object.values(this.facturas);
+
+        const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+        if(this.searchVenta){
+            let searchVenta = this.searchVenta
+
+            clientsWithOrders = clientsWithOrders.filter((factura) => normalizeNumber(factura.name).includes(searchVenta))
+        }
+        return clientsWithOrders;
+    },
+    buscarArqueo(){
+        let clientsWithOrders = Object.values(this.arqueos);
+
+        const normalize = (string) => string.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        const normalizeNumber = (string) => string.toString().trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+        if(this.searchArqueo){
+            let searchArqueo = this.searchArqueo
+
+            clientsWithOrders = clientsWithOrders.filter((arqueo) => normalizeNumber(arqueo.fecha).includes(searchArqueo))
+        }
         return clientsWithOrders;
     },
     dropCarrito(id) {
@@ -177,10 +236,7 @@
         localStorage.setItem('carrito', JSON.stringify(this.carrito));
     },
     selectProd(id) {
-        console.log('id de categoria de selectProd:', id, 'Tipo:', typeof id);
-        
         let idCadena = id.toString();
-        console.log('id de categoria de selectProd:', idCadena, 'Tipo:', typeof idCadena);
         
         this.searchCategory = idCadena;
     },
@@ -219,7 +275,6 @@
                 precioIVA += ((this.carrito[art].cantidad * this.carrito[art].precio) * (ivaQty * 0.01));
             }
         }
-        
         return precioIVA;
     },
     tipoIVA() {
@@ -232,7 +287,11 @@
             if (!IVA[cant_iva]) {
                 IVA[cant_iva] = { 'base': 0, 'cuota': 0, 'total': 0 };
             }
-            IVA[cant_iva]['cuota'] += parseFloat((this.carrito[art].cantidad * this.carrito[art].precio) * (this.iva[this.productos[art].iva_id].qty * 0.01));
+
+            let ivaQtyString = this.iva[this.productos[art].iva_id].qty;
+            let ivaQty = parseFloat(ivaQtyString.replace(',', '.'));
+
+            IVA[cant_iva]['cuota'] += parseFloat((this.carrito[art].cantidad * this.carrito[art].precio) * (ivaQty * 0.01));
             IVA[cant_iva]['base'] += parseFloat((this.carrito[art].cantidad * this.carrito[art].precio));
 
         }
@@ -247,15 +306,6 @@
             lineas++;
         }
         return lineas;
-    },
-    isUsuarioValido() {
-        return this.usuarios.some(usuario => usuario.nombre === this.usuario);
-    },
-    confirmarFormulario() {
-        if (this.cajaSeleccionada && this.isUsuarioValido()) {
-            // Aquí podrías agregar la lógica adicional antes de cerrar el contenedor
-            console.log('Formulario enviado');
-        }
     },
     crearNuevaTarjeta() {
         var saldoInicial;
@@ -293,7 +343,6 @@
                 }
             }
         }
-        console.log(facturasFiltradas);
         return facturasFiltradas;
     },
     PruebaObtenerVentasFiltradas() {
@@ -322,42 +371,50 @@
         }
         return facturaFiltrada;
     },
+    updateValorIVA(){
+        this.valorIVA = this.calcularIVA();
+    },
     imprimirDiv(divAImprimir){
-        let contentDiv = document.getElementById(divAImprimir).outerHTML;
-        let printWindow = window.open('', '', 'height: 500px; width: 700px');
+
+        let contentDiv = document.getElementById(divAImprimir);
+        contentDiv.children[0].style.width = '100%';
+        contentDiv.children[0].style.height = '100%';
+
+        contentDiv = contentDiv.outerHTML;
+        let ruta = window.location.host;
+
+        let printWindow = window.open('', '', 'height: 100%; width: 100%');
         printWindow.document.write(contentDiv);
         printWindow.document.close();
-        printWindow.print();
+        printWindow.addEventListener('load',()=> printWindow.print());
+        printWindow.close();
     }
 }" x-init="productosShow = Object.values(productos);
     calcularBase();
     totalSinDesglosar = calcularIVA() + totalCarrito;
     setInterval(() => fecha = new Date(), 1000);
     $watch('carrito', () => updateTotalSinDesglosar());
-    $watch('totalCarrito', () => updateTotalSinDesglosar());
-    console.log('facturas:', this.facturas, 'Tipo:', typeof this.facturas);
-    console.log('productos:', productos);
-    console.log('categorias:', categorias);
-    console.log('carrito:', carrito);">
+    $watch('carrito', () => updateValorIVA());
+    $watch('totalCarrito', () => updateTotalSinDesglosar());">
     {{-- columna izquierda --}}
     <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center h-full justify-between">
         <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = true; showTR = false; showArqueo = false; showVentas = false;">
+            @click=" showTpv = true; showCS = false; showArqueo = false; showVentas = false;">
             <i class="fa-solid fa-cash-register fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">TPV</p>
         </div>
         <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = false; showTR = false; showArqueo = false; showVentas = true;">
+            @click=" showTpv = false; showCS = false; showArqueo = false; showVentas = true;">
             <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Ventas</p>
         </div>
         <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = false; showTR = true; showArqueo = false; showVentas = false;">
+            @click=" showTpv = false; showCS = true; showArqueo = false; showVentas = false;">
             <i class="fa-solid fa-hand-holding-heart fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Sala</p>
         </div>
         <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = false; showTR = false; showArqueo = true; showVentas = false;">
+            @click=" showTpv = false; showCS = false; showArqueo = true; showVentas = false;">
             <i class="fa-solid fa-folder-open fa-3x px-4 pb-2 pt-4"></i>
             <p class="mx-2">Arqueo</p>
         </div>
@@ -373,9 +430,8 @@
     {{-- columna central --}}
     <div class="flex-1 flex flex-col w-8/12">
         {{-- navegador --}}
-        <div class="bg-gray-600 text-white p-4 h-20 flex items-center" x-data="{ init() { this.$nextTick(() => this.$refs.input.focus()) } }" x-init="init">
+        <div class="bg-gray-600 text-white p-4 h-20 flex items-center" >
             <i class="fa-solid fa-magnifying-glass fa-3x px-4 py-2 cursor-pointer"></i>
-           {{-- <i class="fa-solid fa-barcode fa-3x px-4 py-2 cursor-pointer"></i> --}}
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
         </div>
@@ -410,213 +466,18 @@
         </div>
 
 
-        {{-- tarjeta regalo --}}
-        <div x-show="showTR" class="flex overflow-x-auto">
+        {{-- Carrito Espera --}}
+        <div x-show="showCS" class="flex overflow-x-auto">
             <div class="flex flex-col w-full overflow-x-auto">
                 <div class="flex items-center justify-between m-2">
-                    <input x-model="codigoBusquedaTR" id="buscadorTR" name="buscadorTR" type="text"
-                        placeholder="Buscar por nº mesa" @input="tarjeta_regalo = obtenerTarjetasFiltradas()"
-                        class="border border-gray-400 rounded-md px-2 py-1 mr-2 w-1/4 ">
-                </div>
-
-                {{-- tabla tarjetas/vales --}}
-                <div class="flex overflow-x-auto">
-                    <table class="w-full rounded-lg">
-                        <thead>
-                            <tr class="text-white text-lg border-b-2 border-black bg-skin-primary">
-                                <th class="px-4 py-2" colspan="1">ID</th>
-                                <th class="px-4 py-2" colspan="1">Codigo</th>
-                                <th class="px-4 py-2" colspan="1">Cantidad Inicial</th>
-                                <th class="px-4 py-2" colspan="1">Saldo Actual</th>
-                                <th class="px-4 py-2" colspan="1">Estado</th>
-                                <th class="px-4 py-2" colspan="1">Fecha de Caducidad</th>
-                                <th class="px-4 py-2" colspan="1">Deshabilitar</th>
-                            </tr>
-                        </thead>
-                        <tbody x-show="!showVales">
-                            <template x-for="tarjeta in tarjeta_regalo">
-                                <template x-if="tarjeta.tipo == 'tarjeta'">
-                                    <tr class="border-b-2 border-black">
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.id"></td>
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.codigo"></td>
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.saldo_inicial"></td>
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.saldo"></td>
-                                        <td class="px-4 py-2 text-center"
-                                            @click=" idElemento = tarjeta.id; estado = Number(!tarjeta.estado); $wire.editarTarjetaRegalo(idElemento, estado).then(() => { tarjeta.estado = estado; });">
-                                            <span class="inline-block h-4 w-4 rounded-full"
-                                                :class="tarjeta.estado == 1 ? 'bg-green-500' : 'bg-red-500'"></span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center"
-                                            x-text="new Date(tarjeta.fecha_caducidad).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
-                                        </td>
-                                        <td class="px-4 py-2 text-center"
-                                            @click=" idElemento = tarjeta.id; estado = Number(!tarjeta.estado); $wire.editarTarjetaRegalo(idElemento, estado).then(() => { tarjeta.estado = estado; });">
-                                            <i
-                                                class="fa-regular fa-trash fa-2x px-4 pb-2 pt-4 text-red-600 cursor-pointer"></i>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </template>
-                        </tbody>
-                        <tbody x-show="showVales">
-                            <template x-for="tarjeta in tarjeta_regalo">
-                                <template x-if="tarjeta.tipo == 'vale'">
-                                    <tr class="border-b-2 border-black">
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.id"></td>
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.codigo"></td>
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.saldo_inicial"></td>
-                                        <td class="px-4 py-2 text-center" x-text="tarjeta.saldo"></td>
-                                        <td class="px-4 py-2 text-center"
-                                            @click=" idElemento = tarjeta.id; estado = Number(!tarjeta.estado); $wire.editarTarjetaRegalo(idElemento, estado).then(() => { tarjeta.estado = estado; });">
-                                            <span class="inline-block h-4 w-4 rounded-full"
-                                                :class="tarjeta.estado == 1 ? 'bg-green-500' : 'bg-red-500'"></span>
-                                        </td>
-                                        <td class="px-4 py-2 text-center"
-                                            x-text="new Date(tarjeta.fecha_caducidad).toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
-                                        </td>
-                                        <td class="px-4 py-2 text-center"
-                                            @click=" idElemento = tarjeta.id; estado = Number(!tarjeta.estado); $wire.editarTarjetaRegalo(idElemento, estado).then(() => { tarjeta.estado = estado; });">
-                                            <i
-                                                class="fa-regular fa-trash fa-2x px-4 pb-2 pt-4 text-red-600 cursor-pointer"></i>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Pestaña creacion tarjeta_regalo --}}
-                <div x-show="showCrearTarjeta"
-                    class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
-                    <div class="bg-white p-8 rounded-lg flex flex-col" style="height: 300px; width: 500px">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center space-x-4">
-                                <span class="uppercase text-xl font-bold">Tarjetas</span>
-                                <div class="relative inline-block w-14 align-middle select-none transition duration-200 ease-in mr-2"
-                                    style="margin-right: 11px">
-                                    <label class="switch">
-                                        <input type="checkbox" x-model="showVales">
-                                        <span class="slider round"></span>
-                                    </label>
-                                </div>
-                                <span class="uppercase text-xl font-bold">Vales</span>
+                    <div class="grid grid-cols-3 gap-4">
+                        <template x-for="(item, index) in Object.entries(carritoEspera)" :key="index">
+                            <div class="bg-gray-200 p-4 rounded-lg flex flex-col items-center justify-center"
+                            @click ="cargarCarrito()">
+                                <p class="text-lg font-semibold" x-text="'Mesa' + (index+1)"></p>
+                                <p class="mt-2">Vendedor: <span x-text="item[1].vendedor"></span></p>
                             </div>
-                            <div x-show="!showVales" class="uppercase mb-4 text-2xl font-bold">
-                                tarjetas regalo
-                            </div>
-                            <div x-show="showVales" class="uppercase mb-4 text-2xl font-bold">
-                                vales descuento
-                            </div>
-                        </div>
-
-
-                        {{-- valores CUALQUIER --}}
-                        <div
-                            class="flex items-center justify-between">
-                            {{-- creacion vales valores cualquiera --}}
-                            <div x-show="showVales" class="flex flex-row justify-between items-center p-4 w-full">
-                                <div class="flex flex-col mr-4">
-                                    <label for="codigo" class="block mr-2">Código:</label>
-                                    <input type="text" id="codigo" name="codigo" class="input"
-                                        placeholder="Ingrese el código" />
-
-                                    <label for="saldo" class="block mr-2">Saldo inicial:</label>
-                                    <input type="number" id="saldo" name="saldo" class="input"
-                                        placeholder="Ingrese el saldo inicial" />
-
-                                    <label for="fechaCaducidad" class="block mr-2">Fecha de caducidad:</label>
-                                    <input type="date" id="fechaCaducidad" name="fechaCaducidad" class="input"
-                                        x-ref="fechaCaducidad" value="{{ date('Y-m-d', strtotime('+1 year')) }}" />
-
-                                </div>
-
-                                <div class="flex flex-col items-center justify-center">
-                                    <button class="boton boton-success text-3xl py-3 px-5 mb-7 w-full"
-                                        @click="$wire.crearTarjetaRegalo(codigo, saldo.value, $refs.fechaCaducidad.value, 'vale'); showCrearTarjeta = false;">CREAR</button>
-                                    <button class="boton boton-danger text-3xl py-3 px-5 w-full"
-                                        @click="showCrearTarjeta = false">CANCELAR</button>
-                                </div>
-                            </div>
-                            {{-- creacion tarjetas valores cualquiera --}}
-                            <div x-show="!showVales" class="flex flex-row justify-between items-center p-4 w-full">
-                                <div class="flex flex-col mr-4">
-                                    <label for="codigo" class="block mr-2">Código:</label>
-                                    <input type="text" id="codigo" name="codigo" class="input"
-                                        placeholder="Ingrese el código" />
-
-                                    <label for="saldo" class="block mr-2">Saldo inicial:</label>
-                                    <input type="number" id="saldo" name="saldo" class="input"
-                                        placeholder="Ingrese el saldo inicial" />
-
-                                    <label for="fechaCaducidad" class="block mr-2">Fecha de caducidad:</label>
-                                    <input type="date" id="fechaCaducidad" name="fechaCaducidad" class="input"
-                                        x-ref="fechaCaducidad" value="{{ date('Y-m-d', strtotime('+1 year')) }}" />
-
-                                </div>
-
-                                <div class="flex flex-col items-center justify-center">
-                                    <button class="boton boton-success text-3xl py-3 px-5 mb-7 w-full"
-                                        @click="$wire.crearTarjetaRegalo(codigo, saldo.value, $refs.fechaCaducidad.value, 'tarjeta'); showCrearTarjeta = false;">CREAR</button>
-                                    <button class="boton boton-danger text-3xl py-3 px-5 w-full"
-                                        @click="showCrearTarjeta = false">CANCELAR</button>
-                                </div>
-                            </div>
-                            </div>
-                        {{-- valores FIJOS --}}
-                        <div
-                            class="flex items-center justify-between">
-                            {{-- creacion vales valores fijos --}}
-                            <div x-show="showVales" class="flex flex-row justify-between items-center p-4 w-full">
-                                <div class="flex flex-col mr-4">
-                                    <label for="codigo" class="block mr-2">Código:</label>
-                                    <input type="text" id="codigo" name="codigo" class="input"
-                                        placeholder="Ingrese el código" />
-
-                                    <label for="saldo" class="block mr-2">Saldo inicial:</label>
-                                    <input type="number" id="saldo" name="saldo" class="input"
-                                        placeholder="Ingrese el saldo inicial" />
-
-                                    <label for="fechaCaducidad" class="block mr-2">Fecha de caducidad:</label>
-                                    <input type="date" id="fechaCaducidad" name="fechaCaducidad" class="input"
-                                        x-ref="fechaCaducidad" value="{{ date('Y-m-d', strtotime('+1 year')) }}" />
-
-                                </div>
-
-                                <div class="flex flex-col items-center justify-center">
-                                    <button class="boton boton-success text-3xl py-3 px-5 mb-7 w-full"
-                                        @click="$wire.crearTarjetaRegalo(codigo.value, saldo.value, $refs.fechaCaducidad.value, 'vale'); showCrearTarjeta = false;">CREAR</button>
-                                    <button class="boton boton-danger text-3xl py-3 px-5 w-full"
-                                        @click="showCrearTarjeta = false">CANCELAR</button>
-                                </div>
-                            </div>
-                            {{-- creacion tarjetas valores fijos --}}
-                            <div x-show="!showVales" class="flex flex-row justify-between items-center p-4 w-full">
-                                <div class="flex flex-col mr-4">
-                                    <label for="codigo" class="block mr-2">Código:</label>
-                                    <input type="text" id="codigo" name="codigo" class="input"
-                                        placeholder="Ingrese el código" />
-
-                                    <label for="saldo" class="block mr-2">Saldo inicial:</label>
-                                    <select id="saldo" name="saldo" class="input">
-                                        <template x-for="(item, index) in valores_fijos_TR" :key="index">
-                                            <option x-bind:value="item.valor" x-text="item.valor"></option>
-                                        </template>
-                                    </select>
-
-                                    <label for="fechaCaducidad" class="block mr-2">Fecha de caducidad:</label>
-                                    <input type="date" id="fechaCaducidad" name="fechaCaducidad" class="input"
-                                        x-ref="fechaCaducidad" value="{{ date('Y-m-d', strtotime('+1 year')) }}" />
-
-                                </div>
-                                <div class="flex flex-col items-center justify-center">
-                                    <button class="boton boton-success text-3xl py-3 px-5 mb-7 w-full"
-                                        @click="$wire.crearTarjetaRegalo(codigo, saldo.value, $refs.fechaCaducidad.value, 'tarjeta'); showCrearTarjeta = false;">CREAR</button>
-                                    <button class="boton boton-danger text-3xl py-3 px-5 w-full"
-                                        @click="showCrearTarjeta = false">CANCELAR</button>
-                                </div>
-                            </div>
-                        </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -626,9 +487,8 @@
         <div x-show="showArqueo" x-data="{ saldoTotal: 0 }" class="flex overflow-x-auto" x-init="">
             <div class="flex flex-col w-full overflow-x-auto">
                 <div class="flex items-center justify-between m-2">
-                    <input x-model="codigoBusquedaArqueo" id="buscadorArqueo" name="buscadorArqueo" type="text"
-                        placeholder="Buscar por fecha" @input="obtenerTarjetasFiltradas;"
-                        class="border border-gray-400 rounded-md px-2 py-1 mr-2 w-1/4 ">
+                    <input id="navegador" name="navegador" type="text" x-model="searchArqueo"
+                    class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
                     
                 </div>
                 <table class="w-full">
@@ -645,8 +505,7 @@
                     </thead>
                     <tbody>
                         <template
-                            x-for="arqueo in Object.values(arqueos).sort((arqueo1, arqueo2) => arqueo1.fecha > arqueo2.fecha ).reverse()">
-
+                            x-for="arqueo in buscarArqueo().sort((arqueo1, arqueo2) => arqueo1.fecha > arqueo2.fecha ).reverse()">
                             <template x-if="arqueo.caja_id == cajaSeleccionada">
 
                                 <tr class="border-b-2 border-black">
@@ -671,7 +530,7 @@
                 </table>
             </div>
             {{-- Cierre de caja --}}
-            <div x-show="showComprobanteArqueo && conf.tpv_habilitar_arqueos == 1" x-data="{
+            <div x-show="showComprobanteArqueo" x-data="{
                 showArqueoCierre: true,
                 billetesCierre: { '500': 0, '200': 0, '100': 0, '50': 0, '20': 0, '10': 0, '5': 0, '2': 0, '1': 0, '05': 0, '02': 0, '01': 0, '005': 0, '002': 0, '001': 0 },
                 sumaBilletes: 0,
@@ -697,8 +556,8 @@
                         .reduce((acc, [billete, cantidad]) => acc + (valoresBilletes[billete] * cantidad), 0);
                     this.saldoInicialSiguiente = this.saldoEsperado;
                 },
-                enviarDatosArqueo(usuario, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) {
-                    $wire.crearArqueoCierre(usuario, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes);
+                enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) {
+                    $wire.crearArqueoCierre(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes);
                     showComprobanteArqueo = false;
                 },
                 incrementar(inputKey, increment) {
@@ -719,7 +578,7 @@
 
                     <div class="flex">
                         <div class="w-1/3 m-2">
-                            <span class="block" x-text="'Usuario: ' + usuario"></span>
+                            <span class="block" x-text="'Usuario: ' + user"></span>
                             <span class="block" x-text="'Caja: ' + cajaSeleccionada"></span>
                             <span class="block"
                                 x-text="'Fecha: ' + fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
@@ -806,10 +665,10 @@
                             @click=" VentanaRetiradaDinero = true; showArqueoCierre = false; "
                             :disabled="dineroRetirado > sumaBilletes && sumaBilletes == 0">CREAR</button>
 
-                        <button
+                            {{-- <button
                             class="boton boton-success ml-4 text-2xl"
-                            @click=" showArqueoCierre = false; enviarDatosArqueo(usuario, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes)"
-                            :disabled="dineroRetirado > sumaBilletes && sumaBilletes == 0">CREAR</button>
+                            @click=" showArqueoCierre = false; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes)"
+                            :disabled="dineroRetirado > sumaBilletes && sumaBilletes == 0">CREAR</button> --}}
                     </div>
                 </div>
                 <div x-data="{ mostrarTextarea: false, justificacion: '' }">
@@ -834,7 +693,7 @@
                         <label class="inline-block whitespace-nowrap">¿Deseas retirar dinero?</label>
                         <button @click=" retirar = true " class="mr-4 boton boton-success">Sí</button>
                         <button
-                            @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(usuario, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) "
+                            @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) "
                             class="boton boton-danger">No</button>
                     </div>
                     <div x-show="retirar">
@@ -884,7 +743,7 @@
                         </div>
                         <div class="mt-4">
                             <button
-                                @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(usuario, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) "
+                                @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) "
                                 class="boton">Completar operación</button>
                             <button @click=" retirar = false " class="boton boton-danger">Cancelar</button>
                         </div>
@@ -897,63 +756,44 @@
         <div x-show="showVentas" class="flex overflow-x-auto" x-data="{ocultar: false }">
             <div class="flex flex-col w-full overflow-x-auto">
                 <div class="flex items-center justify-between m-2">
-                    <input x-model="referenciaVenta" id="buscadorVenta" name="buscadorVenta" type="text"
-                        placeholder="Buscar por referencia" @input="facturas = obtenerVentasFiltradas()"
-                        class="border border-gray-400 rounded-md px-2 py-1 mr-2 w-1/4 ">
+                <input id="navegador" name="navegador" type="text" x-model="searchVenta"
+                    class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
                 </div>
                 <table class="w-full">
                     <thead class="bg-skin-primary uppercase">
                         <tr class="text-white text-lg border-b-2 border-black">
                             <th class="px-2 py-2 text-base" colspan="1">referencia</th>
                             <th class="px-2 py-2 text-base" colspan="1">tercero</th>
+                            <th class="px-2 py-2 text-base" colspan="1">fecha</th>
                             <th class="px-2 py-2 text-base" colspan="1">forma de pago</th>
                             <th class="px-2 py-2 text-base" colspan="1">base imponible</th>
                             <th class="px-2 py-2 text-base" colspan="1">total iva</th>
                             <th class="px-2 py-2 text-base" colspan="1">total</th>
                             <th class="px-2 py-2 text-base" colspan="1">imprimir factura</th>
-                            <th  class="px-2 py-2 text-base"
-                                colspan="1">
-                                devolución
-                            </th>
-                            <th class="px-2 py-2 text-base" colspan="1">
-                                cambio
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <template x-for="factura in facturas">
+                        <template
+                              x-for="factura in buscarVenta().sort((venta1, venta2) => venta1.fecha > venta2.fecha ).reverse()">
                             <tr class="border-b-2 border-black">
-                                <td class="px-2 py-2 text-center text-sm" x-text="factura.nombre "></td>
+                                <td class="px-2 py-2 text-center text-sm" x-text="factura.name "></td>
                                 <td class="px-2 py-2 text-center text-sm" x-text="terceros[factura.tercero_id].nombre">
                                 </td>
-                                <td class="px-2 py-2 text-center text-sm" x-text="pagos[factura.forma_pago_id].nombre">
-                                </td>
                                 <td class="px-2 py-2 text-center text-sm"
-                                    x-text="factura.fecha.split('-').reverse().join('/')"></td>
-                                <td class="px-2 py-2 text-center text-sm" x-text="factura.base_imp.toFixed(2) + '€'">
+                                    x-text="factura.fecha.split('-').reverse().join('/')">
                                 </td>
-                                <td class="px-2 py-2 text-center text-sm" x-text="factura.total_iva.toFixed(2) + '€'">
+                                <td class="px-2 py-2 text-center text-sm" x-text="pagos[factura.forma_pago_id].name">
                                 </td>
-                                <td class="px-2 py-2 text-center text-sm" x-text="factura.total.toFixed(2) + '€'">
+                                <td class="px-2 py-2 text-center text-sm" x-text="factura.base_imp + '€'">
+                                </td>
+                                <td class="px-2 py-2 text-center text-sm" x-text="factura.total_iva + '€'">
+                                </td>
+                                <td class="px-2 py-2 text-center text-sm" x-text="factura.total  + '€'">
                                 </td>
                                 <td class="px-2 py-2 text-center">
                                     <!-- Contenido de imprimir factura -->
                                     <button class="boton" @click="">
                                         <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-2"></i>
-                                    </button>
-                                </td>
-                                <td  class="px-2 py-2 text-center">
-                                    <!-- Contenido de devolución -->
-                                    <button class="boton"
-                                        @click=" showOperacionVenta = true; ocultar= false; $wire.filtrarLineasFactura(factura.id); $wire.getFacturaDevolucion(factura.id); $wire.getHistorialDev(factura.id); operacionVenta= 'devolución';">
-                                        <i class="fa-solid fa-tags fa-3x px-3 pb-2 pt-2"></i>
-                                    </button>
-                                </td>
-                                <td  class="px-2 py-2 text-center">
-                                    <!-- Contenido de cambio -->
-                                    <button class="boton"
-                                        @click=" showOperacionVenta = true; ocultar= false; $wire.filtrarLineasFactura(factura.id); $wire.getFacturaDevolucion(factura.id); $wire.getHistorialDev(factura.id); operacionVenta= 'cambio';">
-                                        <i class="fa-solid fa-arrow-right-arrow-left fa-3x px-3 pb-2 pt-2"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -1145,26 +985,62 @@
         </div>
 
         {{-- botones venta --}}
-        <div class="bg-gray-600 text-white p-1 ">
+        <div class="bg-gray-600 text-white p-1">
             <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-0">
                 <button @click="deleteCarrito" class="m-1 flex-grow items-center boton boton-danger !p-4">
-                    <i class="fa-solid fa-trash  cursor-pointer"></i>
+                    <i class="fa-solid fa-trash cursor-pointer"></i>
                 </button>
-                <button @click="guardarCarritoEnEspera" class="m-1 flex-grow items-center boton">
-                    <i class="fa-solid fa-floppy-disk  py-2 cursor-pointer"></i>
+                <button @click="showUsuarioCarritoEspera = true;" 
+                        class="m-1 flex-grow items-center boton">
+                    <i class="fa-solid fa-floppy-disk py-2 cursor-pointer"></i>
                 </button>
-                <button @click="showModal = true; calcularBase();"
-                    class="md:col-span-2 m-1 flex-grow items-center boton boton-success">
+                <button @click="showModal = true; showUsuarioCarritoEspera = false;" 
+                        class="md:col-span-2 m-1 flex-grow items-center boton boton-success">
                     <span class="hidden md:inline">VENDER</span>
-                    <i class="fa-solid fa-cart-shopping inline md:hidden" @click="showModal = true"; calcularCambio();></i>
+                    <i class="fa-solid fa-cart-shopping inline md:hidden"></i>
                 </button>
             </div>
         </div>
 
+        <div x-show="showUsuarioCarritoEspera"
+         class="absolute bg-white text-black p-4 rounded shadow-lg w-48 text-lg mt-4 right-0">
+        <input type="text" x-model="nombreVendedor" placeholder="Nombre del vendedor"
+               class="p-2 border border-gray-300 rounded w-100">
+        <button @click="guardarCarritoEnEspera(nombreVendedor, mesa); showUsuarioCarritoEspera = false;"
+                class="mt-2 boton boton-success text-sm px-4 py-2 rounded-md">Guardar</button>
+    </div>
+
+
     </div>
 
     {{-- ventana inicio caja y arqueo --}}
-
+    <div id="{{ uniqid() }}" x-show="showSeleccionCaja" x-data="{
+            sacarDatosInicioArqueo(cajaSeleccionada) {
+                $wire.comprobarArqueo(cajaSeleccionada).then(result => showInicioCaja = result);
+                $wire.valorSaldoIncial(cajaSeleccionada);
+                showSeleccionCaja = false;
+                esVisible = true;
+            }
+        }"
+        class="flex gap-4 fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 justify-center items-center">
+        <div class="bg-white p-8 rounded-lg flex flex-col">
+            <div class="w-full">
+                <label for="usuario">Usuario:</label>
+                <span x-text="user"></span>
+            </div>
+            <div class="w-full">
+                <label for="caja">Caja:</label>
+                <select x-model="cajaSeleccionada" class="w-full" id="caja" name="caja">
+                    <option value="" disabled selected>Selecciona una caja</option>
+                    <template x-for="caja in cajas" :key="caja.id">
+                        <option x-bind:value="caja.id" x-text="caja.name"></option>
+                    </template>
+                </select>
+            </div>
+            <button type="button" class="boton mt-4" :disabled="!cajaSeleccionada"
+                    @click="sacarDatosInicioArqueo(cajaSeleccionada); $wire.valorSaldoIncial(cajaSeleccionada); $wire.valorBilletes(cajaSeleccionada).then(result => { billetes = result; });">Aceptar</button>
+        </div>
+    </div>
     <div id="{{ uniqid() }}" x-show="esVisible && !showInicioCaja"
         x-data="{
             sumaBilletes: 0,
@@ -1189,8 +1065,8 @@
                 return this.sumaBilletes = Object.entries(billetes)
                     .reduce((acc, [billete, cantidad]) => acc + (valoresBilletes[billete] * cantidad), 0);
             },
-            enviarDatosYCerrar(usuario, cajaSeleccionada, billetes) {
-                $wire.crearArqueoInicio(usuario, cajaSeleccionada, billetes);
+            enviarDatosYCerrar(cajaSeleccionada, billetes) {
+                $wire.crearArqueoInicio(cajaSeleccionada, billetes);
                 showInicioCaja = false;
                 esVisible = false;
             },
@@ -1209,16 +1085,15 @@
             }
         }"
         class="flex gap-4 fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 justify-center items-center transition-all duration-500"
-        x-init="calcularSumaBilletes();
-        console.log(usuario);"
-        @input=" sumaBilletes = calcularSumaBilletes(); console.log(sumaBilletes, calcularSumaBilletes()) ">
+        x-init="calcularSumaBilletes();"
+        @input=" sumaBilletes = calcularSumaBilletes();">
         <div class="bg-white p-8 rounded-lg flex flex-col">
 
             <div class="flex">
                 <div class="w-1/3 m-2">
                     <i class="fa-solid fa-chevron-left fa-3x px-4 pb-2 pt-4 mb-3"
                         @click=" esVisible=false; showSeleccionCaja= true; $wire.set('billetes', true);"></i>
-                    <span class="block" x-text="'Usuario: ' + usuario"></span>
+                    <span class="block" x-text="'Usuario: ' + user"></span>
                     <span class="block" x-text="'Caja: ' + cajaSeleccionada"></span>
                     <span class="block"
                         x-text="'Fecha: ' + fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
@@ -1285,7 +1160,7 @@
             </div>
             <div class="">
                 <button class="boton boton-success ml-4"
-                    @click=" enviarDatosYCerrar(usuario, cajaSeleccionada, billetes); ";
+                    @click=" enviarDatosYCerrar(cajaSeleccionada, billetes); ";
                     :disabled="saldoInicialNumerico() !== sumaBilletes">Crear Arqueo de hoy</button>
             </div>
         </div>
@@ -1299,7 +1174,6 @@
             showSala: false,
             cambio: '',
             dineroEntregado: '',
-            valorIVA: calcularIVA(),
             //ultimaFactura: factura[factura.length - 1],
             calcularCambio(){
                 const total = totalCarrito + calcularIVA();
@@ -1366,15 +1240,21 @@
                         <!-- Botones para seleccionar método de pago -->
                         <div>
                             <button
-                                @click=" showNumericKeyboard = true;"
+                                @click=" dineroEntregado = 0;
+                                showNumericKeyboard = true;
+                                showCardOptions = false; 
+                                metodoDePago = 'efectivo';"
                                 class="relative border-b-2 border-black">
                                 Efectivo
                             </button>
                         </div>
                         <div>
                             <button
-                                @click=" showNumericKeyboard = false;
-                                showSala = false;"
+                                @click=" dineroEntregado = totalSinDesglosar;
+                                cambio = 0;
+                                showNumericKeyboard = false;
+                                showCardOptions = true;
+                                metodoDePago = 'tarjeta';"
                                 class="relative border-b-2 border-black">
                                 Tarjeta
                             </button>
@@ -1436,7 +1316,7 @@
                 <div class="flex justify-between " style="height: 55px">
                     <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
                     <button class="boton boton-success text-2xl"
-                        @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, usuario); deleteCarrito(); showModal = false;"
+                        @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;"
                         :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0" >PAGAR</button> 
                 </div>
             </div>
@@ -1464,31 +1344,31 @@
 
                 <div class="flex justify-between mt-16">
                     <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
-                    <button class="boton boton-success text-2xl">PAGAR</button>
+                    <button class="boton boton-success text-2xl" 
+                    @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;">
+                    PAGAR</button>
                 </div>
             </div>
         </div>
         {{-- Ventana Ticket --}}
-        <div class="">
+        <div id="contenidoAImprimir" class="contenidoDev">
             <div class="bg-slate-100 p-8 rounded-lg flex ml-4 flex-col uppercase overflow-y-auto overflow-x-hidden"
                 style="width: 314px; height: 100vh;">
                 {{-- Cabecera --}}
                 {{-- Datos empresa --}}
                 <div class="flex flex-col items-center mb-3 text-sm">
-                    <img class="" src=""
-                        alt="Descripción de la imagen">
-                    <span ></span>
-                    <span ></span>
+                    <span x-text="datosEmpresa.nombre"></span>
+                    <span x-text="datosEmpresa.direccion"></span>
                     <div>
-                        <span ></span>
-                        <span ></span>
-                        (<span ></span>)
+                        <span x-text="datosEmpresa.cod_postal"></span>
+                        <span x-text="datosEmpresa.ciudad + ' '"></span>
+                        (<span x-text="datosEmpresa.provincia"></span>)
                     </div>
                     <div>
                         <span>Tlf . </span>
-                        <span ></span>
+                        <span x-text="datosEmpresa.telefono"></span>
                         <span>CIF/NIF: </span>
-                        <span ></span>
+                        <span x-text="datosEmpresa.nif"></span>
                     </div>
                 </div>
                 {{-- Fecha --}}
@@ -1580,12 +1460,12 @@
                             <div>
                                 <span class="">ENTREGADO</span>
                                 <span class="border-b-2 border-l-skin-primary pb-2 ml-1"
-                                    x-text="'dineroEntregado' + '€'"></span>
+                                    x-text="dineroEntregado + '€'"></span>
                             </div>
                             <div>
                                 <span>CAMBIO</span>
                                 <span class="border-b-2 border-l-skin-primary pb-2 ml-1"
-                                    x-text="'cambio' + '€'"></span>
+                                    x-text="cambio + '€'"></span>
                             </div>
                         </div>
                     </div>
@@ -1596,7 +1476,7 @@
                         </div>
                         <div class="flex">
                             <span class="mr-2">Vendedor</span>
-                            <span x-text="usuario"></span>
+                            <span x-text="user"></span>
                         </div>
                         <div class="w-full mx-auto flex flex-col items-center justify-center">
                             <span class="my-2">**** IMPUESTOS INCLUIDOS ****</span>

@@ -13,9 +13,17 @@ class Arqueo extends Model
     use HasFactory;
 
     protected $fillable = [
+        'fecha',
+        'saldo_inicial',
+        'saldo_efectivo',
         'saldo_tarjeta',
-        'caja_id',
         'saldo_final',
+        'saldo_total',
+        'caja_id',
+    ];
+
+    protected $dates = [
+        'fecha',
     ];
 
     // Relación con Caja
