@@ -26,6 +26,10 @@ class Fichar extends Component
 
         $this->hora_inicio = $user->hora_inicio;
     }
+    public static function getUserName()
+    {
+        return auth()->user()->name;
+    }
 
     public function desfichar()
     {
