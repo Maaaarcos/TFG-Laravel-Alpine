@@ -42,6 +42,14 @@ class GestionInvetario extends Component
     public $puesto_empresa;
     public $imagen_empleado;
 
+
+    public $cajaName;
+
+
+    protected $rulesCaja =[
+        'cajaName' => 'required|string|max:255',
+    ];
+
     protected $rules = [
         'nombre' => 'required|string',
         'precio' => 'required|numeric',
@@ -73,6 +81,11 @@ class GestionInvetario extends Component
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
         $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
         $this->user = User::select('id', 'name', 'email', 'puesto_empresa', 'privilegios', 'password', 'imagen_url')->get()->keyBy('id')->toArray();
+    }
+
+    public function clearSessionMessage()
+    {
+        session()->forget(['messages.error', 'messages.success']);
     }
 
     public function crearProducto()
@@ -228,8 +241,9 @@ private function getCustomErrorMessage($field, $message)
     public function crearIva($qty)
     {
         try {
-            Iva::create(['qty' => $qty]);
+            Iva::create(['qty' => $this->$qty]);
             $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
+            $this->reset('qty');
             session()->flash('message', 'IVA creado correctamente');
         } catch (\Illuminate\Database\QueryException $e) {
             session()->flash('error', 'Hubo un problema al crear el IVA. Por favor, inténtelo de nuevo más tarde.');
@@ -238,18 +252,21 @@ private function getCustomErrorMessage($field, $message)
         }
     }
     
-    public function crearCaja($name)
-    {
-        try {
-            Caja::create(['name' => $name]);
-            $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
-            session()->flash('message', 'Caja creada correctamente');
-        } catch (\Illuminate\Database\QueryException $e) {
-            session()->flash('error', 'Hubo un problema al crear la caja. Por favor, inténtelo de nuevo más tarde.');
-        } catch (\Exception $e) {
-            session()->flash('error', 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.');
-        }
+    public function crearCaja()
+{
+    $this->validate($this->rulesCaja);
+
+    try {
+        Caja::create(['name' => $this->cajaName]);
+        $this->reset('cajaName');
+        $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
+        session()->flash('message', 'Caja creada correctamente');
+    } catch (\Illuminate\Database\QueryException $e) {
+        session()->flash('error', 'Hubo un problema al crear la caja. Por favor, inténtelo de nuevo más tarde.');
+    } catch (\Exception $e) {
+        session()->flash('error', 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.');
     }
+}
     
 
     public function actualizarEmpleado($id, $name, $email, $password, $privilegios, $imagen_url = null,$puesto_empresa)
@@ -406,7 +423,11 @@ private function getCustomErrorMessage($field, $message)
                 session()->flash('error', 'Empleado no encontrado.');
             }
     
-            $this->user = User::select('id', 'name', 'email', 'password', 'privilegios', 'imagen_url', 'puesto_empresa')->get()->keyBy('id')->toArray();
+            // Actualizar la lista de usuarios después de eliminar el empleado
+            $this->user = User::select('id', 'name', 'email', 'password', 'privilegios', 'imagen_url', 'puesto_empresa')
+                ->get()
+                ->keyBy('id')
+                ->toArray();
         } catch (\Illuminate\Database\QueryException $e) {
             session()->flash('error', 'Hubo un problema al eliminar el empleado. Por favor, inténtelo de nuevo más tarde.');
         } catch (\Exception $e) {
@@ -414,30 +435,35 @@ private function getCustomErrorMessage($field, $message)
         }
     }
     
-
-public function dropProducto($id)
-{
-    try {
-        $producto = Producto::find($id);
-        if ($producto) {
-            $producto->delete();
-            session()->push('messages.success', 'Producto eliminado correctamente');
-        } else {
-            session()->push('messages.error', 'Producto no encontrado.');
+    
+    public function dropProducto($id)
+    {
+        try {
+            $producto = Producto::find($id);
+            if ($producto) {
+                $producto->delete();
+                session()->flash('message', 'Producto eliminado correctamente');
+                session()->flash('message_type', 'success');
+            } else {
+                session()->flash('message', 'Producto no encontrado.');
+                session()->flash('message_type', 'error');
+            }
+    
+            // Actualizar la lista de productos después de la eliminación
+            $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')
+                ->with('categoria')
+                ->get()
+                ->keyBy('id')
+                ->toArray();
+        } catch (\Illuminate\Database\QueryException $e) {
+            session()->flash('message', 'Hubo un problema al eliminar el producto. Por favor, inténtelo de nuevo más tarde.');
+            session()->flash('message_type', 'error');
+        } catch (\Exception $e) {
+            session()->flash('message', 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.');
+            session()->flash('message_type', 'error');
         }
-
-        // Actualizar la lista de productos después de la eliminación
-        $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')
-            ->with('categoria')
-            ->get()
-            ->keyBy('id')
-            ->toArray();
-    } catch (\Illuminate\Database\QueryException $e) {
-        session()->push('messages.error', 'Hubo un problema al eliminar el producto. Por favor, inténtelo de nuevo más tarde.');
-    } catch (\Exception $e) {
-        session()->push('messages.error', 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.');
     }
-}
+    
 
     
 public function dropCategoria($id)

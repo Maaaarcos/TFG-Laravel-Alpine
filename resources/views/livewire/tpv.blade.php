@@ -900,7 +900,10 @@
                 <div x-show="fichaje" class="absolute bg-white text-black p-4 rounded shadow-lg w-48"
                     style="top: 0; right: calc(100% + 10px);">
                     @livewire('Fichar')
-                </div>     
+                </div>
+                @if(Auth::user()->isAdmin())
+                <a href="{{ route('gestion-inventario') }}" class="boton">Administración</a>
+                @endif
                 <p class="cursor-pointer mt-3 mb-2 text-red-500"
                     @click=" open = false; cambioUsuario = false; carritosEsperaOpen= false; ">Cerrar</p>
                 <div x-show="cambioUsuario" class="absolute bg-white text-black p-4 rounded shadow-lg w-48"

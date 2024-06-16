@@ -1,6 +1,6 @@
-@if(session('message'))
+ @if(session('message'))
     <div x-data="{ isVisible: true }"
-         x-init="setTimeout(() => isVisible = false, 5000)"
+         x-init="setTimeout(() => isVisible = false, 5000); setTimeout(() => { isVisible = false; $wire.clearSessionMessage() }, 5500)"
          x-show.transition.duration.1000ms="isVisible"
          class="rounded-md p-4 mt-2 mb-4 {{ session('message_type') == 'success' ? 'bg-green-50' : 'bg-red-50' }}"
     >
@@ -27,4 +27,4 @@
             </div>
         </div>
     </div>
-@endif
+@endif 

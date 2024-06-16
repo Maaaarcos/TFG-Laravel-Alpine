@@ -570,27 +570,24 @@
             </div>
         </div>
         {{-- VENTANA NUEVA CAJA --}}
-        <div x-show="ventanaNuevaCaja" x-data="{
-            nombre: '',
-            imagen: ''}" 
-            class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
-            <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                    Nueva Caja
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Nombre*</label>
-                        <input type="text" id="nombre" name="nombre" x-model="nombre" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+        <div x-show="ventanaNuevaCaja"
+                class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                <div class="bg-white p-8 rounded-lg flex flex-col">
+                    <div class="uppercase text-xl font-bold mb-4">
+                        Nueva Caja
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nombre*</label>
+                            <input type="text" x-model="$wire.cajaName" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="boton" @click="$wire.crearCaja(); ventanaNuevaCaja = false;">Guardar</button>
                     </div>
                 </div>
-                <div class="flex justify-end">
-                    <button class="boton" @click="
-                        $wire.crearCaja(nombre, imagen);
-                        ventanaNuevaCaja = false;">Guardar</button>
-                </div>
-            </div>
-        </div>
+         </div>
+        
     </div>
     {{-- SECCION CATEGORIA --}}
     <div x-show="showCategorias">

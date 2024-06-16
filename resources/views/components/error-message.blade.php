@@ -1,7 +1,7 @@
 @if(session('messages.error'))
     @foreach(session('messages.error') as $message)
         <div x-data="{ isVisible: true }"
-             x-init="setTimeout(() => isVisible = false, 5000); $nextTick(() => {{ session()->forget('messages.error') }})"
+             x-init="setTimeout(() => isVisible = false, 5000); { isVisible = false; {{ session()->forget('messages.error') }} }, 5000)"
              x-show.transition.duration.1000ms="isVisible"
              class="rounded-md bg-red-50 p-4 mt-2 mb-4"
         >
