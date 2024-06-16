@@ -14,8 +14,6 @@ use App\Models\Caja;
 use App\Models\User;
 use App\Models\ArqueoMove;
 use App\Models\DatosEmpresa;
-//use App\Models\FacturacionRel;
-//use App\Models\FacturacionLineasRel;
 use App\Models\FacVentaLinea;
 use App\Models\View;
 use Illuminate\Support\Facades\Session;
@@ -49,28 +47,21 @@ class Tpv extends Component
     public $cajas = [];
     public $movimientos_arqueo = [];
     public $arqueoDisponible;
-    public $tarjeta_regalo = [];
     public $SaldoIncial;
-    public $id_caja;
-    public $nuevoArqueo;
     public $selectCaja;
     public $caja;
     public $cajaSeleccionada;
     public $saldoInicial;
-    public $saldoTR = 0;
+    public $saldoEsperado;
     public $listadoFacturas = [];
     public $billetes = [];
-    public $saldoEsperado = 0;
     public $pagosEfectivo = 0;
     public $pagosTarjeta = 0;
-    public $conf = [];
-    public $valores_fijos_TR = [];
     public $lineas_factura = [];
-    public $prodFiltrados = [];
-    public $historialDev = [];
-    public $paises = [];
-    public $provincias = [];
     public $user;
+    public $sumaTotalTarjeta = 0;
+    public $sumaTotalEfectivo = 0;
+    public $saldo_inicialDS = 0;
 
     protected $listeners = ['cajaSeleccionada' => 'selectCaja'];
 
@@ -80,8 +71,6 @@ class Tpv extends Component
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
         $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
-
-        //$this->terceros = Tercero::select('id', 'nombre)->get()->keyBy('id')->toArray();
         $this->terceros = Tercero::select('id', 'nombre')->get()->keyBy('id')->toArray();
         $this->pagos = FormasPago::select('id', 'name')->get()->keyBy('id')->toArray();
         $this->datosEmpresa = DatosEmpresa::select('id', 'tercero_id', 'nombre', 'direccion', 'provincia', 'telefono', 'email', 'ruc', 'tipo_empresa', 'actividad_economica', 'ciudad', 'codigo_postal', 'nif')->first()->toArray();
@@ -92,25 +81,9 @@ class Tpv extends Component
         $this->cajas = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
         $this->user = Fichar::getUserName();
 
-        //dd($this->productos);
-        //dd($this->categorias);
-        //dd($this->datosEmpresa);
-
         $this->obtenerSiguienteNumeroFactura();
-        
-
-        //$this->selectCaja = $this->selectCaja($this->listeners);
-
-        $terceroAnonimo = collect($this->terceros)->firstWhere('name', 'Anonimo');
-        if ($terceroAnonimo) {
-            $this->terceroSeleccionado = $terceroAnonimo['id'];
-        }
-
-        $formaPago = collect($this->pagos)->first();
-        if ($formaPago) {
-            $this->formaPagoSeleccionada = $formaPago['id'];
-        }
     }
+
 
     public function obtenerSiguienteNumeroFactura()
     {
@@ -130,6 +103,97 @@ class Tpv extends Component
         $this->getNextRef = $prefix . str_pad($sequence, 4, '0', STR_PAD_LEFT);
         
     }
+    
+
+    public function updateSumaTotalEfectivo($caja_id)
+    {
+        $fecha_actual = now()->format('Y-m-d');
+
+        // Obtener la suma total de ventas pagadas en efectivo para la fecha y caja especificadas
+        $sumaTotalEfectivo = FacVenta::whereDate('fecha', $fecha_actual)
+                                    ->where('caja_id', $caja_id)
+                                    ->where('forma_pago_id', 1) // ID 1 para efectivo
+                                    ->sum('total');
+
+        // Actualizar el registro de arqueo existente
+        $arqueoExistente = Arqueo::where('fecha', $fecha_actual)
+                                ->where('caja_id', $caja_id)
+                                ->first();
+
+        if ($arqueoExistente) {
+            $arqueoExistente->update([
+                'saldo_efectivo' => $sumaTotalEfectivo,
+                'saldo_total' => $arqueoExistente->saldo_tarjeta + $sumaTotalEfectivo,
+            ]);
+        }
+        $this->sumaTotalEfectivo = $sumaTotalEfectivo;
+    }
+
+
+    public function updateSumaTotalTarjeta($caja_id)
+    {
+        $fecha_actual = now()->format('Y-m-d');
+
+        // Obtener la suma total de ventas pagadas con tarjeta para la fecha y caja especificadas
+        $sumaTotalTarjeta = FacVenta::whereDate('fecha', $fecha_actual)
+                                    ->where('caja_id', $caja_id)
+                                    ->where('forma_pago_id', 2) // ID 2 para tarjeta
+                                    ->sum('total');
+
+        // Actualizar el registro de arqueo existente
+        $arqueoExistente = Arqueo::where('fecha', $fecha_actual)
+                                ->where('caja_id', $caja_id)
+                                ->first();
+
+        if ($arqueoExistente) {
+            $arqueoExistente->update([
+                'saldo_tarjeta' => $sumaTotalTarjeta,
+                'saldo_total' => $arqueoExistente->saldo_efectivo + $sumaTotalTarjeta, 
+            ]);
+        }
+        $this->sumaTotalTarjeta = $sumaTotalTarjeta;
+    }
+
+
+    public function updateTotalesArqueo($caja_id)
+    {
+        $fecha_actual = now()->format('Y-m-d');
+
+        // Actualizar el registro de arqueo existente
+        $arqueoExistente = Arqueo::where('fecha', $fecha_actual)
+                                ->where('caja_id', $caja_id)
+                                ->first();
+
+                //dd($arqueoExistente->saldo_efectivo, $this->saldoInicial);
+        if ($arqueoExistente) {
+            // Actualizar el valor de saldo_final 
+            $arqueoExistente->update([
+                'saldo_final' => $arqueoExistente->saldo_efectivo + $this->saldoInicial,
+            ]);
+        }
+        $this->saldoEsperado = $arqueoExistente->saldo_efectivo + $this->saldoInicial;
+    
+    }
+
+
+    public function cierreCajaAndUpdate($caja_id, $sumaBilletes){
+        $fecha_actual = now()->format('Y-m-d');
+
+        // Actualizar el registro de arqueo existente
+        $arqueoExistente = Arqueo::where('fecha', $fecha_actual)
+                                ->where('caja_id', $caja_id)
+                                ->first();
+        //dd($fecha_actual, $caja_id, $sumaTotalTarjeta, $arqueoExistente);
+
+        if ($arqueoExistente) {
+            // Actualizar el valor de saldo_final para que sea igual a saldo_total
+            $arqueoExistente->update([
+                'saldo_final' => $sumaBilletes,
+            ]);
+        }
+    }
+
+
     public function listarFacturas()
     {
         $facturas = FacVenta::select('caja_id', date('Y-m-d'))
@@ -138,6 +202,7 @@ class Tpv extends Component
 
         $this->listadoFacturas = $facturas;
     }
+
 
     public function selectCaja($caja)
     {
@@ -156,18 +221,15 @@ class Tpv extends Component
             ->keyBy('id')
             ->toArray();
     }
+
+
     //saber que lineas necesito para hacer la factura
     public function filtrarLineasFactura($objectId)
     {
         $productosFiltrados = FacVentaLinea::where('object_id', $objectId)->get()->toArray();
         $this->lineas_factura = $productosFiltrados;
     }
-    //saber a que factura voy a hacerle la devolucion
-    public function getFacturaDevolucion($objectId)
-    {
-        $productosFiltrados = FacVenta::where('id', $objectId)->get()->toArray();
-        $this->prodFiltrados = $productosFiltrados;
-    }
+
 
     public function comprobarArqueo($caja_id)
     {
@@ -177,16 +239,20 @@ class Tpv extends Component
 
         return $arqueos;
     }
+
+
     public function valorSaldoIncial($caja_id)
     {
         $ultimoArqueo = Arqueo::where('caja_id', $caja_id)
             ->latest('id')
             ->first();
 
-        $saldo_inicial = $ultimoArqueo ? $ultimoArqueo->saldo_final : 10;
+        $saldo_inicial = $ultimoArqueo ? $ultimoArqueo->saldo_final : 0;
 
         $this->saldoInicial = $saldo_inicial;
     }
+
+
     public function valorBilletes($caja_id)
     {
         $ultimoArqueo = ArqueoMove::where('caja_id', $caja_id)
@@ -198,6 +264,8 @@ class Tpv extends Component
 
         return $billetes;
     }
+
+
     public function crearArqueoInicio($caja_id, $billetes)
     {
         $user = User::where('name', $this->user)->first();
@@ -209,7 +277,7 @@ class Tpv extends Component
         $saldo_inicial = $ultimoArqueo ? $ultimoArqueo->saldo_final : 0;
 
         $fecha = now()->format('Y-m-d');
-        //dd($user->id, $ultimoArqueo, $saldo_inicial, $billetes, $fecha, $caja_id);
+
         $arqueo = Arqueo::create([
             'fecha' => $fecha,
             'saldo_inicial' => $saldo_inicial,
@@ -231,10 +299,12 @@ class Tpv extends Component
         ]);
 
         $arqueoMove->save();
+        $this->saldo_inicialDS = $saldo_inicial;
 
         $this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();
         return $arqueo;
     }
+
 
     public function crearArqueoCierre($user_name, $caja_id, $billetes, $saldoInicialSiguiente, $sumaBilletes)
     {
@@ -246,10 +316,10 @@ class Tpv extends Component
             ->first();
 
         $arqueoExistente->update([
-            'saldo_total' => $sumaBilletes,
-            'saldo_efectivo' => 0,
-            'saldo_tarjeta' => 0,
-            'saldo_final' => $saldoInicialSiguiente,
+            'saldo_total' => $this->sumaTotalEfectivo + $this->sumaTotalTarjeta,
+            'saldo_efectivo' => $this->sumaTotalEfectivo,
+            'saldo_tarjeta' => $this->sumaTotalTarjeta,
+            'saldo_final' => $sumaBilletes,
 
         ]);
 
@@ -261,7 +331,11 @@ class Tpv extends Component
             'moves' => 'cierre',
         ]);
         $this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();
+        // Reiniciar sumaTotalTarjeta después del arqueo de cierre
+        $this->sumaTotalTarjeta = 0;
+        $this->sumaTotalEfectivo = 0;
     }
+
 
     public function obtenerArqueo($caja_id)
     {
@@ -271,6 +345,8 @@ class Tpv extends Component
 
         return $arqueo;
     }
+
+
     public function listarMovimientosArqueo($caja_id)
     {
         $movimientos = ArqueoMove::where('caja_id', $caja_id)
@@ -279,6 +355,8 @@ class Tpv extends Component
 
         return $movimientos;
     }
+
+
     public function listarProductos($tipo)
     {
         $productos = Producto::where('tipo', $tipo)
@@ -287,6 +365,8 @@ class Tpv extends Component
 
         return $productos;
     }
+
+
     public function listarUsuarios()
     {
         $usuarios = User::select('id', 'name')
@@ -295,6 +375,8 @@ class Tpv extends Component
 
         return $usuarios;
     }
+
+
     public function listarCajas()
     {
         $cajas = Caja::select('id', 'name')
@@ -303,6 +385,8 @@ class Tpv extends Component
 
         return $cajas;
     }
+
+
     public function listarFormasPago()
     {
         $formasPago = FormasPago::select('id', 'name')
@@ -311,6 +395,8 @@ class Tpv extends Component
 
         return $formasPago;
     }
+
+
     public function listarTerceros()
     {
         $terceros = Tercero::select('id', 'nombre')
@@ -319,38 +405,20 @@ class Tpv extends Component
 
         return $terceros;
     }
-    public function listarProvincias()
-    {
-        $provincias = Provincia::select('id', 'nombre')
-            ->get()
-            ->toArray();
 
-        return $provincias;
-    }
-    public function listarPaises()
-    {
-        $paises = Pais::select('id', 'nombre')
-            ->get()
-            ->toArray();
 
-        return $paises;
-    }
     public function seleccionarTercero($tercero_id)
     {
         $this->terceroSeleccionado = $tercero_id;
     }
+
+
     public function seleccionarFormaPago($formaPago_id)
     {
         $this->formaPagoSeleccionada = $formaPago_id;
     }
-    public function actualizarValoresRecibido($valores)
-    {
-        $this->valoresRecibido = $valores;
-    }
-    public function calcularSaldoEsperado()
-    {
-        $this->saldoEsperado = $this->saldoInicial + $this->pagosEfectivo + $this->pagosTarjeta;
-    }
+
+    
     public function guardarFactura()
     {
         $factura = new FacVenta();
@@ -376,31 +444,37 @@ class Tpv extends Component
 
         return $factura;
     }
-    public function crearTicket($valores, $valorIVA, $totalSinDesglosar, $totalCarrito, $usuarioName, $metodoDePago)
+
+
+    public function crearTicket($valores, $valorIVA, $totalSinDesglosar, $totalCarrito, $usuarioName, $metodoDePago, $caja_id)
     {
 
         $usuario = User::where('name', $usuarioName)->first();
         $usuarioId = $usuario->id;
 
-        $lineas = [];
+        //restar stock
         foreach ($valores as $value) {
-            $ls =
-                [
-                    'producto_id' => $value['id'],
-                    'tipo' => '0',
-                    'precio' => $value['precio'],
-                    'qty' => $value['cantidad'],
-
-
-                ];
-            array_push($lineas, $ls);
 
             $producto = Producto::find($value['id']);
             $producto->stock -= $value['cantidad'];
             $producto->save();
+
         }
+        // Logica obtener nombre para factura
+        $year = now()->format('y');
+        $prefix = 'FS' . $year . '-';
+        $lastInvoice = FacVenta::where('name', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
+        $sequence = $lastInvoice ? intval(substr($lastInvoice->name, -4)) + 1 : 1;
+        $name = $prefix . str_pad($sequence, 4, '0', STR_PAD_LEFT);
+
+        $fecha = now()->format('Y-m-d');
 
         $idFormaPago = $this->formaPagoSeleccionada;
+
+        //pasar caja_id a int
+        $caja_id = intval($caja_id);
+
+
         if($metodoDePago === 'tarjeta'){
             $fp = FormasPago::firstOrCreate(
                 ['name' => 'Tarjeta']
@@ -415,32 +489,40 @@ class Tpv extends Component
                     'base_imp' => $totalCarrito,
                     'total_iva' => $valorIVA,
                     'total' => $totalSinDesglosar,
+                    'caja_id' => $caja_id,
                 ]
             );
         }
-        $year = now()->format('y'); // Obtener los últimos dos dígitos del año actual
-        $prefix = 'FS' . $year . '-';
-        $lastInvoice = FacVenta::where('name', 'like', $prefix . '%')->orderBy('id', 'desc')->first();
-        $sequence = $lastInvoice ? intval(substr($lastInvoice->name, -4)) + 1 : 1;
-        $name = $prefix . str_pad($sequence, 4, '0', STR_PAD_LEFT);
 
-        $fecha = now()->format('Y-m-d');
-        //dd($name,$fecha,$idFormaPago,$totalCarrito,$valorIVA,$totalSinDesglosar);
-        FacVenta::create(
-            [
-                'name' => $name,
-                'tercero_id' => 1,
-                'fecha' => $fecha,
-                'forma_pago_id' => $idFormaPago,
-                'base_imp' => $totalCarrito,
-                'total_iva' => $valorIVA,
-                'total' => $totalSinDesglosar,
-            ]
-        );
+        if($metodoDePago === 'efectivo'){
+            $fp = FormasPago::firstOrCreate(
+                ['name' => 'Efectivo']
+            );
+            $idFormaPago = $fp->id;
+            FacVenta::create(
+                [
+                    'name' => $name,
+                    'tercero_id' => 1,
+                    'fecha' => $fecha,
+                    'forma_pago_id' => $idFormaPago,
+                    'base_imp' => $totalCarrito,
+                    'total_iva' => $valorIVA,
+                    'total' => $totalSinDesglosar,
+                    'caja_id' => $caja_id,
+                ]
+            );
+        }
+        $this->getNextRef = $name;
+        // Actualizar el arqueo con las sumas de efectivo y tarjeta
+        $this->updateSumaTotalEfectivo($caja_id);
+        $this->updateSumaTotalTarjeta($caja_id);
+        $this->updateTotalesArqueo($caja_id);
 
-
+        // Refresca factura y arqueo
+        $this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();
         $this->factura = FacVenta::orderBy('id', 'desc')->first();
         $this->facturas = FacVenta::select('id', 'name', 'tercero_id', 'fecha', 'forma_pago_id', 'base_imp', 'total_iva', 'total')->get()->keyBy('id')->toArray();
     }
+
 }
 ?>

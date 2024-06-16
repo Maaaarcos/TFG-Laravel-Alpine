@@ -20,6 +20,7 @@ class FacVenta extends Model
         'base_imp',
         'total_iva',
         'total',
+        'caja_id',
     ];
 
     // Relación con Tercero

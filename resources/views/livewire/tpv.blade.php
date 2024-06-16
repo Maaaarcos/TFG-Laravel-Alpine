@@ -1,8 +1,6 @@
 <div id="tpv" class=" h-screen flex" x-data="{
     showModal: false,
-    showCrearTarjeta: false,
     showComprobanteArqueo: false,
-    showCrearArqueo: false,
     showInicioCaja: false,
     showSeleccionCaja: true,
     showTpv: true,
@@ -12,14 +10,11 @@
     showOperacionVenta: false,
     esVisible: false,
     VentanaRetiradaDinero: false,
-    showVales: false,
-    showCambio: false,
     showNumericKeyboard : false,
     showSala : false,
     showCardOptions : false,
     showUsuarioCarritoEspera: false,
     fecha: new Date(),
-    barcode: '',
     search: '',
     searchCategory: '',
     searchVenta: '',
@@ -36,41 +31,35 @@
     user: @entangle('user'),
     usuario: '',
     cajas: @entangle('cajas'),
-    tarjeta_regalo: @entangle('tarjeta_regalo'),
     selectCaja: @entangle('selectCaja'),
     saldoInicial: @entangle('saldoInicial'),
-    saldoTR: @entangle('saldoTR'),
     facturas: @entangle('facturas'),
     clonFacturas: @entangle('facturas'),
     pagos: @entangle('pagos'),
     terceros: @entangle('terceros'),
-    valores_fijos_TR: @entangle('valores_fijos_TR'),
     movimientos_arqueo: @entangle('movimientos_arqueo'),
     lineas_factura: @entangle('lineas_factura'),
-    prodFiltrados: @entangle('prodFiltrados'),
-    historialDev: @entangle('historialDev'),
-    user: @entangle('user'),
     datosEmpresa: @entangle('datosEmpresa'),
     cajaSeleccionada: '',
     carrito: JSON.parse(localStorage.getItem('carrito')) || {},
-    carritoEspera: JSON.parse(localStorage.getItem('carritoEspera')) || {},
+    carritoEspera: JSON.parse(localStorage.getItem('carritoEspera')) || Array(12).fill({ productos: {}, vendedor: '' }),
     arrayDevoluciones: {},
     arrayNuevaVenta: {},
     totalCarrito: 0,
     saldoTotal: 0,
     totalSinDesglosar: 0,
     dineroRetirado: 0,
-    saldoEsperado: 100,
-    saldoInicialSiguiente: 100,
+    saldoEsperado: @entangle('saldoEsperado') ,
+    saldoInicialSiguiente: @entangle('saldo_inicialDS'),
     codigoBusqueda: '',
     codigoBusquedaTR: '',
     codigoBusquedaArqueo: '',
     referenciaVenta: '',
     operacionVenta: '',
     mensaje: '',
-    metodoDePago: '',
+    metodoDePago: 'efectivo',
     contenidoDev: '', 
-    nombreVendedor: '',
+    nombreVendedor: '{{ $user }}',
     mesa: '',
     valorIVA: 0,
     stock: true,
@@ -134,24 +123,19 @@
         this.calcularBase();
     },
     guardarCarritoEnEspera(nombreVendedor, mesa) {
-        if (this.carritoEspera.length !== 12) {
-            this.carritoEspera = Array(12).fill({
-                productos: {},
-                vendedor: ''
-            });
+        // Verificar si el índice de la mesa es válido
+        let mesaIndicada = mesa - 1;
+        if (mesa < 0 || mesa >= 12) {
+            console.error('Índice de mesa inválido');
+            return;
         }
 
-        // Encontrar el primer índice vacío para guardar el carrito
-        let index = this.carritoEspera.findIndex(item => !item.productos || Object.keys(item.productos).length === 0);
+        // Guardar el carrito actual en el índice especificado
+        this.carritoEspera[mesaIndicada] = {
+            productos: { ...this.carrito },
+            vendedor: nombreVendedor  // Sustituye por el nombre real del vendedor
+        };
 
-        // Guardar el carrito actual en el primer índice vacío
-        if (index !== -1) {
-            this.carritoEspera[index] = {
-                productos: { ...this.carrito },
-                vendedor: nombreVendedor  // Sustituye por el nombre real del vendedor
-            };
-        }
-        
         // Guardar en localStorage
         localStorage.setItem('carritoEspera', JSON.stringify(this.carritoEspera));
 
@@ -159,21 +143,51 @@
         this.carrito = {};
         localStorage.setItem('carrito', JSON.stringify(this.carrito));
     },
-    cargarCarrito(){
-    
-        for (let id in this.carritoEspera[index].productos) {
-        let producto = this.carritoEspera[index].productos[id];
-        this.carrito[id] = {
-            id: producto.id,
-            name: producto.name,
-            precio: producto.precio,
-            cantidad: producto.cantidad
-        };
-    }
+    cargarCarrito(index) {
+        // Verificar si el índice es válido
+        if (index < 0 || index >= this.carritoEspera.length) {
+            console.error('Índice inválido');
+            return;
+        }
 
-    // Guardar en localStorage
-    localStorage.setItem('carritoEspera', JSON.stringify(this.carritoEspera));
-    localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Guardar también el carrito actual
+        // Limpiar el carrito actual
+        this.carrito = {};
+
+        // Cargar los productos del carrito específico
+        for (let id in this.carritoEspera[index].productos) {
+            let producto = this.carritoEspera[index].productos[id];
+            this.carrito[id] = {
+                id: producto.id,
+                name: producto.name,
+                precio: producto.precio,
+                cantidad: producto.cantidad
+            };
+        }
+
+        // Actualizar el nombre del vendedor
+        this.nombreVendedor = this.carritoEspera[index].vendedor;
+
+        this.calcularBase();
+
+        // Guardar en localStorage
+        localStorage.setItem('carritoEspera', JSON.stringify(this.carritoEspera));
+        localStorage.setItem('carrito', JSON.stringify(this.carrito)); // Guardar también el carrito actual
+    },
+    eliminarCarritoEspera(index) {
+        // Verificar si el índice es válido
+        if (index < 0 || index >= this.carritoEspera.length) {
+            console.error('Índice inválido');
+            return;
+        }
+
+        // Eliminar el carrito en el índice especificado
+        this.carritoEspera[index] = {
+            productos: {},
+            vendedor: ''
+        };
+
+        // Guardar en localStorage
+        localStorage.setItem('carritoEspera', JSON.stringify(this.carritoEspera));
     },
     buscarPorNombre(){
         let clientsWithOrders = Object.values(this.productos);
@@ -306,9 +320,6 @@
             lineas++;
         }
         return lineas;
-    },
-    crearNuevaTarjeta() {
-        var saldoInicial;
     },
     updateTotalSinDesglosar() {
         this.totalSinDesglosar = this.calcularIVA() + this.totalCarrito;
@@ -472,9 +483,13 @@
                 <div class="flex items-center justify-between m-2">
                     <div class="grid grid-cols-3 gap-4">
                         <template x-for="(item, index) in Object.entries(carritoEspera)" :key="index">
-                            <div class="bg-gray-200 p-4 rounded-lg flex flex-col items-center justify-center"
-                            @click ="cargarCarrito()">
-                                <p class="text-lg font-semibold" x-text="'Mesa' + (index+1)"></p>
+                            <div class="relative bg-gray-200 p-4 rounded-lg flex flex-col items-center justify-center cursor-pointer"
+                                @click="cargarCarrito(index)">
+                                <button @click.stop="eliminarCarritoEspera(index)"
+                                        class="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 rounded">
+                                            <i class="fa-solid fa-xmark fa-x px-1 py-1 cursor-pointer"></i>
+                                    </button>
+                                <p class="text-lg font-semibold" x-text="'Mesa ' + (index + 1)"></p>
                                 <p class="mt-2">Vendedor: <span x-text="item[1].vendedor"></span></p>
                             </div>
                         </template>
@@ -487,7 +502,7 @@
         <div x-show="showArqueo" x-data="{ saldoTotal: 0 }" class="flex overflow-x-auto" x-init="">
             <div class="flex flex-col w-full overflow-x-auto">
                 <div class="flex items-center justify-between m-2">
-                    <input id="navegador" name="navegador" type="text" x-model="searchArqueo"
+                    <input id="navegador" name="navegador" type="text" x-model="searchArqueo" placeholder="Filtrar por fecha"
                     class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
                     
                 </div>
@@ -519,7 +534,7 @@
                                     <td class="px-4 py-2 text-center" x-text="arqueo.saldo_final + '€'"></td>
                                     <td class="px-4 py-2 text-center">
                                         <button class="boton"
-                                            @click="showComprobanteArqueo = true; saldoTotal = arqueo.saldo_total;">
+                                            @click="showComprobanteArqueo = true;">
                                             <i class="fa-solid fa-hand-holding-dollar fa-2x px-4 pb-2 pt-4"></i>
                                         </button>
                                     </td>
@@ -664,11 +679,6 @@
                             class="boton boton-success ml-4 text-2xl"
                             @click=" VentanaRetiradaDinero = true; showArqueoCierre = false; "
                             :disabled="dineroRetirado > sumaBilletes && sumaBilletes == 0">CREAR</button>
-
-                            {{-- <button
-                            class="boton boton-success ml-4 text-2xl"
-                            @click=" showArqueoCierre = false; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes)"
-                            :disabled="dineroRetirado > sumaBilletes && sumaBilletes == 0">CREAR</button> --}}
                     </div>
                 </div>
                 <div x-data="{ mostrarTextarea: false, justificacion: '' }">
@@ -693,7 +703,7 @@
                         <label class="inline-block whitespace-nowrap">¿Deseas retirar dinero?</label>
                         <button @click=" retirar = true " class="mr-4 boton boton-success">Sí</button>
                         <button
-                            @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) "
+                            @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes);  $wire.cierreCajaAndUpdate(cajaSeleccionada, sumaBilletes)"
                             class="boton boton-danger">No</button>
                     </div>
                     <div x-show="retirar">
@@ -743,7 +753,7 @@
                         </div>
                         <div class="mt-4">
                             <button
-                                @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes) "
+                                @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes); $wire.cierreCajaAndUpdate(cajaSeleccionada, sumaBilletes);"
                                 class="boton">Completar operación</button>
                             <button @click=" retirar = false " class="boton boton-danger">Cancelar</button>
                         </div>
@@ -756,7 +766,7 @@
         <div x-show="showVentas" class="flex overflow-x-auto" x-data="{ocultar: false }">
             <div class="flex flex-col w-full overflow-x-auto">
                 <div class="flex items-center justify-between m-2">
-                <input id="navegador" name="navegador" type="text" x-model="searchVenta"
+                <input id="navegador" name="navegador" type="text" x-model="searchVenta" placeholder="Filtrar por referencia"
                     class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
                 </div>
                 <table class="w-full">
@@ -769,7 +779,7 @@
                             <th class="px-2 py-2 text-base" colspan="1">base imponible</th>
                             <th class="px-2 py-2 text-base" colspan="1">total iva</th>
                             <th class="px-2 py-2 text-base" colspan="1">total</th>
-                            <th class="px-2 py-2 text-base" colspan="1">imprimir factura</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -789,12 +799,6 @@
                                 <td class="px-2 py-2 text-center text-sm" x-text="factura.total_iva + '€'">
                                 </td>
                                 <td class="px-2 py-2 text-center text-sm" x-text="factura.total  + '€'">
-                                </td>
-                                <td class="px-2 py-2 text-center">
-                                    <!-- Contenido de imprimir factura -->
-                                    <button class="boton" @click="">
-                                        <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-2"></i>
-                                    </button>
                                 </td>
                             </tr>
                         </template>
@@ -985,6 +989,13 @@
         </div>
 
         {{-- botones venta --}}
+        <div x-show="showUsuarioCarritoEspera" class="absolute bg-white text-black p-4 rounded shadow-lg w-48 text-lg">
+            <input type="text" x-model="nombreVendedor" placeholder="Nombre del vendedor" class="p-2 border border-gray-300 rounded mb-2">
+            <input type="number" x-model="mesa" min="0" max="11" placeholder="Número de mesa" class="p-2 border border-gray-300 rounded mb-2">
+            <button @click="guardarCarritoEnEspera(nombreVendedor, mesa); showUsuarioCarritoEspera = false;" 
+                    class="mt-2 boton boton-success text-sm px-4 py-2 rounded-md">Guardar</button>
+            <button @click="showUsuarioCarritoEspera = false;"  class="mt-2 boton boton-success text-sm px-4 py-2 rounded-md">Cancelar</button>
+        </div>
         <div class="bg-gray-600 text-white p-1">
             <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-0">
                 <button @click="deleteCarrito" class="m-1 flex-grow items-center boton boton-danger !p-4">
@@ -1001,15 +1012,6 @@
                 </button>
             </div>
         </div>
-
-        <div x-show="showUsuarioCarritoEspera"
-         class="absolute bg-white text-black p-4 rounded shadow-lg w-48 text-lg mt-4 right-0">
-        <input type="text" x-model="nombreVendedor" placeholder="Nombre del vendedor"
-               class="p-2 border border-gray-300 rounded w-100">
-        <button @click="guardarCarritoEnEspera(nombreVendedor, mesa); showUsuarioCarritoEspera = false;"
-                class="mt-2 boton boton-success text-sm px-4 py-2 rounded-md">Guardar</button>
-    </div>
-
 
     </div>
 
@@ -1289,34 +1291,34 @@
                 </div>
 
                 <!-- Teclado numerico -->
-                <div class="grid grid-cols-6 gap-1 mb-6" style="height:280px;">
+                <div class="grid grid-cols-4 gap-1 mb-6" style="height:280px;">
                     <button @click="pulsarTecla('7')" class="py-2  boton w-full h-full">7</button>
                     <button @click="pulsarTecla('8')" class="py-2  boton w-full h-full">8</button>
                     <button @click="pulsarTecla('9')" class="py-2  boton w-full h-full">9</button>
                     <button @click="pulsarTecla('cancel')" class="py-2  boton w-full h-full"><i
                             class="fa-solid fa-trash cursor-pointer"></i></button>
-                    <button @click="pulsarTecla('b5')" class="py-2  boton  col-span-2">5.00€</button>
+                    
                     <button @click="pulsarTecla('4')" class="py-2  boton w-full h-full">4</button>
                     <button @click="pulsarTecla('5')" class="py-2  boton w-full h-full">5</button>
                     <button @click="pulsarTecla('6')" class="py-2  boton w-full h-full">6</button>
                     <button @click="pulsarTecla('delete')" class="py-2  boton w-full h-full"><i
                             class="fa-solid fa-delete-left cursor-pointer"></i></button>
-                    <button @click="pulsarTecla('b10')" class="py-2  boton   col-span-2">10.00€</button>
+                    
                     <button @click="pulsarTecla('1')" class="py-2  boton w-full h-full">1</button>
                     <button @click="pulsarTecla('2')" class="py-2  boton w-full h-full">2</button>
                     <button @click="pulsarTecla('3')" class="py-2  boton w-full h-full">3</button>
-                    <button @click="calcularCambio" class="py-2  boton  row-span-2  w-full h-full"><i
+                    <button @click="dineroEntregado = totalSinDesglosar; calcularCambio();" class="py-2  boton  row-span-2  w-full h-full"><i
                             class="fa-solid fa-arrow-turn-down transform rotate-90"></i></button>
-                    <button @click="pulsarTecla('b20')" class="py-2  boton  col-span-2  w-full h-full">20.00€</button>
+                    
                     <button class="py-2 boton  w-full h-full"></button>
                     <button @click="pulsarTecla('.')" class="py-2  boton  w-full h-full">.</button>
                     <button @click="pulsarTecla('0')" class="py-2  boton  w-full h-full">0</button>
-                    <button @click="pulsarTecla('b50')" class="py-2  boton col-span-2  w-full h-full">50.00€</button>
+                    
                 </div>
                 <div class="flex justify-between " style="height: 55px">
                     <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
                     <button class="boton boton-success text-2xl"
-                        @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;"
+                        @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago, cajaSeleccionada); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;"
                         :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0" >PAGAR</button> 
                 </div>
             </div>
@@ -1345,7 +1347,7 @@
                 <div class="flex justify-between mt-16">
                     <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
                     <button class="boton boton-success text-2xl" 
-                    @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;">
+                    @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago, cajaSeleccionada); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;">
                     PAGAR</button>
                 </div>
             </div>
@@ -1476,7 +1478,7 @@
                         </div>
                         <div class="flex">
                             <span class="mr-2">Vendedor</span>
-                            <span x-text="user"></span>
+                            <span x-text="nombreVendedor"></span>
                         </div>
                         <div class="w-full mx-auto flex flex-col items-center justify-center">
                             <span class="my-2">**** IMPUESTOS INCLUIDOS ****</span>
