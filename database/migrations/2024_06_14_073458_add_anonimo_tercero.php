@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::table('terceros')->insert([
-            'name' => 'Anonimo',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        Schema::table('terceros', function (Blueprint $table) {
+            $table->string('nombre')->default('Anonimo')->change();
+        });
     }
 
     /**
@@ -24,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('terceros', function (Blueprint $table) {
-            //
+            $table->string('nombre')->default(NULL)->change();
         });
     }
 };

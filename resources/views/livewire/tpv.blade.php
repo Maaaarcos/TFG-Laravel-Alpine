@@ -397,35 +397,37 @@
     $watch('carrito', () => updateValorIVA());
     $watch('totalCarrito', () => updateTotalSinDesglosar());">
     {{-- columna izquierda --}}
-    <div class="bg-gray-800 text-white w-1/12 flex flex-col items-center h-full justify-between">
-        <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = true; showCS = false; showArqueo = false; showVentas = false;">
-            <i class="fa-solid fa-cash-register fa-3x px-4 pb-2 pt-4"></i>
-            <p class="mx-2">TPV</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = false; showCS = false; showArqueo = false; showVentas = true;">
-            <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></i>
-            <p class="mx-2">Ventas</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = false; showCS = true; showArqueo = false; showVentas = false;">
-            <i class="fa-solid fa-hand-holding-heart fa-3x px-4 pb-2 pt-4"></i>
-            <p class="mx-2">Sala</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer"
-            @click=" showTpv = false; showCS = false; showArqueo = true; showVentas = false;">
-            <i class="fa-solid fa-folder-open fa-3x px-4 pb-2 pt-4"></i>
-            <p class="mx-2">Arqueo</p>
-        </div>
-        <div class="my-2 text-center cursor-pointer">
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-                </form>
-                <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer" onclick="document.getElementById('logout-form').submit();"></i>
-                <p class="mx-2">Salir</p>
-            </div>
+    <div class="bg-gray-800 text-white flex flex-col items-center justify-between h-screen md:w-1/6 lg:w-1/12">
+    <div class="my-2 text-center cursor-pointer"
+        @click="showTpv = true; showCS = false; showArqueo = false; showVentas = false;">
+        <i class="fa-solid fa-cash-register fa-3x px-4 pb-2 pt-4"></i>
+        <p class="mx-2">TPV</p>
     </div>
+    <div class="my-2 text-center cursor-pointer"
+        @click="showTpv = false; showCS = false; showArqueo = false; showVentas = true;">
+        <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></i>
+        <p class="mx-2">Ventas</p>
+    </div>
+    <div class="my-2 text-center cursor-pointer"
+        @click="showTpv = false; showCS = true; showArqueo = false; showVentas = false;">
+        <i class="fa-solid fa-hand-holding-heart fa-3x px-4 pb-2 pt-4"></i>
+        <p class="mx-2">Sala</p>
+    </div>
+    <div class="my-2 text-center cursor-pointer"
+        @click="showTpv = false; showCS = false; showArqueo = true; showVentas = false;">
+        <i class="fa-solid fa-folder-open fa-3x px-4 pb-2 pt-4"></i>
+        <p class="mx-2">Arqueo</p>
+    </div>
+    <div class="my-2 text-center cursor-pointer">
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+        <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer"
+            onclick="document.getElementById('logout-form').submit();"></i>
+        <p class="mx-2">Salir</p>
+    </div>
+</div>
+
 
     {{-- columna central --}}
     <div class="flex-1 flex flex-col w-8/12">

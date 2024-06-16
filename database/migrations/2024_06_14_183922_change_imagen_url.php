@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('terceros', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('categorias', function (Blueprint $table) {
+            $table->string('imagen_url')->nullable()->change();
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('terceros');
+        Schema::table('categorias', function (Blueprint $table) {
+            $table->string('imagen_url')->change();
+        });
     }
 };

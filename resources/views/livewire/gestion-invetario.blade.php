@@ -179,7 +179,9 @@
     <div class="flex-1 pt-16 w-full overflow-y-auto px-4 md:px-8">
 
         <div x-show="showInventario">
-            <div class="container mx-auto py-4"> 
+            <x-success-message/>
+            <x-error-message/>
+            <div class="container mx-auto py-4">
             <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
                 <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
                     class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
@@ -364,6 +366,8 @@
     
     {{-- SECCION EMPLEADOS --}}
     <div x-show="showEmpleados">
+        <x-success-message/>
+        <x-error-message/>
         <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchBox"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500"
@@ -512,7 +516,9 @@
     </div>    
     {{-- SECCION CAJAS --}}
     <div x-show="showCajas">
-    <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
+        <x-success-message/>
+        <x-error-message/>
+        <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchBox"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
         </div>
@@ -588,6 +594,8 @@
     </div>
     {{-- SECCION CATEGORIA --}}
     <div x-show="showCategorias">
+        <x-success-message/>
+        <x-error-message/>
         <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchCategory"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
@@ -671,6 +679,8 @@
     </div>
     {{-- SECCION IVAS --}}
     <div x-show="showIvas">
+        <x-success-message/>
+        <x-error-message/>
         <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchIva"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
