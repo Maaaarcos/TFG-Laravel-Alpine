@@ -177,7 +177,6 @@
 
     {{-- SECCION PRODUCTOS --}}
     <div class="flex-1 pt-16 w-full overflow-y-auto px-4 md:px-8">
-
         <div x-show="showInventario">
             <x-success-message/>
             <x-error-message/>
@@ -237,8 +236,13 @@
         <div x-show="ventanaEditarProducto" x-data="{
         }" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                    Edición Producto
+                <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaEditarProducto = false;">
+                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                    </button>
+                    <div class="uppercase text-xl font-bold">
+                        Edición Producto
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -299,11 +303,15 @@
         </div>
         {{-- VENTANA NUEVO PRODUCTO --}}
         <div x-show="ventanaNuevoProducto">
-
             <div x-show="ventanaNuevoProducto" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
                 <div class="bg-white p-8 rounded-lg flex flex-col">
-                    <div class="uppercase text-xl font-bold mb-4">
-                        Nuevo Producto
+                    <div class="flex items-center mb-4">
+                        <button class="text-xl font-bold mr-2" @click="ventanaNuevoProducto = false;">
+                            <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                        </button>
+                        <div class="uppercase text-xl font-bold">
+                            Nuevo Producto
+                        </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
@@ -363,7 +371,6 @@
             </div>
         </div>
     </div>
-    
     {{-- SECCION EMPLEADOS --}}
     <div x-show="showEmpleados">
         <x-success-message/>
@@ -413,10 +420,15 @@
 
         {{-- VENTANA EDITAR EMPLEADO --}}
         <div x-show="ventanaEditarEmpleado" x-data="{}" 
-        class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+            class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                    Edición Empleado
+                <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaEditarEmpleado = false;">
+                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                    </button>
+                    <div class="uppercase text-xl font-bold">
+                        Edición Empleado
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -463,12 +475,16 @@
         </div>
 
         {{-- VENTANA NUEVO EMPLEADO --}}
-        
         <div x-show="ventanaNuevoEmpleado">
             <div x-show="ventanaNuevoEmpleado" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
                     <div class="bg-white p-8 rounded-lg flex flex-col">
-                        <div class="uppercase text-xl font-bold mb-4">
-                            Nuevo empleado
+                        <div class="flex items-center mb-4">
+                            <button class="text-xl font-bold mr-2" @click="ventanaNuevoEmpleado = false;">
+                                <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                            </button>
+                            <div class="uppercase text-xl font-bold">
+                                Nuevo Empleado
+                            </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
@@ -551,10 +567,15 @@
         </table>
         {{-- VENTANA EDITAR CAJA --}}
         <div x-show="ventanaEditarCaja" x-data="{}" 
-        class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+            class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                    Edición Caja
+                <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaEditarCaja = false;">
+                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                    </button>
+                    <div class="uppercase text-xl font-bold">
+                        Edición Caja
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -573,9 +594,14 @@
         <div x-show="ventanaNuevaCaja"
                 class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
                 <div class="bg-white p-8 rounded-lg flex flex-col">
-                    <div class="uppercase text-xl font-bold mb-4">
-                        Nueva Caja
-                    </div>
+                  <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaNuevaCaja = false;">
+                          <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                     </button>
+                      <div class="uppercase text-xl font-bold">
+                        nueva Caja
+                      </div>
+                  </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Nombre*</label>
@@ -630,20 +656,25 @@
         </table>
         {{-- VENTANA EDITAR CATEGORIA --}}
         <div x-show="ventanaEditarCategoria" x-data="{}" 
-        class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+            class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                    Edición Categoria
+                <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaEditarCategoria = false;">
+                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                    </button>
+                    <div class="uppercase text-xl font-bold">
+                        Edición Categoria
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Nombre</label>
                         <input type="text" id="nombreCategoria" name="nombreCategoria" x-model="nombreCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                     </div>
-                    <div>
+                    {{-- <div>
                         <label class="block text-sm font-medium text-gray-700">Imagen</label>
                         <input type="text" id="imagenCategoria" name="imagenCategoria" x-model="imagenCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="flex justify-end">
                     <button class="boton" @click="
@@ -655,18 +686,23 @@
         {{-- VENTANA NUEVA CATEGORIA --}}
         <div x-show="ventanaNuevaCategoria" x-data="{ nombre: '', imagen: '' }" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                Nueva Categoría
-            </div>
+                <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaNuevaCategoria = false;">
+                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                    </button>
+                    <div class="uppercase text-xl font-bold">
+                        Nueva Categoria
+                    </div>
+                </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Nombre*</label>
                     <input type="text" wire:model="nombreCategoria" class="mt-1 block w-full">
                 </div>
-                <div>
+                {{-- <div>
                     <label class="block text-sm font-medium text-gray-700">Imagen</label>
                     <input type="file" wire:model="imagenCategoria" accept="image/*" class="mt-1 block w-full">
-                </div>
+                </div> --}}
             </div>
             <div class="flex justify-end">
                 <button class="boton" @click="$wire.crearCategoria(); ventanaNuevaCategoria = false;">Guardar</button>
@@ -712,8 +748,13 @@
         {{-- VENTANA NUEVO IVA --}}
         <div x-show="ventanaNuevoIva" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                    Nuevo IVA
+                <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaNuevoIva = false;">
+                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                    </button>
+                    <div class="uppercase text-xl font-bold">
+                        Nuevo IVA
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -731,8 +772,13 @@
         {{-- VENTANA EDITAR IVA --}}
         <div x-show="ventanaEditarIva" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="uppercase text-xl font-bold mb-4">
-                    Nuevo IVA
+                <div class="flex items-center mb-4">
+                    <button class="text-xl font-bold mr-2" @click="ventanaEditarIva = false;">
+                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                    </button>
+                    <div class="uppercase text-xl font-bold">
+                        Edición IVA
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
