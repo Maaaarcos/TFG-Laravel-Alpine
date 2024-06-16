@@ -45,6 +45,8 @@ class GestionInvetario extends Component
 
     public $cajaName;
 
+    public $qty;
+
 
     protected $rulesCaja =[
         'cajaName' => 'required|string|max:255',
@@ -106,6 +108,15 @@ class GestionInvetario extends Component
             'stock' => $this->stock,
             'estado' => $this->estado,
         ]);
+
+        // Limpiar los campos del formulario después de crear el producto
+        $this->nombre = '';
+        $this->precio = '';
+        $this->imagen = null;
+        $this->iva_id = '';
+        $this->categoria_id = '';
+        $this->stock = '';
+        $this->estado = '';
 
         // Actualizar la lista de productos
         $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock', 'se_vende')
@@ -238,10 +249,12 @@ private function getCustomErrorMessage($field, $message)
     return $customMessages[$field] ?? implode(', ', $message);
 }
 
-    public function crearIva($qty)
+    public function crearIva()
     {
         try {
-            Iva::create(['qty' => $this->$qty]);
+    
+            $this->validate(['qty' => 'required|numeric']);
+            Iva::create(['qty' => $this->qty]);
             $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
             $this->reset('qty');
             session()->flash('message', 'IVA creado correctamente');

@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/tpv', Tpv::class)->name('tpv');
     Route::middleware('checkPrivileges:1')->get('/crear', Crear::class);
-    Route::get('/gestion-inventario', GestionInvetario::class)->name('gestion-inventario');
+    Route::middleware('checkPrivileges:1')->get('/gestion-inventario', GestionInvetario::class)->name('gestion-inventario');
     Route::get('/test', Test::class);
     Route::get('/crear', Crear::class);
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
