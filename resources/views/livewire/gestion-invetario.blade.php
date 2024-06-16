@@ -608,7 +608,7 @@
         <table class="min-w-full bg-white border">
                 <thead>
                     <tr>
-                        <th class="py-2 px-4 border-b">Imagen</th>
+                    {{-- <th class="py-2 px-4 border-b">Imagen</th> --}}
                         <th class="py-2 px-4 border-b">Nombre</th>
                         <th class="py-2 px-4 border-b"></th>
                         <th class="py-2 px-4 border-b"></th>
@@ -617,9 +617,9 @@
                 <tbody>
                     <template x-for="categoria in buscarPorNombreCategoria" :key="categoria.id">
                         <tr>
-                            <td class="py-2 px-4 border-b">
+                        {{-- <td class="py-2 px-4 border-b">
                                 <img :src="'{{ asset('storage/') }}' + '/' + categoria.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
-                            </td>
+                            </td> --}}
                             <td class="py-2 px-4 border-b" x-text="categoria.nombre"></td>
                             <td class="py-2 px-4 border-b">
                                 <button @click="updateCategoriaFiltrada(categoria.id, categoria.nombre, categoria.imagen_url); ventanaEditarCategoria= true" class="text-blue-500">Editar</button>
