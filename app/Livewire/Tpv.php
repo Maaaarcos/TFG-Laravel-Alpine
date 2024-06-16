@@ -73,7 +73,7 @@ class Tpv extends Component
         $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
         $this->terceros = Tercero::select('id', 'nombre')->get()->keyBy('id')->toArray();
         $this->pagos = FormasPago::select('id', 'name')->get()->keyBy('id')->toArray();
-        $this->datosEmpresa = DatosEmpresa::select('id', 'tercero_id', 'nombre', 'direccion', 'provincia', 'telefono', 'email', 'ruc', 'tipo_empresa', 'actividad_economica', 'ciudad', 'codigo_postal', 'nif')->first()->toArray();
+        // $this->datosEmpresa = DatosEmpresa::select('id', 'tercero_id', 'nombre', 'direccion', 'provincia', 'telefono', 'email', 'ruc', 'tipo_empresa', 'actividad_economica', 'ciudad', 'codigo_postal', 'nif')->first()->toArray();
         $this->factura = FacVenta::orderBy('id', 'desc')->first();
         $this->facturas = FacVenta::select('id', 'name', 'tercero_id', 'fecha', 'forma_pago_id', 'base_imp', 'total_iva', 'total')->get()->keyBy('id')->toArray();
         $this->arqueos = Arqueo::select('id', 'fecha', 'saldo_inicial', 'saldo_efectivo', 'saldo_tarjeta', 'caja_id', 'saldo_total', 'saldo_final')->orderBy('fecha', 'DESC')->get()->keyBy('id')->toArray();

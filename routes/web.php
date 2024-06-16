@@ -20,8 +20,8 @@ use App\Livewire\GestionInvetario;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
-    Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+    // Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+    // Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
 });
 
 // Rutas que requieren autenticación
@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/tpv', Tpv::class)->name('tpv');
     Route::middleware('checkPrivileges:1')->get('/crear', Crear::class);
-    Route::get('/gestion-invetario', GestionInvetario::class)->name('gestion-invetario');
+    Route::middleware('checkPrivileges:1')->get('/gestion-inventario', GestionInvetario::class)->name('gestion-inventario');
     Route::get('/test', Test::class);
     Route::get('/crear', Crear::class);
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

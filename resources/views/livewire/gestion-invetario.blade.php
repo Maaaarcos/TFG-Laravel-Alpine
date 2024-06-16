@@ -28,6 +28,7 @@
         categoria_idProd: '',
         stockProd: '',
         estadoProd: '',
+        privilegiosEmpleado: '',
         idCategoria: '',
         nombreCategoria: '',
         imagenCategoria: '',
@@ -177,7 +178,9 @@
     {{-- SECCION PRODUCTOS --}}
     <div class="flex-1 pt-16 w-full overflow-y-auto px-4 md:px-8">
         <div x-show="showInventario">
-            <div class="container mx-auto py-4"> 
+            <x-success-message/>
+            <x-error-message/>
+            <div class="container mx-auto py-4">
             <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
                 <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
                     class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
@@ -370,6 +373,8 @@
     </div>
     {{-- SECCION EMPLEADOS --}}
     <div x-show="showEmpleados">
+        <x-success-message/>
+        <x-error-message/>
         <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchBox"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500"
@@ -437,8 +442,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Privilegios</label>
-                        <input type="number" id="privilegiosEmpleado" name="privilegiosEmpleado" x-model="privilegiosEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        <label class="block text-sm font-medium text-gray-700">Permisos</label>
+                            <select x-model="privilegiosEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                <option value="" disabled selected></option>
+                                <option value="1">Admin</option>
+                                <option value="0">Usuario</option>
+                            </select>
                     </div>
 
                     <div>
@@ -448,7 +457,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Imagen</label>
-                        <input type="text" id="imagenEmpleado" name="imagenEmpleado" x-model="imagenEmpleado" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        <input type="file" wire:model="imagen_empleado" accept="image/*" class="mt-1 block w-full">
                     </div>
 
                     <div>
@@ -458,11 +467,13 @@
                 </div>
                 <div class="flex justify-end">
                     <button class="boton" @click="
-                        $wire.actualizarEmpleado(idEmpleado, nameEmpleado, emailEmpleado,privilegiosEmpleado, puestoEmpleado, imagenEmpleado, passwordEmpleado);
+                        $wire.actualizarEmpleado(idEmpleado, nameEmpleado, emailEmpleado, passwordEmpleado,privilegiosEmpleado,imagenEmpleado,puestoEmpleado);
                         ventanaEditarEmpleado = false;">Guardar</button>
+                        <button @click="ventanaEditarEmpleado = false" class="boton">Cancelar</button>
                 </div>
             </div>
         </div>
+
         {{-- VENTANA NUEVO EMPLEADO --}}
         <div x-show="ventanaNuevoEmpleado">
             <div x-show="ventanaNuevoEmpleado" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
@@ -521,6 +532,8 @@
     </div>    
     {{-- SECCION CAJAS --}}
     <div x-show="showCajas">
+        <x-success-message/>
+        <x-error-message/>
         <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchBox"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
@@ -578,35 +591,34 @@
             </div>
         </div>
         {{-- VENTANA NUEVA CAJA --}}
-        <div x-show="ventanaNuevaCaja" x-data="{
-            nombre: '',
-            imagen: ''}" 
-            class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
-            <div class="bg-white p-8 rounded-lg flex flex-col">
-                <div class="flex items-center mb-4">
+        <div x-show="ventanaNuevaCaja"
+                class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                <div class="bg-white p-8 rounded-lg flex flex-col">
+                  <div class="flex items-center mb-4">
                     <button class="text-xl font-bold mr-2" @click="ventanaNuevaCaja = false;">
-                        <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
-                    </button>
-                    <div class="uppercase text-xl font-bold">
+                          <i class="fa-solid fa-angle-left fa-2x px-4 pb-2 pt-4 mb-3"></i>
+                     </button>
+                      <div class="uppercase text-xl font-bold">
                         nueva Caja
+                      </div>
+                  </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nombre*</label>
+                            <input type="text" x-model="$wire.cajaName" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="boton" @click="$wire.crearCaja(); ventanaNuevaCaja = false;">Guardar</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Nombre*</label>
-                        <input type="text" id="nombre" name="nombre" x-model="nombre" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                    </div>
-                </div>
-                <div class="flex justify-end">
-                    <button class="boton" @click="
-                        $wire.crearCaja(nombre, imagen);
-                        ventanaNuevaCaja = false;">Guardar</button>
-                </div>
-            </div>
-        </div>
+         </div>
+        
     </div>
     {{-- SECCION CATEGORIA --}}
     <div x-show="showCategorias">
+        <x-success-message/>
+        <x-error-message/>
         <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchCategory"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
@@ -700,6 +712,8 @@
     </div>
     {{-- SECCION IVAS --}}
     <div x-show="showIvas">
+        <x-success-message/>
+        <x-error-message/>
         <div class="bg-gray-600 text-white p-4 h-20 flex items-center">
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="searchIva"
                 class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
@@ -732,10 +746,7 @@
                 </tbody>
         </table>
         {{-- VENTANA NUEVO IVA --}}
-        <div x-show="ventanaNuevoIva" x-data="{
-            qty: '',
-            imagen: '',
-            }" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div x-show="ventanaNuevoIva" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
             <div class="bg-white p-8 rounded-lg flex flex-col">
                 <div class="flex items-center mb-4">
                     <button class="text-xl font-bold mr-2" @click="ventanaNuevoIva = false;">
@@ -748,12 +759,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">QTY*</label>
-                        <input type="text" id="qty" name="qty" x-model="qty" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        <input type="text" x-model="$wire.qty" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                     </div>
                 </div>
                 <div class="flex justify-end">
                     <button class="boton" @click="
-                        $wire.crearIva(qty);
+                        $wire.crearIva();
                         ventanaNuevoIva = false;">Guardar</button>
                 </div>
             </div>
