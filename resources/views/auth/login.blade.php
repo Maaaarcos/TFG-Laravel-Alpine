@@ -63,20 +63,20 @@
 	</div>
 </div>
 <footer class="bg-dark text-white text-center py-3">
-	<div class="container">
-		<div class="row">
-			<div class="col">
-				<p>EasyTPV. 2024</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col">
-				<p>Icons by <a href="https://fontawesome.com/license/free" target="_blank">Font Awesome</a></p>
-				<p>Bootstrap is licensed under <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a></p>
-				<p>Some content licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
-			</div>
-		</div>
-	</div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <p>EasyTPV. 2024</p>
+				<p>Iconos por <a href="https://fontawesome.com/license/free" target="_blank">Font Awesome</a></p>
+				<p>Bootstrap está licenciado bajo <a href="https://opensource.org/licenses/MIT" target="_blank">Licencia MIT</a></p>
+            </div>
+            <div class="col-md-6">
+                <p>Algunos contenidos están bajo <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
+                <p>Imagen utilizada <a href="https://www.pexels.com/es-es/foto/botella-surtida-dentro-de-la-barra-941864/" target="_blank">Chan Walrus en Pexels</a></p>
+                <p>Bajo licencia de <a href="https://www.pexels.com/es-ES/license/" target="_blank">Pexels</a></p>
+            </div>
+        </div>
+    </div>
 </footer>
 </body>
 </html>

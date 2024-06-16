@@ -659,10 +659,10 @@
                         <label class="block text-sm font-medium text-gray-700">Nombre</label>
                         <input type="text" id="nombreCategoria" name="nombreCategoria" x-model="nombreCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                     </div>
-                    <div>
+                    {{-- <div>
                         <label class="block text-sm font-medium text-gray-700">Imagen</label>
                         <input type="text" id="imagenCategoria" name="imagenCategoria" x-model="imagenCategoria" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="flex justify-end">
                     <button class="boton" @click="
@@ -687,10 +687,10 @@
                     <label class="block text-sm font-medium text-gray-700">Nombre*</label>
                     <input type="text" wire:model="nombreCategoria" class="mt-1 block w-full">
                 </div>
-                <div>
+                {{-- <div>
                     <label class="block text-sm font-medium text-gray-700">Imagen</label>
                     <input type="file" wire:model="imagenCategoria" accept="image/*" class="mt-1 block w-full">
-                </div>
+                </div> --}}
             </div>
             <div class="flex justify-end">
                 <button class="boton" @click="$wire.crearCategoria(); ventanaNuevaCategoria = false;">Guardar</button>

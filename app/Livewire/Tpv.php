@@ -67,7 +67,7 @@ class Tpv extends Component
 
     public function mount()
     {
-        $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock')->where('se_vende', '=', 1)->with('categoria')->get()->keyBy('id')->toArray();
+        $this->productos = Producto::select('id', 'nombre', 'precio', 'imagen_url', 'iva_id', 'categoria_id', 'stock')->where('se_vende', '=', 1)->where('stock', '>', 0)->with('categoria')->get()->keyBy('id')->toArray();
         $this->categorias = Categoria::select('id', 'nombre', 'imagen_url')->get()->keyBy('id')->toArray();
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
         $this->usuarios = User::select('id', 'name')->get()->pluck('name')->toArray();
