@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Livewire;
-
 use App\Models\Producto;
 use App\Models\Categoria;
 use App\Models\Iva;
 use App\Models\Caja;
 use App\Models\User;
+use App\Models\Tercero;
+use App\Models\DatosEmpresa;
 use Livewire\WithFileUploads;
-use Livewire\Component;
+use Livewire\Component;;
 
 class GestionInvetario extends Component
 {
@@ -20,6 +21,8 @@ class GestionInvetario extends Component
     public $iva = [];
     public $caja = [];
     public $user = [];
+    public $empresa = [];
+    public $tercero=[];
 
     // Propiedades de Producto
     public $nombre;
@@ -42,10 +45,41 @@ class GestionInvetario extends Component
     public $puesto_empresa;
     public $imagen_empleado;
 
-
+    // Propiedades de Caja
     public $cajaName;
 
+    // Propiedades de Iva
     public $qty;
+    // Propiedades de Empresa
+    public $nombreEmpresa;
+    public $direccion;
+    public $provincia;
+    public $terceroid;
+    public $telefono;
+    public $emailEmpresa;
+    public $ruc;
+    public $tipoEmpresa;
+    public $actividadEconomica;
+    public $ciudad;
+    public $codigoPostal;
+    public $nif;
+
+    // Reglas de validación
+    protected $rulesEmpresa =[
+        'nombreEmpresa' => 'required|string|max:255',
+        'direccion' => 'required|string|max:255',
+        'provincia' => 'required|string|max:255',
+        'telefono' => 'required|string|max:255',
+        'terceroid' => 'required|integer',
+        'emailEmpresa' => 'required|email',
+        'ruc' => 'required|string|max:255',
+        'tipoEmpresa' => 'required|string|max:255',
+        'actividadEconomica' => 'required|string|max:255',
+        'ciudad' => 'required|string|max:255',
+        'codigoPostal' => 'required|string|max:255',
+        'nif' => 'required|string|max:255',
+
+    ];
 
 
     protected $rulesCaja =[
@@ -83,12 +117,66 @@ class GestionInvetario extends Component
         $this->iva = Iva::select('id', 'qty')->get()->keyBy('id')->toArray();
         $this->caja = Caja::select('id', 'name')->get()->keyBy('id')->toArray();
         $this->user = User::select('id', 'name', 'email', 'puesto_empresa', 'privilegios', 'password', 'imagen_url')->get()->keyBy('id')->toArray();
+        $this->empresa = DatosEmpresa::select('id', 'nombre', 'direccion', 'provincia', 'tercero_id', 'telefono', 'email', 'ruc', 'tipo_empresa', 'actividad_economica', 'ciudad', 'codigo_postal', 'nif')->get()->keyBy('id')->toArray();
+        $this->tercero = Tercero::select('id', 'nombre')->get()->keyBy('id')->toArray();
     }
 
     public function clearSessionMessage()
     {
         session()->forget(['messages.error', 'messages.success']);
     }
+
+    public function crearEmpresa()
+        {
+            try {
+                $this->validate($this->rulesEmpresa);
+                $terceroid = (int)$this->terceroid;
+                dd($this->nombreEmpresa,$this->direccion,$this->provincia,$this->terceroid,$this->telefono,$this->emailEmpresa,$this->ruc,$this->tipoEmpresa,$this->actividadEconomica,$this->ciudad,$this->codigoPostal,$this->nif);
+                // Crear la empresa
+                DatosEmpresa::create([
+                    'nombre' => $this->nombreEmpresa,
+                    'direccion' => $this->direccion,
+                    'provincia' => $this->provincia,
+                    'tercero_id' => 1,
+                    'telefono' => $this->telefono,
+                    'email' => $this->emailEmpresa,
+                    'ruc' => $this->ruc,
+                    'tipo_empresa' => $this->tipoEmpresa,
+                    'actividad_economica' => $this->actividadEconomica,
+                    'ciudad' => $this->ciudad,
+                    'codigo_postal' => $this->codigoPostal,
+                    'nif' => $this->nif,
+                ]);
+                // dd($this->nombreEmpresa,$this->direccion,$this->provincia,$this->terceroid,$this->telefono,$this->emailEmpresa,$this->ruc,$this->tipoEmpresa,$this->actividadEconomica,$this->ciudad,$this->codigoPostal,$this->nif);
+                // Limpiar los campos del formulario después de crear la empresa
+                $this->nombreEmpresa = '';
+                $this->direccion = '';
+                $this->provincia = '';
+                $this->terceroid = '';
+                $this->telefono = '';
+                $this->emailEmpresa = '';
+                $this->ruc = '';
+                $this->tipoEmpresa = '';
+                $this->actividadEconomica = '';
+                $this->ciudad = '';
+                $this->codigoPostal = '';
+                $this->nif = '';
+
+                // Actualizar la lista de empresas
+                $this->empresa = DatosEmpresa::select('id', 'nombre', 'direccion', 'provincia', 'tercero_id', 'telefono', 'email', 'ruc', 'tipo_empresa', 'actividad_economica', 'ciudad', 'codigo_postal', 'nif')->get()->keyBy('id')->toArray();
+                
+                session()->flash('message', 'Empresa creada correctamente');
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                // Manejar errores de validación
+                $errors = $e->validator->errors()->getMessages();
+                foreach ($errors as $field => $message) {
+                    session()->flash('error_' . $field, $this->getCustomErrorMessage($field, $message));
+                }
+            } catch (\Exception $e) {
+                // Manejar cualquier otra excepción inesperada
+                session()->flash('error', 'Ocurrió un error al crear la empresa. Por favor, inténtelo de nuevo más tarde.');
+            }
+        }
 
     public function crearProducto()
 {
@@ -281,6 +369,34 @@ private function getCustomErrorMessage($field, $message)
     }
 }
     
+    public function actualizarEmpresa($id, $nombre, $direccion, $telefono, $email, $ruc, $tipo_empresa, $actividad_economica, $ciudad, $codigo_postal, $nif)
+    {
+        try {
+            $empresa = DatosEmpresa::find($id);
+            if ($empresa) {
+                $empresa->nombre = $nombre;
+                $empresa->direccion = $direccion;
+                $empresa->telefono = $telefono;
+                $empresa->email = $email;
+                $empresa->ruc = $ruc;
+                $empresa->tipo_empresa = $tipo_empresa;
+                $empresa->actividad_economica = $actividad_economica;
+                $empresa->ciudad = $ciudad;
+                $empresa->codigo_postal = $codigo_postal;
+                $empresa->nif = $nif;
+                $empresa->save();
+                session()->flash('message', 'Empresa actualizada correctamente');
+            } else {
+                session()->flash('error', 'Empresa no encontrada.');
+            }
+
+            $this->empresa = Empresa::select('id', 'nombre', 'direccion', 'telefono', 'email', 'ruc', 'tipo_empresa', 'actividad_economica', 'ciudad', 'codigo_postal', 'nif')->get()->keyBy('id')->toArray();
+        } catch (\Illuminate\Database\QueryException $e) {
+            session()->flash('error', 'Hubo un problema al actualizar la empresa. Por favor, inténtelo de nuevo más tarde.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.');
+        }
+    }
 
     public function actualizarEmpleado($id, $name, $email, $password, $privilegios, $imagen_url = null,$puesto_empresa)
     {
@@ -294,6 +410,10 @@ private function getCustomErrorMessage($field, $message)
                 $user->puesto_empresa = $puesto_empresa;
                 
                 if (!empty($password)) {
+                    // Verificar longitud de la contraseña
+                    if (strlen($password) < 8) {
+                        throw new \Exception('La contraseña es demasiado corta. Debe tener al menos 8 caracteres.');
+                    }
                     $user->password = bcrypt($password);
                 }
                 
@@ -448,6 +568,28 @@ private function getCustomErrorMessage($field, $message)
         }
     }
     
+    public function dropEmpresa($id)
+    {
+        try {
+            $empresa = Empresa::find($id);
+            if ($empresa) {
+                $empresa->delete();
+                session()->flash('message', 'Empresa eliminada correctamente');
+            } else {
+                session()->flash('error', 'Empresa no encontrada.');
+            }
+
+            // Actualizar la lista de empresas después de la eliminación
+            $this->empresa = Empresa::select('id', 'nombre', 'direccion', 'telefono', 'email', 'ruc', 'tipo_empresa', 'actividad_economica', 'ciudad', 'codigo_postal', 'nif')
+                ->get()
+                ->keyBy('id')
+                ->toArray();
+        } catch (\Illuminate\Database\QueryException $e) {
+            session()->flash('error', 'Hubo un problema al eliminar la empresa. Por favor, inténtelo de nuevo más tarde.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.');
+        }
+    }
     
     public function dropProducto($id)
     {

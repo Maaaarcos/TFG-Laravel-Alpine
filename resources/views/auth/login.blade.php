@@ -58,7 +58,7 @@
 				<p>Bootstrap está licenciado bajo <a href="https://opensource.org/licenses/MIT" target="_blank">Licencia MIT</a></p>
             </div>
             <div class="col-md-6">
-                <p>Algunos contenidos están bajo <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
+                <p>Esta web esta bajo la licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
                 <p>Imagen utilizada <a href="https://www.pexels.com/es-es/foto/botella-surtida-dentro-de-la-barra-941864/" target="_blank">Chan Walrus en Pexels</a></p>
                 <p>Bajo licencia de <a href="https://www.pexels.com/es-ES/license/" target="_blank">Pexels</a></p>
             </div>
