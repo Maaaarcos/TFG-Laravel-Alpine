@@ -15,17 +15,27 @@ class Fichar extends Component
 
     public function mount()
     {
-        $this->hora_inicio = now();
+        $user = auth()->user();
+        if ($user->hora_inicio && !$user->hora_fin) {
+            $this->hora_inicio = Carbon::parse($user->hora_inicio);
+        } else {
+            $this->hora_inicio = null;
+        }
+        $this->hora_fin = $user->hora_fin ? Carbon::parse($user->hora_fin) : null;
+        $this->horas_totales = $user->horas_totales ? Carbon::parse($user->horas_totales)->format('H:i:s') : '00:00:00';
     }
 
     public function fichar()
     {
         $user = auth()->user();
         $user->hora_inicio = now();
+        $user->hora_fin = null; // Reset hora_fin when starting a new session
         $user->save();
 
         $this->hora_inicio = $user->hora_inicio;
+        $this->hora_fin = null;
     }
+
     public static function getUserName()
     {
         return auth()->user()->name;
@@ -63,7 +73,7 @@ class Fichar extends Component
         $diff = $horaInicio->diff($horaFin);
         $horasNuevas = sprintf('%02d:%02d:%02d', $diff->h, $diff->i, $diff->s);
     
-        $horasTotalesAnteriores = Carbon::parse($user->horas_totales);
+        $horasTotalesAnteriores = $user->horas_totales ? Carbon::parse($user->horas_totales) : Carbon::parse('00:00:00');
         $horasTotalesNuevas = $horasTotalesAnteriores->addHours($diff->h)->addMinutes($diff->i)->addSeconds($diff->s);
         $this->horas_totales = $horasTotalesNuevas->format('H:i:s');
     
@@ -73,6 +83,8 @@ class Fichar extends Component
 
     public function render()
     {
-        return view('livewire.fichar');
+        return view('livewire.fichar', [
+            'fichado' => $this->hora_inicio && !$this->hora_fin,
+        ]);
     }
 }

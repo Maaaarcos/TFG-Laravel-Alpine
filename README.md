@@ -64,3 +64,39 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Font Awesome Free License Information
+
+Font Awesome Free 6.0.0 by @fontawesome - https://fontawesome.com
+
+- **Icons**: [CC BY 4.0 License](https://creativecommons.org/licenses/by/4.0/)
+- **Fonts**: [SIL Open Font License 1.1](https://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web)
+- **Code**: [MIT License](https://opensource.org/licenses/MIT)
+
+### Tailwind CSS
+
+Tailwind CSS - https://tailwindcss.com
+
+- **License**: [MIT License](https://opensource.org/licenses/MIT)
+
+### Bootstrap
+
+Bootstrap - https://getbootstrap.com
+
+- **License**: [MIT License](https://opensource.org/licenses/MIT)
+
+### Alpine.js
+
+- **Fuente**: [Alpine.js Documentation](https://alpinejs.dev/start-here)
+- **Licencia**: [MIT License](https://opensource.org/licenses/MIT)
+
+### Creative Commons
+
+Some content in this project is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License](https://creativecommons.org/licenses/by-sa/4.0/).
+
+## Créditos de Imágenes
+
+- **Fotografía de Login**
+  - Fotógrafo: Chan Walrus
+  - Fuente: Pexels ([\[enlace a la página de la imagen en Pexels\]](https://www.pexels.com/es-es/foto/botella-surtida-dentro-de-la-barra-941864/))
+  - Licencia: Consulta la [licencia de Pexels](https://www.pexels.com/es-ES/license/)
