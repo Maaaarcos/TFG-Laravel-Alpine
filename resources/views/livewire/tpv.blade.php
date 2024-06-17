@@ -408,66 +408,94 @@
     $watch('carrito', () => updateValorIVA());
     $watch('totalCarrito', () => updateTotalSinDesglosar());">
     {{-- columna izquierda --}}
-    <div class="bg-gray-800 text-white flex flex-col items-center justify-between h-screen md:w-1/6 lg:w-1/12">
-    <div class="my-2 text-center cursor-pointer"
+    <div class="bg-gris-oscuro text-white flex flex-col items-center justify-between h-screen md:w-1/6 lg:w-1/12">
+        <div class="my-2 text-center cursor-pointer transition duration-300 ease-in-out transform hover:scale-110"
         @click="showTpv = true; showCS = false; showArqueo = false; showVentas = false;">
-        <i class="fa-solid fa-cash-register fa-3x px-4 pb-2 pt-4"></i>
-        <p class="mx-2">TPV</p>
-    </div>
-    <div class="my-2 text-center cursor-pointer"
+       <i class="fa-solid fa-cash-register fa-3x px-4 pb-2 pt-4 "></i>
+       <p class="mx-2">TPV</p>
+   </div>
+   
+   <div class="my-2 text-center cursor-pointer transition duration-300 ease-in-out transform hover:scale-110"
         @click="showTpv = false; showCS = false; showArqueo = false; showVentas = true;">
-        <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4"></i>
-        <p class="mx-2">Ventas</p>
-    </div>
-    <div class="my-2 text-center cursor-pointer"
+       <i class="fa-solid fa-file-invoice fa-3x px-4 pb-2 pt-4 "></i>
+       <p class="mx-2 ">Ventas</p>
+   </div>
+   
+   <div class="my-2 text-center cursor-pointer transition duration-300 ease-in-out transform hover:scale-110"
         @click="showTpv = false; showCS = true; showArqueo = false; showVentas = false;">
-        <i class="fa-solid fa-hand-holding-heart fa-3x px-4 pb-2 pt-4"></i>
-        <p class="mx-2">Sala</p>
-    </div>
-    <div class="my-2 text-center cursor-pointer"
+       <i class="fa-solid fa-store fa-3x px-4 pb-2 pt-4 "></i>
+       <p class="mx-2 ">Sala</p>
+   </div>
+   
+   <div class="my-2 text-center cursor-pointer transition duration-300 ease-in-out transform hover:scale-110"
         @click="showTpv = false; showCS = false; showArqueo = true; showVentas = false;">
-        <i class="fa-solid fa-folder-open fa-3x px-4 pb-2 pt-4"></i>
-        <p class="mx-2">Arqueo</p>
-    </div>
-    <div class="my-2 text-center cursor-pointer">
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-        <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer"
-            onclick="document.getElementById('logout-form').submit();"></i>
-        <p class="mx-2">Salir</p>
-    </div>
+       <i class="fa-solid fa-folder-open fa-3x px-4 pb-2 pt-4 "></i>
+       <p class="mx-2 ">Arqueo</p>
+   </div>
+   
+   <div class="my-2 text-center cursor-pointer transition duration-300 ease-in-out transform hover:scale-110">
+       <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+           @csrf
+       </form>
+       <i class="fa-solid fa-sign-out fa-3x px-4 py-2 cursor-pointer "
+          onclick="document.getElementById('logout-form').submit();"></i>
+       <p class="mx-2 ">Salir</p>
+   </div>
+   
 </div>
 
 
     {{-- columna central --}}
     <div class="flex-1 flex flex-col w-8/12">
         {{-- navegador --}}
-        <div class="bg-gray-600 text-white p-4 h-20 flex items-center" >
+        <div class="bg-gris-oscuro text-white p-4 h-20 flex items-center" >
             <i class="fa-solid fa-magnifying-glass fa-3x px-4 py-2 cursor-pointer"></i>
             <input x-ref="inputCB" id="navegador" name="navegador" type="text" x-model="search"
-                class="rounded-full px-4 py-2 w-full bg-white text-black border border-gray-300 focus:outline-none focus:border-blue-500">
+                class="rounded-full px-4 py-2 w-full bg-white text-black border border-gris-oscuro focus:outline-none focus:border-blue-500">
         </div>
         {{-- tpv --}}
         <div x-show="showTpv" class="flex overflow-x-auto bg-skin-primary">
             <div class="flex flex-col w-full overflow-x-auto bg-skin-primary">
+               
                 <!-- Categorías -->
-                <div class="flex overflow-x-auto bg-skin-primary">
-                    <div class="flex-none w-24 h-24 bg-gray-300 p-4 m-3 cursor-pointer" @click="resetProductos()">
-                        <p class="text-center mt-2">Borrar Filtros</p>
+                <div class="flex overflow-x-auto bg-skin-primary p-4 space-x-2">
+                    <div class="flex-none w-24 h-20 bg-gray-300 flex items-center justify-center cursor-pointer rounded-lg shadow-lg hover:bg-gray-400 transition-all duration-300"
+                        @click="resetProductos()">
+                        <p class="text-center font-semibold text-gray-700">Borrar Filtros</p>
                     </div>
                     <template x-for="categoria in Object.values(categorias)">
-                        <div class="flex-none w-24 h-24 bg-gray-300 p-4 m-3 cursor-pointer" @click="selectProd(categoria.id)">
-                            <p class="text-center mt-2" x-text="categoria.nombre"></p>
+                        <div class="flex-none w-24 h-20 bg-gray-300 flex items-center justify-center cursor-pointer rounded-lg shadow-lg hover:bg-gray-400 transition-all duration-300"
+                            @click="selectProd(categoria.id)">
+                            <p class="text-center font-semibold text-gray-700" x-text="categoria.nombre"></p>
                         </div>
                     </template>
                 </div>
-                <!-- Productos -->
-                <div class="flex-1 bg-gray-200 overflow-y-auto h-screen flex flex-wrap justify-start">
-                    <template x-for="producto in buscarPorNombre()" :key="producto.id">
-                        <div class="my-3 bg-white w-36 h-36 p-2 mx-4 flex flex-col justify-center items-center cursor-pointer" @click="carritoAdd(producto.id)">
-                        <img :src="'{{ asset('storage/') }}/' +  producto.imagen_url" alt="Foto del producto" class="h-12 w-12 object-cover">
 
+
+                <div class="flex-1 overflow-y-auto h-screen flex flex-wrap justify-start overflow-x-auto scrollbar-hide">
+                    <!-- Estilos CSS para la barra de desplazamiento -->
+                    <style>
+                        .custom-scrollbar::-webkit-scrollbar {
+                            width: 8px; /* Grosor de la barra */
+                        }
+                    
+                        .custom-scrollbar::-webkit-scrollbar-track {
+                            background-color: #f1f1f1; /* Color de fondo de la pista */
+                        }
+                    
+                        .custom-scrollbar::-webkit-scrollbar-thumb {
+                            background-color: #9e1414; /* Color del thumb */
+                            border-radius: 4px; /* Radio de las esquinas del thumb */
+                        }
+                    </style>
+                
+                    <!-- Iteración de productos -->
+                    <template x-for="producto in buscarPorNombre()" :key="producto.id">
+                        <div class="my-3 bg-white w-36 h-36 p-2 mx-4 flex flex-col justify-center items-center cursor-pointer transition duration-300 ease-in-out transform hover:scale-105" @click="carritoAdd(producto.id)">
+                            <div class="rounded-full overflow-hidden w-24 h-24 flex items-center justify-center">
+                                <img :src="'{{ asset('storage/') }}/' +  producto.imagen_url" alt="Foto del producto" class="object-cover w-full h-full">
+                            </div>
+                
                             <div class="flex justify-center items-center mt-2">
                                 <p class="h-8 overflow-hidden" x-text="producto.nombre" title="producto.nombre"></p>
                                 <p class="text-xs ml-2 mb-1" x-text="(parseFloat(producto.precio) || 0).toFixed(2) + '€'"></p>
@@ -475,22 +503,25 @@
                         </div>
                     </template>
                 </div>
+                
+                
+            
+                
             </div>
         </div>
 
 
         {{-- Carrito Espera --}}
-        <div x-show="showCS" class="flex overflow-x-auto">
-            <div class="flex flex-col w-full overflow-x-auto">
-                <div class="flex items-center justify-between m-2">
-                    <div class="grid grid-cols-3 gap-4">
+        <div x-show="showCS" class="flex justify-center overflow-x-auto py-4">
+            <div class="flex flex-col w-full">
+                <div class="flex items-center justify-center m-2">
+                    <div class="grid grid-cols-3 gap-x-32 gap-y-8"> <!-- Incrementamos el gap a 8 -->
                         <template x-for="(item, index) in Object.entries(carritoEspera)" :key="index">
-                            <div class="relative bg-gray-200 p-4 rounded-lg flex flex-col items-center justify-center cursor-pointer"
-                                @click="cargarCarrito(index)">
+                            <div class="relative bg-gray-200 p-6 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-300 transform hover:scale-105 transition-transform"                                @click="cargarCarrito(index)">
                                 <button @click.stop="eliminarCarritoEspera(index)"
                                         class="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 rounded">
-                                            <i class="fa-solid fa-xmark fa-x px-1 py-1 cursor-pointer"></i>
-                                    </button>
+                                    <i class="fa-solid fa-xmark fa-x px-1 py-1 cursor-pointer"></i>
+                                </button>
                                 <p class="text-lg font-semibold" x-text="'Mesa ' + (index + 1)"></p>
                                 <p class="mt-2">Vendedor: <span x-text="item[1].vendedor"></span></p>
                             </div>
@@ -499,6 +530,7 @@
                 </div>
             </div>
         </div>
+        
 
         {{-- arqueo --}}
         <div x-show="showArqueo" x-data="{ saldoTotal: 0 }" class="flex overflow-x-auto" x-init="">
@@ -510,7 +542,7 @@
                 </div>
                 <table class="w-full">
                     <thead class="bg-skin-primary">
-                        <tr class="text-white text-lg border-b-2 border-black">
+                        <tr class="text-black text-lg border-b-2 border-black">
                             <th class="px-4 py-2" colspan="1">Fecha</th>
                             <th class="px-4 py-2" colspan="1">Saldo Inicial</th>
                             <th class="px-4 py-2" colspan="1">Pagos Tarjeta</th>
@@ -591,176 +623,142 @@
                 class="flex gap-4 fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 justify-center items-center transition-all duration-500"
                 x-init="calcularSumaBilletes();" @input="calcularSumaBilletes()">
                 {{-- Ventana para conteo billetes cierre --}}
-                <div x-show="showArqueoCierre" class=" bg-white p-4 rounded-lg flex flex-col">
-
-                    <div class="flex">
-                        <div class="w-1/3 m-2">
-                            <span class="block" x-text="'Usuario: ' + user"></span>
-                            <span class="block" x-text="'Caja: ' + cajaSeleccionada"></span>
-                            <span class="block"
-                                x-text="'Fecha: ' + fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
-                            </span>
-                            <div class="w-1/3 m-2">
-                                <label for="saldoEsperado" class="inline-block whitespace-nowrap">Saldo
-                                    Esperado:</label>
-                                <span x-text="saldoEsperado + '€'"></span>
-                            </div>
-                            <div class="w-1/3 m-2">
-                                <label for="sumaBilletes" class="inline-block whitespace-nowrap">Saldo Total:</label>
-                                <span x-text="sumaBilletes.toFixed(2) + '€'"></span>
-                            </div>
-                            <div class="w-1/3 m-2">
-                                <label for="saldoInicialSiguiente" class="inline-block whitespace-nowrap">Saldo
-                                    Inicial día siguiente:</label>
-                                <span x-text="saldoInicialSiguiente + '€'"></span>
-                            </div>
-                            <div class="w-1/3 m-2">
-                                <span class="inline-block whitespace-nowrap text-red-600"
-                                    x-show="saldoEsperado !== sumaBilletes"
-                                    x-text="'Descuadre: ' + (saldoEsperado - sumaBilletes).toFixed(2) + '€'"></span>
-                            </div>
-                            {{-- <div class="w-2/3 m-1" x-data="{ justificacion: '' }">
-                                <textarea x-show="sumaBilletes !== saldoEsperado" class="w-full mt-2" rows="3" id="justificacion"
-                                    name="justificacion" placeholder="Justificación descuadre" x-model="justificacion">
-                                </textarea>
-                            </div> --}}
-                        </div>
-                        {{-- billetes --}}
-                        <div class="w-1/3 mr-6">
-                            <template x-for="(cantidad, denominacion) in billetesCierre" :key="denominacion">
-                                <template x-if="['500', '200', '100', '50', '20', '10', '5'].includes(denominacion)">
-                                    <div class="mx-5 my-2 flex flex-col items-center">
-                                        <label x-text="'Billete/s de ' + denominacion + '€:'"></label>
-                                        <div class="flex items-center">
-                                            <button @click="decrementar(denominacion, 5)"
-                                                class="mx-1 boton-arqueo">-5</button>
-                                            <button @click="decrementar(denominacion, 1)"
-                                                class="mx-1 boton-arqueo">-1</button>
-                                            <input x-model="billetesCierre[denominacion]" class="w-full"
-                                                type="number" :name="'billetesCierre' + denominacion" min="0"
-                                                value="0">
-                                            <button @click="incrementar(denominacion, 1)"
-                                                class="mx-1 boton-arqueo">+1</button>
-                                            <button @click="incrementar(denominacion, 5)"
-                                                class="mx-1 boton-arqueo">+5</button>
-                                        </div>
+                
+<div x-show="showArqueoCierre" class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center transition-all duration-500 z-50">
+    <div class="bg-white rounded-lg overflow-y-auto max-h-full w-full md:max-w-3xl">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <span class="block font-bold text-lg text-gray-900" x-text="'Usuario: ' + user"></span>
+                    <span class="block font-bold text-lg text-gray-900" x-text="'Caja: ' + cajaSeleccionada"></span>
+                    <span class="block text-sm text-gray-600" x-text="'Fecha: ' + fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})"></span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="saldoEsperado" class="inline-block font-bold text-gray-900">Saldo Esperado:</label>
+                    <span class="block text-lg font-semibold text-gray-900" x-text="saldoEsperado.toFixed(2) + '€'"></span>
+                </div>
+                <div>
+                    <label for="sumaBilletes" class="inline-block font-bold text-gray-900">Saldo Total:</label>
+                    <span class="block text-lg font-semibold text-gray-900" x-text="sumaBilletes.toFixed(2) + '€'"></span>
+                </div>
+                <div>
+                    <label for="saldoInicialSiguiente" class="inline-block font-bold text-gray-900">Saldo Inicial día siguiente:</label>
+                    <span class="block text-lg font-semibold text-gray-900" x-text="saldoInicialSiguiente.toFixed(2) + '€'"></span>
+                </div>
+                <div class="col-span-3 mt-4">
+                    <span class="block text-red-600 font-bold" x-show="saldoEsperado !== sumaBilletes" x-text="'Descuadre: ' + (saldoEsperado - sumaBilletes).toFixed(2) + '€'"></span>
+                </div>
+                <div class="col-span-3">
+                    <div class="grid grid-cols-2 gap-4">
+                        {{-- Billetes --}}
+                        <template x-for="(cantidad, denominacion) in billetesCierre" :key="denominacion">
+                            <template x-if="['500', '200', '100', '50', '20', '10', '5'].includes(denominacion)">
+                                <div class="flex items-center justify-between bg-gray-100 rounded p-2">
+                                    <label class="font-bold text-gray-900" x-text="'Billetes de ' + denominacion + '€:'"></label>
+                                    <div class="flex items-center space-x-2">
+                                        <button @click="decrementar(denominacion, 5)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">-5</button>
+                                        <button @click="decrementar(denominacion, 1)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">-1</button>
+                                        <input x-model="billetesCierre[denominacion]" class="w-16 text-center bg-gray-200 text-gray-700 rounded" type="number" :name="'billetesCierre' + denominacion" min="0" value="0">
+                                        <button @click="incrementar(denominacion, 1)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">+1</button>
+                                        <button @click="incrementar(denominacion, 5)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">+5</button>
                                     </div>
-                                </template>
+                                </div>
                             </template>
-                        </div>
-                        {{-- monedas --}}
-                        <div class="w-1/3">
-                            <template x-for="(cantidad, denominacion) in billetesCierre" :key="denominacion">
-                                <template
-                                    x-if="['2', '1', '05', '02', '01', '005', '002', '001'].includes(denominacion)">
-                                    <div class="mx-5 my-2 flex flex-col items-center">
-                                        <label x-text="'Moneda/s de ' + denominacion + '€:'"></label>
-                                        <div class="flex items-center">
-                                            <button @click="decrementar(denominacion, 5)"
-                                                class="mx-1 boton-arqueo">-5</button>
-                                            <button @click="decrementar(denominacion, 1)"
-                                                class="mx-1 boton-arqueo">-1</button>
-                                            <input x-model="billetesCierre[denominacion]" class="w-full"
-                                                type="number" :name="'billetesCierre' + denominacion" min="0"
-                                                value="0">
-                                            <button @click="incrementar(denominacion, 1)"
-                                                class="mx-1 boton-arqueo">+1</button>
-                                            <button @click="incrementar(denominacion, 5)"
-                                                class="mx-1 boton-arqueo">+5</button>
-                                        </div>
+                        </template>
+                        {{-- Monedas --}}
+                        <template x-for="(cantidad, denominacion) in billetesCierre" :key="denominacion">
+                            <template x-if="['2', '1', '05', '02', '01', '005', '002', '001'].includes(denominacion)">
+                                <div class="flex items-center justify-between bg-gray-100 rounded p-2">
+                                    <label class="font-bold text-gray-900" x-text="'Monedas de ' + denominacion + '€:'"></label>
+                                    <div class="flex items-center space-x-2">
+                                        <button @click="decrementar(denominacion, 5)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">-5</button>
+                                        <button @click="decrementar(denominacion, 1)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">-1</button>
+                                        <input x-model="billetesCierre[denominacion]" class="w-16 text-center bg-gray-200 text-gray-700 rounded" type="number" :name="'billetesCierre' + denominacion" min="0" value="0">
+                                        <button @click="incrementar(denominacion, 1)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">+1</button>
+                                        <button @click="incrementar(denominacion, 5)" class="boton-arqueo bg-gray-200 text-gray-700 px-2 py-1 rounded">+5</button>
                                     </div>
-                                </template>
+                                </div>
                             </template>
+                        </template>
+                    </div>
+                </div>
+                {{-- Justificación de descuadre --}}
+                <div class="col-span-3 mt-4">
+                    <div x-data="{ mostrarTextarea: false, justificacion: '' }">
+                        <div class="contenedor_ticket border border-gray-300 p-4 rounded-lg cursor-pointer bg-gray-100">
+                            <div class="ticket_text text-gray-700" x-show="!mostrarTextarea">Añadir justificación</div>
+                            <textarea x-show="mostrarTextarea" class="w-full mt-2 p-2 border border-gray-300 rounded" id="justificacion" name="justificacion" x-ref="justificacion" x-model="justificacion"></textarea>
                         </div>
                     </div>
-                    <div class="">
-                        <button class="boton boton-danger text-2xl"
-                            @click="showComprobanteArqueo = false">CANCELAR</button>
+                </div>
+                {{-- Botones de acción --}}
+                <div class="col-span-3 mt-4 flex justify-end space-x-4">
+                    <button class="boton boton-danger px-4 py-2 text-lg bg-red-500 text-white rounded hover:bg-red-600" @click="showComprobanteArqueo = false">CANCELAR</button>
+                    <button class="boton boton-success px-4 py-2 text-lg bg-green-500 text-white rounded hover:bg-green-600" @click="VentanaRetiradaDinero = true; showArqueoCierre = false;" :disabled="dineroRetirado > sumaBilletes && sumaBilletes == 0">CREAR</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+</div>
+{{-- Ventana de confirmacion de retirada de dinero --}}
+<div x-show="VentanaRetiradaDinero" x-data="{ retirar: false }"
+class="bg-white p-8 rounded-lg flex flex-col">
+<div x-show="!retirar">
+    <i class="fa-solid fa-chevron-left fa-2x px-4 pb-2 pt-4 mb-3"
+        @click=" showArqueoCierre = true; VentanaRetiradaDinero = false"></i>
+    <label class="inline-block whitespace-nowrap">¿Deseas retirar dinero?</label>
+    <button @click=" retirar = true " class="mr-4 boton boton-success">Sí</button>
+    <button
+        @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes);  $wire.cierreCajaAndUpdate(cajaSeleccionada, sumaBilletes)"
+        class="boton boton-danger">No</button>
+</div>
+<div x-show="retirar" class="mt-4 max-h-screen overflow-y-auto bg-white p-8 rounded-lg">
+    <div class="flex">
+        <div class="w-1/2">
+            <template x-for="(cantidad, denominacion) in billetesCierre" :key="denominacion">
+                <template x-if="['500', '200', '100', '50', '20', '10', '5'].includes(denominacion)">
+                    <div class="mx-5 my-2 flex flex-col items-center">
+                        <label x-text="'Billete/s de ' + denominacion + '€:'"></label>
+                        <div class="flex items-center">
+                            <button @click="decrementar(denominacion, 5)" class="mx-1 boton-arqueo">-5</button>
+                            <button @click="decrementar(denominacion, 1)" class="mx-1 boton-arqueo">-1</button>
+                            <input x-model="billetesCierre[denominacion]"
+                                   class="p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-blue-500"
+                                   type="number" :name="'billetesCierre' + denominacion" min="0" value="0">
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+        <div class="w-1/2">
+            <template x-for="(cantidad, denominacion) in billetesCierre" :key="denominacion">
+                <template x-if="['2', '1', '05', '02', '01', '005', '002', '001'].includes(denominacion)">
+                    <div class="mx-5 my-2 flex flex-col items-center">
+                        <label x-text="'Moneda/s de ' + denominacion + '€:'"></label>
+                        <div class="flex items-center">
+                            <button @click="decrementar(denominacion, 5)" class="mx-1 boton-arqueo">-5</button>
+                            <button @click="decrementar(denominacion, 1)" class="mx-1 boton-arqueo">-1</button>
+                            <input x-model="billetesCierre[denominacion]"
+                                   class="p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-blue-500"
+                                   type="number" :name="'billetesCierre' + denominacion" min="0" value="0">
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </div>
+    <div class="mt-4 flex justify-end">
+        <button @click="VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes); $wire.cierreCajaAndUpdate(cajaSeleccionada, sumaBilletes);"
+                class="boton bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md mr-2">Completar operación</button>
+        <button @click="retirar = false" class="boton boton-danger bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md">Cancelar</button>
+    </div>
+</div>
 
-                        <button
-                            class="boton boton-success ml-4 text-2xl"
-                            @click=" VentanaRetiradaDinero = true; showArqueoCierre = false; "
-                            :disabled="dineroRetirado > sumaBilletes && sumaBilletes == 0">CREAR</button>
-                    </div>
-                </div>
-                <div x-data="{ mostrarTextarea: false, justificacion: '' }">
-                    <div x-show="sumaBilletes !== saldoEsperado && !VentanaRetiradaDinero" class="contenedor_ticket"
-                        @click="mostrarTextarea = true; $nextTick(() => $refs.justificacion.focus())">
-                        <div class="ticket">
-                            <div class="ticket_content">
-                                <div class="ticket_text" x-show="!mostrarTextarea"
-                                    x-text="justificacion ? '' : 'Justificante descuadre'"></div>
-                                <textarea x-show="mostrarTextarea" class="w-full h-full outline-none resize-none" id="justificacion"
-                                    name="justificacion" x-ref="justificacion" x-model="justificacion" style="border: none; outline: none;"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {{-- Ventana de confirmacion de retirada de dinero --}}
-                <div x-show="VentanaRetiradaDinero" x-data="{ retirar: false }"
-                    class="bg-white p-8 rounded-lg flex flex-col">
-                    <div x-show="!retirar">
-                        <i class="fa-solid fa-chevron-left fa-2x px-4 pb-2 pt-4 mb-3"
-                            @click=" showArqueoCierre = true; VentanaRetiradaDinero = false"></i>
-                        <label class="inline-block whitespace-nowrap">¿Deseas retirar dinero?</label>
-                        <button @click=" retirar = true " class="mr-4 boton boton-success">Sí</button>
-                        <button
-                            @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes);  $wire.cierreCajaAndUpdate(cajaSeleccionada, sumaBilletes)"
-                            class="boton boton-danger">No</button>
-                    </div>
-                    <div x-show="retirar">
-                        <div>
-                            <div class="flex">
-                                <div class="w-1/2">
-                                    <template x-for="(cantidad, denominacion) in billetesCierre"
-                                        :key="denominacion">
-                                        <template
-                                            x-if="['500', '200', '100', '50', '20', '10', '5'].includes(denominacion)">
-                                            <div class="mx-5 my-2 flex flex-col items-center">
-                                                <label x-text="'Billete/s de ' + denominacion + '€:'"></label>
-                                                <div class="flex items-center">
-                                                    <button @click="decrementar(denominacion, 5)"
-                                                        class="mx-1 boton-arqueo">-5</button>
-                                                    <button @click="decrementar(denominacion, 1)"
-                                                        class="mx-1 boton-arqueo">-1</button>
-                                                    <input x-model="billetesCierre[denominacion]" class="w-full"
-                                                        type="number" :name="'billetesCierre' + denominacion"
-                                                        min="0" value="0">
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </template>
-                                </div>
-                                <div class="w-1/2">
-                                    <template x-for="(cantidad, denominacion) in billetesCierre"
-                                        :key="denominacion">
-                                        <template
-                                            x-if="['2', '1', '05', '02', '01', '005', '002', '001'].includes(denominacion)">
-                                            <div class="mx-5 my-2 flex flex-col items-center">
-                                                <label x-text="'Moneda/s de ' + denominacion + '€:'"></label>
-                                                <div class="flex items-center">
-                                                    <button @click="decrementar(denominacion, 5)"
-                                                        class="mx-1 boton-arqueo">-5</button>
-                                                    <button @click="decrementar(denominacion, 1)"
-                                                        class="mx-1 boton-arqueo">-1</button>
-                                                    <input x-model="billetesCierre[denominacion]" class="w-full"
-                                                        type="number" :name="'billetesCierre' + denominacion"
-                                                        min="0" value="0">
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <button
-                                @click=" VentanaRetiradaDinero = true; enviarDatosArqueo(user, cajaSeleccionada, billetesCierre, saldoInicialSiguiente, sumaBilletes); $wire.cierreCajaAndUpdate(cajaSeleccionada, sumaBilletes);"
-                                class="boton">Completar operación</button>
-                            <button @click=" retirar = false " class="boton boton-danger">Cancelar</button>
-                        </div>
-                    </div>
-                </div>
+</div>
             </div>
         </div>
 
@@ -773,7 +771,7 @@
                 </div>
                 <table class="w-full">
                     <thead class="bg-skin-primary uppercase">
-                        <tr class="text-white text-lg border-b-2 border-black">
+                        <tr class="text-black text-lg border-b-2 border-black">
                             <th class="px-2 py-2 text-base" colspan="1">referencia</th>
                             <th class="px-2 py-2 text-base" colspan="1">tercero</th>
                             <th class="px-2 py-2 text-base" colspan="1">fecha</th>
@@ -884,7 +882,7 @@
         </div>
     </div>
     {{-- columna derecha --}}
-    <div class="bg-gray-600 text-white w-3/12 flex flex-col h-screen">
+    <div class="bg-gris-oscuro text-white w-3/12 flex flex-col h-screen">
 
             <div class="text-white p-4 h-20 ml-auto flex items-center relative rounded-sm" x-data="{ open: false, cambioUsuario: false, fichaje:false, carritosEsperaOpen: false, productosCarritoEspera: false, configuracion: false, 
             usuario: ''}"
@@ -947,34 +945,34 @@
                 </div>
             </div>
         </div>
-        <div class="flex-1 bg-white border-l-4 border-gray-500 overflow-y-auto ">
-            <table class="table-auto table-list">
+        <div class="flex-1 bg-white border-l-4 border-gris-oscuro overflow-y-auto">
+            <table class="table-auto table-list bg-gris-predeterminado w-full">
                 <thead>
                     <tr>
-                        <th class="border-r border-black">CANT</th>
-                        <th class="col-span-2 border-black">NOMBRE</th>
-                        <th>SUB.TOTAL</th>
-                        <th class="ml-4 border-black">TOTAL</th>
+                        <th class="border-r border-black text-center">CANT</th>
+                        <th class="col-span-2 border-black text-center">NOMBRE</th>
+                        <th class="text-center">SUB.TOTAL</th>
+                        <th class="ml-4 text-center">TOTAL</th>
                         <th class="border-l border-black"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="articulo in carrito">
-                        <tr class="bg-slate-200 text-black text-sm">
-                            <td class="border-r border-black" x-text="articulo.cantidad"></td>
-                            <td class="col-span-2 overflow-hidden" x-text="articulo.name"></td>
-                            <td class="ml-4" x-text="(articulo.precio).toFixed(2) + '€'"></td>
-                            <td x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
-                            <td class="border-l border-black" @click="dropCarrito(articulo.id)">
-                                <i class="fa-solid fa-trash cursor-pointer text-red-600"></i>
+                        <tr class="bg-white text-black text-sm">
+                            <td class="border-r border-black text-center" x-text="articulo.cantidad"></td>
+                            <td class="col-span-2 overflow-hidden text-center" x-text="articulo.name"></td>
+                            <td class="ml-4 text-center" x-text="(articulo.precio).toFixed(2) + '€'"></td>
+                            <td class="text-center" x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
+                            <td class="border-l border-black text-center cursor-pointer" @click="dropCarrito(articulo.id)">
+                                <i class="fa-solid fa-trash text-red-600"></i>
                             </td>
                         </tr>
                     </template>
                 </tbody>
             </table>
-
         </div>
-        <div class="grid grid-cols-2 gap-4 pl-3 bg-gray-500 rounded-tl-xl rounded-tr-xl">
+        
+        <div class="grid grid-cols-2 gap-4 pl-3 bg-gris-predeterminado rounded-tl-xl rounded-tr-xl">
             {{-- Columna de datos --}}
             <div>
                 <ul>
@@ -994,14 +992,34 @@
         </div>
 
         {{-- botones venta --}}
-        <div x-show="showUsuarioCarritoEspera" class="absolute bg-white text-black p-4 rounded shadow-lg w-48 text-lg">
-            <input type="text" x-model="nombreVendedor" placeholder="Nombre del vendedor" class="p-2 border border-gray-300 rounded mb-2">
-            <input type="number" x-model="mesa" min="0" max="11" placeholder="Número de mesa" class="p-2 border border-gray-300 rounded mb-2">
-            <button @click="guardarCarritoEnEspera(nombreVendedor, mesa); showUsuarioCarritoEspera = false;" 
-                    class="mt-2 boton boton-success text-sm px-4 py-2 rounded-md">Guardar</button>
-            <button @click="showUsuarioCarritoEspera = false;"  class="mt-2 boton boton-success text-sm px-4 py-2 rounded-md">Cancelar</button>
+        <div x-show="showUsuarioCarritoEspera" class="absolute bg-white text-black p-4 rounded shadow-lg w-72">
+            <h2 class="text-lg font-bold mb-4">Guardar Carrito en Espera</h2>
+            <form>
+                <div class="mb-4">
+                    <label for="nombreVendedor" class="block text-sm font-medium text-gray-700">Nombre del vendedor</label>
+                    <input id="nombreVendedor" type="text" x-model="nombreVendedor"
+                           placeholder="Nombre del vendedor"
+                           class="p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-blue-500"
+                           readonly>
+                </div>
+                <div class="mb-4">
+                    <label for="mesa" class="block text-sm font-medium text-gray-700">Número de mesa</label>
+                    <input id="mesa" type="number" x-model="mesa" min="0" max="11"
+                           placeholder="Número de mesa"
+                           class="p-2 border border-gray-300 rounded w-full focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="flex justify-end">
+                    <button type="button"
+                            @click="showUsuarioCarritoEspera = false;"
+                            class="boton boton-danger text-sm px-4 py-2 rounded-md bg-red-500 hover:bg-red-700 text-white hover:text-white">Cancelar</button>
+                    <button type="button"
+                            @click="guardarCarritoEnEspera(nombreVendedor, mesa); showUsuarioCarritoEspera = false;"
+                            class="ml-2 boton boton-success text-sm px-4 py-2 rounded-md bg-green-500 hover:bg-green-700 text-white hover:text-white">Guardar</button>
+                </div>
+            </form>
         </div>
-        <div class="bg-gray-600 text-white p-1">
+        
+        <div class="bg-gris-oscuro text-white p-1">
             <div class="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-0">
                 <button @click="deleteCarrito" class="m-1 flex-grow items-center boton boton-danger !p-4">
                     <i class="fa-solid fa-trash cursor-pointer"></i>
@@ -1029,149 +1047,130 @@
                 esVisible = true;
             }
         }"
-        class="flex gap-4 fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 justify-center items-center">
-        <div class="bg-white p-8 rounded-lg flex flex-col">
-            <div class="w-full">
-                <label for="usuario">Usuario:</label>
-                <span x-text="user"></span>
+        class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center duration-500">
+
+        <div class="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto">
+            <div class="mb-4">
+                <label for="usuario" class="block text-sm font-medium text-gray-700">Usuario:</label>
+                <span class="text-gray-900" x-text="user"></span>
             </div>
-            <div class="w-full">
-                <label for="caja">Caja:</label>
-                <select x-model="cajaSeleccionada" class="w-full" id="caja" name="caja">
+            <div class="mb-4">
+                <label for="caja" class="block text-sm font-medium text-gray-700">Caja:</label>
+                <select x-model="cajaSeleccionada" id="caja" name="caja" class="w-full mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <option value="" disabled selected>Selecciona una caja</option>
                     <template x-for="caja in cajas" :key="caja.id">
                         <option x-bind:value="caja.id" x-text="caja.name"></option>
                     </template>
                 </select>
             </div>
-            <button type="button" class="boton mt-4" :disabled="!cajaSeleccionada"
-                    @click="sacarDatosInicioArqueo(cajaSeleccionada); $wire.valorSaldoIncial(cajaSeleccionada); $wire.valorBilletes(cajaSeleccionada).then(result => { billetes = result; });">Aceptar</button>
+            <button type="button" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-blue-200"
+                    :disabled="!cajaSeleccionada"
+                    @click="sacarDatosInicioArqueo(cajaSeleccionada); $wire.valorSaldoIncial(cajaSeleccionada); $wire.valorBilletes(cajaSeleccionada).then(result => { billetes = result; });">
+                Aceptar
+            </button>
         </div>
+        
     </div>
     <div id="{{ uniqid() }}" x-show="esVisible && !showInicioCaja"
-        x-data="{
-            sumaBilletes: 0,
-            calcularSumaBilletes() {
-                let valoresBilletes = {
-                    '500': 500,
-                    '200': 200,
-                    '100': 100,
-                    '50': 50,
-                    '20': 20,
-                    '10': 10,
-                    '5': 5,
-                    '2': 2,
-                    '1': 1,
-                    '05': 0.5,
-                    '02': 0.2,
-                    '01': 0.1,
-                    '005': 0.05,
-                    '002': 0.02,
-                    '001': 0.01
-                };
-                return this.sumaBilletes = Object.entries(billetes)
-                    .reduce((acc, [billete, cantidad]) => acc + (valoresBilletes[billete] * cantidad), 0);
-            },
-            enviarDatosYCerrar(cajaSeleccionada, billetes) {
-                $wire.crearArqueoInicio(cajaSeleccionada, billetes);
-                showInicioCaja = false;
-                esVisible = false;
-            },
-            incrementar(inputKey, increment) {
-                billetes[inputKey] += increment;
-                this.calcularSumaBilletes();
-            },
-            decrementar(inputKey, decrement) {
-                if (billetes[inputKey] >= decrement) {
-                    billetes[inputKey] -= decrement;
-                    this.calcularSumaBilletes();
-                }
-            },
-            saldoInicialNumerico() {
-                return Number(this.saldoInicial);
-            }
-        }"
-        class="flex gap-4 fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 justify-center items-center transition-all duration-500"
-        x-init="calcularSumaBilletes();"
-        @input=" sumaBilletes = calcularSumaBilletes();">
-        <div class="bg-white p-8 rounded-lg flex flex-col">
-
-            <div class="flex">
-                <div class="w-1/3 m-2">
-                    <i class="fa-solid fa-chevron-left fa-3x px-4 pb-2 pt-4 mb-3"
-                        @click=" esVisible=false; showSeleccionCaja= true; $wire.set('billetes', true);"></i>
-                    <span class="block" x-text="'Usuario: ' + user"></span>
-                    <span class="block" x-text="'Caja: ' + cajaSeleccionada"></span>
-                    <span class="block"
-                        x-text="'Fecha: ' + fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})">
-                    </span>
-                    <div class="w-1/3 m-2">
-                        <label for="saldoInicial" class="inline-block whitespace-nowrap">Saldo Inicial:</label>
-                        <span id="saldoInicial" x-text="saldoInicialNumerico().toFixed(2) + '€'"></span>
-                    </div>
-                    <div class="w-1/3 m-2">
-                        <label for="sumaBilletes" class="inline-block whitespace-nowrap">Conteo dinero:</label>
-                        <span id="sumaBilletes" x-text="calcularSumaBilletes() + '€'"></span>
-                    </div>
-                    <div class="w-1/3 m-2">
-                        <span class="inline-block whitespace-nowrap text-red-600"
-                            x-show="saldoInicialNumerico() !== sumaBilletes"
-                            x-text="'Descuadre: ' + (saldoInicial - sumaBilletes).toFixed(2) + '€'"></span>
-                    </div>
-
+     x-data="{
+         sumaBilletes: 0,
+         calcularSumaBilletes() {
+             let valoresBilletes = {
+                 '500': 500, '200': 200, '100': 100, '50': 50,
+                 '20': 20, '10': 10, '5': 5, '2': 2,
+                 '1': 1, '05': 0.5, '02': 0.2,
+                 '01': 0.1, '005': 0.05, '002': 0.02, '001': 0.01
+             };
+             return this.sumaBilletes = Object.entries(billetes)
+                 .reduce((acc, [billete, cantidad]) => acc + (valoresBilletes[billete] * cantidad), 0);
+         },
+         enviarDatosYCerrar(cajaSeleccionada, billetes) {
+             $wire.crearArqueoInicio(cajaSeleccionada, billetes);
+             showInicioCaja = false;
+             esVisible = false;
+         },
+         incrementar(inputKey, increment) {
+             billetes[inputKey] += increment;
+             this.calcularSumaBilletes();
+         },
+         decrementar(inputKey, decrement) {
+             if (billetes[inputKey] >= decrement) {
+                 billetes[inputKey] -= decrement;
+                 this.calcularSumaBilletes();
+             }
+         },
+         saldoInicialNumerico() {
+             return Number(this.saldoInicial);
+         }
+     }"
+     class="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center transition-all duration-500"
+     x-init="calcularSumaBilletes();"
+     @input="sumaBilletes = calcularSumaBilletes();">
+    <div class="bg-white p-8 rounded-lg flex flex-col w-full max-w-3xl">
+        <div class="flex">
+            <div class="w-1/3 m-2">
+                <i class="fa-solid fa-chevron-left fa-3x px-4 pb-2 pt-4 mb-3 cursor-pointer text-gray-600"
+                   @click="esVisible=false; showSeleccionCaja=true; $wire.set('billetes', true);"></i>
+                <span class="block text-gray-800 font-bold" x-text="'Usuario: ' + user"></span>
+                <span class="block text-gray-800 font-bold" x-text="'Caja: ' + cajaSeleccionada"></span>
+                <span class="block text-gray-800 font-bold"
+                      x-text="'Fecha: ' + fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})"></span>
+                <div class="mt-4">
+                    <label for="saldoInicial" class="block text-gray-800 font-bold">Saldo Inicial:</label>
+                    <span id="saldoInicial" x-text="saldoInicialNumerico().toFixed(2) + '€'"></span>
                 </div>
-                {{-- billetes --}}
-                <div class="w-1/3 m-2">
-                    <template x-for="(cantidad, denominacion) in billetes" :key="denominacion">
-                        <template x-if="['500', '200', '100', '50', '20', '10', '5'].includes(denominacion)">
-                            <div class="mx-5 my-2 flex flex-col items-center">
-                                <label x-text="'Billete/s de ' + denominacion + '€:'"></label>
-                                <div class="flex items-center">
-                                    <button @click="decrementar(denominacion, 5)"
-                                        class="mx-1 boton-arqueo">-5</button>
-                                    <button @click="decrementar(denominacion, 1)"
-                                        class="mx-1 boton-arqueo">-1</button>
-                                    <input x-model="billetes[denominacion]" class="w-full" type="number"
-                                        :name="'billetes' + denominacion" min="0" value="0">
-                                    <button @click="incrementar(denominacion, 1)"
-                                        class="mx-1 boton-arqueo">+1</button>
-                                    <button @click="incrementar(denominacion, 5)"
-                                        class="mx-1 boton-arqueo">+5</button>
-                                </div>
-                            </div>
-                        </template>
-                    </template>
+                <div class="mt-4">
+                    <label for="sumaBilletes" class="block text-gray-800 font-bold">Conteo dinero:</label>
+                    <span id="sumaBilletes" x-text="calcularSumaBilletes() + '€'"></span>
                 </div>
-                {{-- monedas --}}
-                <div class="w-1/3 m-2">
-                    <template x-for="(cantidad, denominacion) in billetes" :key="denominacion">
-                        <template x-if="['2', '1', '05', '02', '01', '005', '002', '001'].includes(denominacion)">
-                            <div class="mx-5 my-2 flex flex-col items-center">
-                                <label x-text="'Billete/s de ' + denominacion + '€:'"></label>
-                                <div class="flex items-center">
-                                    <button @click="decrementar(denominacion, 5)"
-                                        class="mx-1 boton-arqueo">-5</button>
-                                    <button @click="decrementar(denominacion, 1)"
-                                        class="mx-1 boton-arqueo">-1</button>
-                                    <input x-model="billetes[denominacion]" class="w-full" type="number"
-                                        :name="'billetes' + denominacion" min="0" value="0">
-                                    <button @click="incrementar(denominacion, 1)"
-                                        class="mx-1 boton-arqueo">+1</button>
-                                    <button @click="incrementar(denominacion, 5)"
-                                        class="mx-1 boton-arqueo">+5</button>
-                                </div>
-                            </div>
-                        </template>
-                    </template>
+                <div class="mt-4">
+                    <span class="block text-red-600 font-bold" x-show="saldoInicialNumerico() !== sumaBilletes"
+                          x-text="'Descuadre: ' + (saldoInicial - sumaBilletes).toFixed(2) + '€'"></span>
                 </div>
             </div>
-            <div class="">
-                <button class="boton boton-success ml-4"
-                    @click=" enviarDatosYCerrar(cajaSeleccionada, billetes); ";
-                    :disabled="saldoInicialNumerico() !== sumaBilletes">Crear Arqueo de hoy</button>
+            <!-- Billetes -->
+            <div class="w-1/3 m-2">
+                <template x-for="(cantidad, denominacion) in billetes" :key="denominacion">
+                    <template x-if="['500', '200', '100', '50', '20', '10', '5'].includes(denominacion)">
+                        <div class="mx-5 my-2">
+                            <label x-text="'Billete/s de ' + denominacion + '€:'" class="block text-gray-800 font-bold"></label>
+                            <div class="flex items-center">
+                                <button @click="decrementar(denominacion, 5)" class="boton-arqueo bg-red-500 hover:bg-red-600 text-white rounded-md px-3 py-1 mr-1">-5</button>
+                                <button @click="decrementar(denominacion, 1)" class="boton-arqueo bg-red-500 hover:bg-red-600 text-white rounded-md px-3 py-1 mr-1">-1</button>
+                                <input x-model="billetes[denominacion]" class="w-full ml-2 mr-2 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="number" :name="'billetes' + denominacion" min="0" value="0">
+                                <button @click="incrementar(denominacion, 1)" class="boton-arqueo bg-green-500 hover:bg-green-600 text-white rounded-md px-3 py-1 mr-1">+1</button>
+                                <button @click="incrementar(denominacion, 5)" class="boton-arqueo bg-green-500 hover:bg-green-600 text-white rounded-md px-3 py-1 mr-1">+5</button>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </div>
+            <!-- Monedas -->
+            <div class="w-1/3 m-2">
+                <template x-for="(cantidad, denominacion) in billetes" :key="denominacion">
+                    <template x-if="['2', '1', '05', '02', '01', '005', '002', '001'].includes(denominacion)">
+                        <div class="mx-5 my-2">
+                            <label x-text="'Moneda/s de ' + denominacion + '€:'" class="block text-gray-800 font-bold"></label>
+                            <div class="flex items-center">
+                                <button @click="decrementar(denominacion, 5)" class="boton-arqueo bg-red-500 hover:bg-red-600 text-white rounded-md px-3 py-1 mr-1">-5</button>
+                                <button @click="decrementar(denominacion, 1)" class="boton-arqueo bg-red-500 hover:bg-red-600 text-white rounded-md px-3 py-1 mr-1">-1</button>
+                                <input x-model="billetes[denominacion]" class="w-full ml-2 mr-2 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="number" :name="'billetes' + denominacion" min="0" value="0">
+                                <button @click="incrementar(denominacion, 1)" class="boton-arqueo bg-green-500 hover:bg-green-600 text-white rounded-md px-3 py-1 mr-1">+1</button>
+                                <button @click="incrementar(denominacion, 5)" class="boton-arqueo bg-green-500 hover:bg-green-600 text-white rounded-md px-3 py-1 mr-1">+5</button>
+                            </div>
+                        </div>
+                    </template>
+                </template>
             </div>
         </div>
+        <div class="mt-6">
+            <button class="boton boton-success w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                    @click="enviarDatosYCerrar(cajaSeleccionada, billetes);"
+                    :disabled="saldoInicialNumerico() !== sumaBilletes">Crear Arqueo de hoy</button>
+        </div>
     </div>
+</div>
+
 
     {{-- Ventana emergente --}}
     <div class="flex gap-4 fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 justify-center items-center"
@@ -1239,131 +1238,117 @@
                 };
             },
         }" x-init="calcularCambio();">
-        <div class=" bg-white p-8 rounded-lg flex" style="height: 500px; width: 700px">
-            <!-- Sección metodos de pago -->
-            <div class="w-1/5 ">
+        <div class="bg-white p-8 rounded-lg flex" style="height: 500px; width: 700px">
+            <!-- Sección métodos de pago -->
+            <div class="w-1/5">
                 <div>
                     <div class="mb-6 space-y-2">
                         <!-- Botones para seleccionar método de pago -->
                         <div>
-                            <button
-                                @click=" dineroEntregado = 0;
-                                showNumericKeyboard = true;
-                                showCardOptions = false; 
-                                metodoDePago = 'efectivo';"
-                                class="relative border-b-2 border-black">
+                            <button @click="dineroEntregado = 0; showNumericKeyboard = true; showCardOptions = false; metodoDePago = 'efectivo';" 
+                                    class="relative border-b-2 border-black hover:bg-gray-200 transition-colors duration-300">
                                 Efectivo
                             </button>
                         </div>
                         <div>
-                            <button
-                                @click=" dineroEntregado = totalSinDesglosar;
-                                cambio = 0;
-                                showNumericKeyboard = false;
-                                showCardOptions = true;
-                                metodoDePago = 'tarjeta';"
-                                class="relative border-b-2 border-black">
+                            <button @click="dineroEntregado = totalSinDesglosar; cambio = 0; showNumericKeyboard = false; showCardOptions = true; metodoDePago = 'tarjeta';" 
+                                    class="relative border-b-2 border-black hover:bg-gray-200 transition-colors duration-300">
                                 Tarjeta
                             </button>
                         </div>
-                
                     </div>
                 </div>
             </div>
-
-            <!-- Pago en Efectivo -->
-            <div class=" w-4/5 m-0" x-show="showNumericKeyboard">
-
-                <div class="grid grid-cols-2 gap-4">
-                    {{-- Columna de datos --}}
+        
+            <!-- Pago con Efectivo -->
+            <div class="w-4/5 max-w-md mx-auto p-4 bg-white rounded-lg" x-show="showNumericKeyboard">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <!-- Columna de datos -->
                     <div>
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2">TOTAL:</li>
-                            <li class="border-b-2 border-l-skin-primary pb-2">ENTREGADO:</li>
-                            <li class="border-b-2 border-l-skin-primary pb-2">CAMBIO:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg">TOTAL:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg">ENTREGADO:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg">CAMBIO:</li>
                         </ul>
                     </div>
-                    {{-- Columna de precios --}}
+                    <!-- Columna de precios -->
                     <div class="mb-6">
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2"
-                                x-text="(totalSinDesglosar).toFixed(2) + '€'">
-                            </li>
-                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="dineroEntregado + '€'"></li>
-                            <li class="border-b-2 border-l-skin-primary pb-2" x-text="cambio + '€'"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg" x-text="(totalSinDesglosar).toFixed(2) + '€'"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg" x-text="dineroEntregado + '€'"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg" x-text="cambio + '€'"></li>
                         </ul>
                     </div>
                 </div>
-
-                <!-- Teclado numerico -->
-                <div class="grid grid-cols-4 gap-1 mb-6" style="height:280px;">
-                    <button @click="pulsarTecla('7')" class="py-2  boton w-full h-full">7</button>
-                    <button @click="pulsarTecla('8')" class="py-2  boton w-full h-full">8</button>
-                    <button @click="pulsarTecla('9')" class="py-2  boton w-full h-full">9</button>
-                    <button @click="pulsarTecla('cancel')" class="py-2  boton w-full h-full"><i
-                            class="fa-solid fa-trash cursor-pointer"></i></button>
-                    
-                    <button @click="pulsarTecla('4')" class="py-2  boton w-full h-full">4</button>
-                    <button @click="pulsarTecla('5')" class="py-2  boton w-full h-full">5</button>
-                    <button @click="pulsarTecla('6')" class="py-2  boton w-full h-full">6</button>
-                    <button @click="pulsarTecla('delete')" class="py-2  boton w-full h-full"><i
-                            class="fa-solid fa-delete-left cursor-pointer"></i></button>
-                    
-                    <button @click="pulsarTecla('1')" class="py-2  boton w-full h-full">1</button>
-                    <button @click="pulsarTecla('2')" class="py-2  boton w-full h-full">2</button>
-                    <button @click="pulsarTecla('3')" class="py-2  boton w-full h-full">3</button>
-                    <button @click="dineroEntregado = totalSinDesglosar; calcularCambio();" class="py-2  boton  row-span-2  w-full h-full"><i
-                            class="fa-solid fa-arrow-turn-down transform rotate-90"></i></button>
-                    
-                    <button class="py-2 boton  w-full h-full"></button>
-                    <button @click="pulsarTecla('.')" class="py-2  boton  w-full h-full">.</button>
-                    <button @click="pulsarTecla('0')" class="py-2  boton  w-full h-full">0</button>
-                    
+        
+                <!-- Teclado numérico -->
+                <div class="grid grid-cols-4 gap-2 mb-6">
+                    <button @click="pulsarTecla('7')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">7</button>
+                    <button @click="pulsarTecla('8')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">8</button>
+                    <button @click="pulsarTecla('9')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">9</button>
+                    <button @click="pulsarTecla('cancel')" class="py-2 bg-red-500 text-white font-bold rounded w-full h-full hover:bg-red-600 transition-colors duration-300">
+                        <i class="fa-solid fa-trash cursor-pointer"></i>
+                    </button>
+        
+                    <button @click="pulsarTecla('4')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">4</button>
+                    <button @click="pulsarTecla('5')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">5</button>
+                    <button @click="pulsarTecla('6')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">6</button>
+                    <button @click="pulsarTecla('delete')" class="py-2 bg-yellow-500 text-white font-bold rounded w-full h-full hover:bg-yellow-600 transition-colors duration-300">
+                        <i class="fa-solid fa-delete-left cursor-pointer"></i>
+                    </button>
+        
+                    <button @click="pulsarTecla('1')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">1</button>
+                    <button @click="pulsarTecla('2')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">2</button>
+                    <button @click="pulsarTecla('3')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">3</button>
+                    <button @click="dineroEntregado = totalSinDesglosar; calcularCambio();" class="py-2 bg-green-500 text-white font-bold rounded row-span-2 w-full h-full hover:bg-green-600 transition-colors duration-300">
+                        <i class="fa-solid fa-arrow-turn-down transform rotate-90"></i>
+                    </button>
+        
+                    <button class="py-2 bg-gray-500 text-white font-bold rounded w-full h-full"></button>
+                    <button @click="pulsarTecla('.')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">.</button>
+                    <button @click="pulsarTecla('0')" class="py-2 bg-blue-500 text-white font-bold rounded w-full h-full hover:bg-blue-600 transition-colors duration-300">0</button>
                 </div>
-                <div class="flex justify-between " style="height: 55px">
-                    <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
-                    <button class="boton boton-success text-2xl"
-                        @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago, cajaSeleccionada); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;"
-                        :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0" >PAGAR</button> 
+        
+                <div class="flex justify-between" style="height: 55px">
+                    <button class="boton boton-danger text-2xl bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300" @click="showModal = false">CANCELAR</button>
+                    <button class="boton boton-success text-2xl bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors duration-300"
+                            @click="$wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago, cajaSeleccionada); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;"
+                            :disabled="carrito.length === 0 || cambio < 0 || dineroEntregado <= 0">PAGAR</button>
                 </div>
             </div>
-            {{-- Pago con Tarjeta --}}
-            <div class="w-1/2 " x-show="showCardOptions">
-                <div class="grid grid-cols-2 gap-4">
-                    {{-- Columna de datos --}}
+        
+            <!-- Pago con Tarjeta -->
+            <div class="w-4/5 max-w-md mx-auto p-4 bg-white rounded-lg" x-show="showCardOptions">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <!-- Columna de datos -->
                     <div>
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2">TOTAL:</li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg">TOTAL:</li>
                         </ul>
                     </div>
-                    {{-- Columna de precios --}}
+                    <!-- Columna de precios -->
                     <div class="mb-6">
                         <ul>
-                            <li class="border-b-2 border-l-skin-primary pb-2"
-                                x-text="(totalSinDesglosar ).toFixed(2) + '€'"></li>
+                            <li class="border-b-2 border-l-skin-primary pb-2 font-bold text-lg" x-text="(totalSinDesglosar).toFixed(2) + '€'"></li>
                         </ul>
                     </div>
                 </div>
-                <div>
-                    
-                </div>
-
-
+        
                 <div class="flex justify-between mt-16">
-                    <button class="boton boton-danger text-2xl" @click="showModal = false">CANCELAR</button>
-                    <button class="boton boton-success text-2xl" 
-                    @click=" $wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago, cajaSeleccionada); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;">
-                    PAGAR</button>
+                    <button class="boton boton-danger text-2xl bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300" @click="showModal = false">CANCELAR</button>
+                    <button class="boton boton-success text-2xl bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors duration-300"
+                            @click="$wire.crearTicket(carrito, valorIVA, totalSinDesglosar, totalCarrito, user, metodoDePago, cajaSeleccionada); imprimirDiv('contenidoAImprimir'); deleteCarrito(); showModal = false;">PAGAR</button>
                 </div>
             </div>
         </div>
+        
+        
         {{-- Ventana Ticket --}}
         <div id="contenidoAImprimir" class="contenidoDev">
-            <div class="bg-slate-100 p-8 rounded-lg flex ml-4 flex-col uppercase overflow-y-auto overflow-x-hidden"
-                style="width: 314px; height: 100vh;">
-                {{-- Cabecera --}}
-                {{-- Datos empresa --}}
-                <div class="flex flex-col items-center mb-3 text-sm">
+            <div class="ticket-container bg-slate-100 p-4 rounded-lg uppercase overflow-y-auto overflow-x-hidden">
+                <!-- Cabecera -->
+                <!-- Datos empresa -->
+                <div class="flex flex-col items-center mb-3 text-xs">
                     <span x-text="datosEmpresa.nombre"></span>
                     <span x-text="datosEmpresa.direccion"></span>
                     <div>
@@ -1378,8 +1363,8 @@
                         <span x-text="datosEmpresa.nif"></span>
                     </div>
                 </div>
-                {{-- Fecha --}}
-                <div class="text-sm">
+                <!-- Fecha -->
+                <div class="text-xs mb-3">
                     <span class="font-bold">FACTURA SIMPLIFICADA</span>
                     <div class="flex justify-between">
                         <div>
@@ -1387,111 +1372,88 @@
                             <span x-text="getNextRef"></span>
                         </div>
                         <div>
-                            <span
-                                x-text="fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})"></span>
-                            <span
-                                x-text="fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})"></span>
+                            <span x-text="fecha.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit', year: 'numeric'})"></span>
+                            <span x-text="fecha.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'})"></span>
                         </div>
                     </div>
                 </div>
-                {{-- Datos compra --}}
-                <div class="">
-                    <div class="flex-1 bg-whit">
-                        <table class="w-full">
-                            <thead class="border-b border-black">
-                                <tr>
-                                    <th class="text-left px-2 h-5">und</th>
-                                    <th class="col-span-2 text-left px-2 h-5">NOMBRE</th>
-                                    <th class="px-2 h-5">PRECIO</th>
-                                    <th class="ml-4 px-2 h-5">IMPORTE</th>
-                                    <th class="px-2 h-5"></th>
+                <!-- Datos compra -->
+                <div>
+                    <table class="w-full text-xs">
+                        <thead class="border-b border-black">
+                            <tr>
+                                <th class="text-left px-1 h-5">UND</th>
+                                <th class="text-left px-1 h-5">NOMBRE</th>
+                                <th class="text-right px-1 h-5">PRECIO</th>
+                                <th class="text-right px-1 h-5">IMPORTE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="articulo in carrito">
+                                <tr class="text-black h-5">
+                                    <td class="text-right px-1 h-5" x-text="articulo.cantidad"></td>
+                                    <td class="text-left px-1 h-5 truncate" x-text="articulo.name"></td>
+                                    <td class="text-right px-1 h-5" x-text="(articulo.precio).toFixed(2) + '€'"></td>
+                                    <td class="text-right px-1 h-5" x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <template x-for="articulo in carrito">
-                                
-                                    <tr class="text-black text-sm h-5">
-                                        <td class="text-right mr-2 px-2 h-5" x-text="articulo.cantidad"></td>
-                                        <td class="col-span-2 text-left flex overflow-hidden  h-5"
-                                            x-text="articulo.name">
-                                        </td>
-                                        <td class="ml-4 text-right px-2 h-5"
-                                            x-text="(articulo.precio).toFixed(2) + '€'">
-                                        </td>
-                                        <td class="text-right px-2 h-5"
-                                            x-text="(articulo.precio * articulo.cantidad).toFixed(2) + '€'"></td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-
-                    </div>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
-                <div class=" mt-3">
-                    <table class="w-full border-b-4 text-sm">
+                <div class="mt-3">
+                    <table class="w-full border-b-4 text-xs">
                         <thead>
                             <tr>
-                                <th class=" text-right">Imp</th>
-                                <th class=" text-right">Base</th>
-                                <th class=" text-right">Cuota</th>
-                                <th class=" text-right">TOTAL</th>
+                                <th class="text-right">IMP</th>
+                                <th class="text-right">BASE</th>
+                                <th class="text-right">CUOTA</th>
+                                <th class="text-right">TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
                             <template x-for="(value, index) in tipoIVA()">
                                 <tr>
-
-                                    <td class=" text-right" x-text="index + '%'"></td>
-                                    <td class=" text-right" x-text="value.base.toFixed(2) + '€'"></td>
-                                    <td class=" text-right" x-text="value.cuota.toFixed(2) + '€'"></td>
-                                    <td class=" text-right" x-text="value.total.toFixed(2) + '€'"></td>
+                                    <td class="text-right" x-text="index + '%'"></td>
+                                    <td class="text-right" x-text="value.base.toFixed(2) + '€'"></td>
+                                    <td class="text-right" x-text="value.cuota.toFixed(2) + '€'"></td>
+                                    <td class="text-right" x-text="value.total.toFixed(2) + '€'"></td>
                                 </tr>
                             </template>
                             <tr>
                                 <td></td>
                                 <td></td>
-                                <td class="font-bold text-right border-t border-black text-base">TOTAL</td>
-                                <td class="font-bold text-right border-t border-black text-base"
-                                    x-text="(totalSinDesglosar).toFixed(2) + '€'"></td>
+                                <td class="font-bold text-right border-t border-black">TOTAL</td>
+                                <td class="font-bold text-right border-t border-black" x-text="(totalSinDesglosar).toFixed(2) + '€'"></td>
                             </tr>
                         </tbody>
-
                     </table>
-
-
                 </div>
-                {{-- footer --}}
-                <div class="border-t border-black text-sm">
-                    <div class="w-full text-sm">
-                        <div class="flex flex-wrap justify-between items-start">
-                            <div>
-                                <span class="">ENTREGADO</span>
-                                <span class="border-b-2 border-l-skin-primary pb-2 ml-1"
-                                    x-text="dineroEntregado + '€'"></span>
-                            </div>
-                            <div>
-                                <span>CAMBIO</span>
-                                <span class="border-b-2 border-l-skin-primary pb-2 ml-1"
-                                    x-text="cambio + '€'"></span>
-                            </div>
+                <!-- Footer -->
+                <div class="border-t border-black text-xs mt-3">
+                    <div class="flex justify-between mb-2">
+                        <div>
+                            <span>ENTREGADO</span>
+                            <span class="border-b-2 border-l-skin-primary ml-1" x-text="dineroEntregado + '€'"></span>
+                        </div>
+                        <div>
+                            <span>CAMBIO</span>
+                            <span class="border-b-2 border-l-skin-primary ml-1" x-text="cambio + '€'"></span>
                         </div>
                     </div>
-                    <div>
-                        <div class="flex mb-2">
-                            <span class="mr-2">Num. Lin. Factura</span>
-                            <span x-text="elementosCarrito()"></span>
-                        </div>
-                        <div class="flex">
-                            <span class="mr-2">Vendedor</span>
-                            <span x-text="nombreVendedor"></span>
-                        </div>
-                        <div class="w-full mx-auto flex flex-col items-center justify-center">
-                            <span class="my-2">**** IMPUESTOS INCLUIDOS ****</span>
-                            <span class="my-2">GRACIAS POR SU COMPRA</span>
-                        </div>
+                    <div class="flex mb-2">
+                        <span class="mr-2">Num. Lin. Factura</span>
+                        <span x-text="elementosCarrito()"></span>
+                    </div>
+                    <div class="flex mb-2">
+                        <span class="mr-2">Vendedor</span>
+                        <span x-text="nombreVendedor"></span>
+                    </div>
+                    <div class="w-full flex flex-col items-center justify-center text-center">
+                        <span class="my-2">**** IMPUESTOS INCLUIDOS ****</span>
+                        <span class="my-2">GRACIAS POR SU COMPRA</span>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>        
     </div>
 </div>
